@@ -14,8 +14,10 @@ app.use(cookieParser());
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/test", test_router);
 
-app.listen(process.env.PORT, function () {
-    console.log(`Server started at http://localhost:${process.env.PORT}`);
-});
+if (process.env.NODE_ENV != "testing") {
+    app.listen(process.env.PORT, function () {
+        console.log(`Server started at http://localhost:${process.env.PORT}`);
+    });
+}
 
 module.exports = app;
