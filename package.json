@@ -1,0 +1,14 @@
+{
+  "name": "tweet-analysis",
+  "version": "0.0.1",
+  "description": "Non ho mandato l'email",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1"
+  }
+}
