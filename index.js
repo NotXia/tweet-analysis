@@ -11,9 +11,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/", express.static(path.join(__dirname, "frontend/build")));
-app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/test", test_router);
+
+app.use("/", express.static(path.join(__dirname, "frontend/build")));
+app.use("/*", (req, res) => { res.sendFile(path.join(__dirname, "frontend/build/index.html")) });
 
 if (process.env.NODE_ENV != "testing") {
     app.listen(process.env.PORT, function () {
