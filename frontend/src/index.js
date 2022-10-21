@@ -7,7 +7,7 @@ import home_routes from "./pages/Home/routes";
 let routes = [];
 routes = routes.concat(home_routes);
 
-routes.push({ path: "/*", loader: () => { window.location.href="/not-found.html" } }); // Gestione not found (lasciare come ultimo route)
+routes.push({ path: "/*", loader: () => { window.location.href=`${process.env.REACT_APP_BASE_PATH}/not-found.html` } }); // Gestione not found (lasciare come ultimo route)
 const router = createBrowserRouter(routes, { basename: process.env.REACT_APP_BASE_PATH });
 
 
