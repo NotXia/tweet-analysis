@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    tools {nodejs "node-16"}
 
     stages {
         stage('SCM') { 
@@ -44,7 +45,7 @@ pipeline {
                     } 
                 }
             }
-		}
+        }
 
         stage('SonarQube analysis') {
             when {
@@ -63,14 +64,14 @@ pipeline {
             }
             post {
                 success {
-				    updateGitlabCommitStatus name: 'SonarScanner analysis', state: 'success'
+                    updateGitlabCommitStatus name: 'SonarScanner analysis', state: 'success'
                 }
                 failure {
-				    updateGitlabCommitStatus name: 'SonarScanner analysis', state: 'failed'
+                    updateGitlabCommitStatus name: 'SonarScanner analysis', state: 'failed'
                 }
             }
         }
- 
+
         stage ("Production deploy") {
             when {
                 expression {
