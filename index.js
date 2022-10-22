@@ -5,14 +5,10 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
 
-const test_router = require("./routes/test");
-
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-
-app.use("/test", test_router);
 
 app.use(error_handler); // Gestore errori
 
