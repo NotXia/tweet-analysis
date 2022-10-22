@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test:unit": "jest --passWithNoTests ./tests/unit",
+    "test:unit": "jest --passWithNoTests --coverage ./tests/unit",
     "build": "npm run build --prefix ./frontend"
   },
   "jest": {
