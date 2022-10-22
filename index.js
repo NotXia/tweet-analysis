@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const error_handler = require("./error_handler.js").error_handler;
 
 const test_router = require("./routes/test");
 
@@ -13,6 +14,9 @@ app.use(cookieParser());
 
 app.use("/test", test_router);
 
+app.use(error_handler); // Gestore errori
+
+// App react
 app.use("/", express.static(path.join(__dirname, "frontend/build")));
 app.use("/*", (req, res) => { res.sendFile(path.join(__dirname, "frontend/build/index.html")) });
 
