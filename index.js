@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+app.disable("x-powered-by");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
