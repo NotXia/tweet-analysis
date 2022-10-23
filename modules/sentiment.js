@@ -9,6 +9,7 @@ const BIAS_TOLLERANCE = 0.1;
 
 module.exports = sentiment;
 
+/* istanbul ignore next */
 if (process.env.NODE_ENV === "testing") {
     module.exports = {
         detectLanguage: _detectLanguage,
