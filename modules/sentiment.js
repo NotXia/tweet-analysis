@@ -1,6 +1,8 @@
 require("dotenv").config();
 const lngDetector = new (require("languagedetect"));
 lngDetector.setLanguageType("iso2");
+const sentimentManager = new (require("node-nlp").SentimentManager)();
+var sentimentMultilang = require('sentiment-multilang');
 
 const BIAS_TOLLERANCE = 0.1;
 
@@ -9,15 +11,53 @@ module.exports = sentiment;
 
 if (process.env.NODE_ENV === "testing") {
     module.exports = {
-        detectLanguage: _detectLanguage
+        detectLanguage: _detectLanguage,
+        sentiment: sentiment
     }
 }
 
 
-function sentiment(sentence, options) {
-    return null;
+/**
+ * Analizza il sentimento di una data frase in una determinata lingua. Se non specificata, si tenta di rilevare la lingua.
+ * @param {string} sentence             Frase da analizzare
+ * @param {Object} options              Opzioni di analisi
+ * @param {string} options.language     Lingua della frase
+ * @param {string} options.bias         Lingua a cui far tendere la rilevazione (se la lingua della frase è incerta)
+ * @returns {{sentiment:string, score:number}} Sentimento ("positive", "neutral", "negative") e score della frase
+ */
+async function sentiment(sentence, options={}) {
+    let to_use_language;
+
+    if (!options?.language && !options?.bias) { to_use_language = _detectLanguage(sentence); }  // Rilevamento lingua senza indizzi
+    else if (options.language) { to_use_language = options.language; }                          // Lingua fornita in input
+    else { to_use_language = _detectLanguage(sentence, options.bias); }                         // Rilevamento lingua con bias suggerito 
+
+    const sentiment_data = await _sentimentAnalyzer(sentence, to_use_language);
+
+    return sentiment_data;
 }
 
+
+/**
+ * Analizza il sentimento di una frase utilizzando l'analizzatore più idoneo.
+ * @param {string} sentence     Frase da analizzare
+ * @param {string} language     Lingua della frase
+ * @returns {{sentiment:string, score:number}} Sentimento ("positive", "neutral", "negative") e score della frase
+ */
+async function _sentimentAnalyzer(sentence, language) {
+    let data;
+
+    // Permette di scegliere analizzatori diversi in base alla lingua
+    switch (language) {
+        case "it": 
+            data = sentimentMultilang(sentence, language);
+            return { sentiment: data.vote, score: data.score };
+
+        default: 
+            data = await sentimentManager.process(language, sentence)
+            return { sentiment: data.vote, score: data.score };
+    }
+}
 
 /**
  * Individua la lingua di una data stringa.
