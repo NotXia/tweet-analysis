@@ -64,7 +64,7 @@ async function _sentimentAnalyzer(sentence, language) {
  * Individua la lingua di una data stringa.
  * @param {string} sentence     Stringa a cui individuare la lingua
  * @param {string} bias         Lingua in formato ISO2 a cui far tendere la ricerca (default: null)
- * @returns Codice ISO2 della lingua
+ * @returns {string} Codice ISO2 della lingua
  */
 function _detectLanguage(sentence, bias=null) {
     const detections = lngDetector.detect(sentence);
