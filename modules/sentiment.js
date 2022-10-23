@@ -43,7 +43,7 @@ async function sentiment(sentence, options={}) {
  * Analizza il sentimento di una frase utilizzando l'analizzatore più idoneo.
  * @param {string} sentence     Frase da analizzare
  * @param {string} language     Lingua della frase
- * @returns {{sentiment:string, score:number}} Sentimento ("positive", "neutral", "negative") e score della frase
+ * @returns {{sentiment:string, score:number, language:string}} Sentimento ("positive", "neutral", "negative"), score della frase e lingua utilizzata
  */
 async function _sentimentAnalyzer(sentence, language) {
     let data;
@@ -52,11 +52,11 @@ async function _sentimentAnalyzer(sentence, language) {
     switch (language) {
         case "it": 
             data = sentimentMultilang(sentence, language);
-            return { sentiment: data.vote, score: data.score };
+            return { sentiment: data.vote, score: data.score, language: language };
 
         default: 
             data = await sentimentManager.process(language, sentence)
-            return { sentiment: data.vote, score: data.score };
+            return { sentiment: data.vote, score: data.score, language: language };
     }
 }
 

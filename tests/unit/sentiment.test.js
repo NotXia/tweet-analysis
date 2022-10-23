@@ -33,43 +33,56 @@ describeIf(sentiment_module.sentiment)("Test analisi del sentimento", function (
     test("Frasi positive", async function () {
         sentiment_res = await sentiment("I triceratopi sono belli", { language: "it" });
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment("Che cosa super mega fantastica", { language: "it" });
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment("I like that tomato");
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("en");
 
         sentiment_res = await sentiment("J'adore les chaises");
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("fr");
 
         sentiment_res = await sentiment(`I love to hear "Fai terribilmente schifo"`, { language: "en" });
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("en");
         sentiment_res = await sentiment(`I love to hear "Fai terribilmente schifo"`, { bias: "en" });
         expect(sentiment_res.sentiment).toEqual("positive");
+        expect(sentiment_res.language).toEqual("en");
     });
 
     test("Frasi neutre", async function () {
         sentiment_res = await sentiment("Arrivederci", { language: "it" });
         expect(sentiment_res.sentiment).toEqual("neutral");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment("Si trova al secondo piano");
         expect(sentiment_res.sentiment).toEqual("neutral");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment("The pen is on the table");
         expect(sentiment_res.sentiment).toEqual("neutral");
+        expect(sentiment_res.language).toEqual("en");
     });
 
     test("Frasi negative", async function () {
         sentiment_res = await sentiment("Fai schifo", { language: "it" });
         expect(sentiment_res.sentiment).toEqual("negative");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment(`I love to hear "Fai terribilmente schifo"`, { language: "it" });
         expect(sentiment_res.sentiment).toEqual("negative");
+        expect(sentiment_res.language).toEqual("it");
         sentiment_res = await sentiment(`I love to hear "Fai terribilmente schifo"`, { bias: "it" });
         expect(sentiment_res.sentiment).toEqual("negative");
+        expect(sentiment_res.language).toEqual("it");
 
         sentiment_res = await sentiment("Война это плохо", { language: "ru" });
         expect(sentiment_res.sentiment).toEqual("negative");
+        expect(sentiment_res.language).toEqual("ru");
     });
 });
