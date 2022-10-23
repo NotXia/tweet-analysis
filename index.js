@@ -17,7 +17,7 @@ app.use(error_handler); // Gestore errori
 app.use("/", express.static(path.join(__dirname, "frontend/build")));
 app.use("/*", (req, res) => { res.sendFile(path.join(__dirname, "frontend/build/index.html")) });
 
-if (process.env.NODE_ENV != "testing") {
+if (!process.env.NODE_ENV.includes("testing")) {
     app.listen(process.env.PORT, function () {
         console.log(`Server started at http://localhost:${process.env.PORT}`);
     });

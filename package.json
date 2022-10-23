@@ -5,15 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test:unit": "jest --passWithNoTests --coverage ./tests/unit",
+    "test": "npm run test:unit && npm run test:api",
+    "test:unit": "jest --passWithNoTests --coverage --coverageDirectory ./coverage/unit --globalSetup ./tests/utils/unit.global_init.js ./tests/unit/.*.test.js",
+    "test:api": "jest --passWithNoTests --coverage --coverageDirectory ./coverage/api --globalSetup ./tests/utils/api.global_init.js ./tests/api/.*.test.js",
     "build": "npm run build --prefix ./frontend"
   },
   "jest": {
-    "testRegex": "./tests/.*.test.js",
     "testPathIgnorePatterns": [
       "./tests/utils/"
-    ],
-    "globalSetup": "./tests/utils/global_init.js"
+    ]
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
