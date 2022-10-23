@@ -6,10 +6,16 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
 
+const sentiment_router = require("./routes/sentiment.js");
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+// API
+app.use("/analysis", sentiment_router);
+
 
 app.use(error_handler); // Gestore errori
 
