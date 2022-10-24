@@ -20,11 +20,14 @@
     "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "http-errors": "^2.0.0",
+    "languagedetect": "^2.0.0",
+    "node-nlp": "^4.24.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
+    "sentiment-multilang": "^0.0.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
