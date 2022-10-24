@@ -1,6 +1,5 @@
 require("dotenv").config();
 const describeIf = (condition) => condition ? describe : describe.skip;
-// const testIf = (condition) => condition ? test : test.skip;
 
 const sentiment_module = require("../../modules/sentiment.js");
 

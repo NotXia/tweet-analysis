@@ -2,7 +2,7 @@ require("dotenv").config();
 const lngDetector = new (require("languagedetect"));
 lngDetector.setLanguageType("iso2");
 const sentimentManager = new (require("node-nlp").SentimentManager)();
-var sentimentMultilang = require('sentiment-multilang');
+const sentimentMultilang = require('sentiment-multilang');
 
 const BIAS_TOLLERANCE = 0.1;
 
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === "testing") {
  * @param {Object} options              Opzioni di analisi
  * @param {string} options.language     Lingua della frase
  * @param {string} options.bias         Lingua a cui far tendere la rilevazione (se la lingua della frase è incerta)
- * @returns {{sentiment:string, score:number}} Sentimento ("positive", "neutral", "negative") e score della frase
+ * @returns {Promise<{sentiment:string, score:number}>} Sentimento ("positive", "neutral", "negative") e score della frase
  */
 async function sentiment(sentence, options={}) {
     let to_use_language;
@@ -43,7 +43,7 @@ async function sentiment(sentence, options={}) {
  * Analizza il sentimento di una frase utilizzando l'analizzatore più idoneo.
  * @param {string} sentence     Frase da analizzare
  * @param {string} language     Lingua della frase
- * @returns {{sentiment:string, score:number, language:string}} Sentimento ("positive", "neutral", "negative"), score della frase e lingua utilizzata
+ * @returns {Promise<{sentiment:string, score:number, language:string}>} Sentimento ("positive", "neutral", "negative"), score della frase e lingua utilizzata
  */
 async function _sentimentAnalyzer(sentence, language) {
     let data;
