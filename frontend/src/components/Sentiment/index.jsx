@@ -8,6 +8,8 @@
  * - positive:string   Testo o percorso dell'immagine da visualizzare per risultati positivi
  * - neutral:string    Testo o percorso dell'immagine da visualizzare per risultati neutri
  * - negative:string   Testo o percorso dell'immagine da visualizzare per risultati negativi
+ * - language:string   Lingua (ISO2) del tweet, se mancante viene inferito
+ * - bias:string       Suggerimento della lingua (ISO2) del tweet a cui far tendere l'inferenza
  * 
  * Attributi:
  * - image             Se si vuole il risultato visualizzato come immagine (è obbligatorio indicare il percorso delle immagine)
@@ -40,7 +42,8 @@ class Sentiment extends React.Component {
             const res = await axios({
                 method: "GET", url: `${process.env.REACT_APP_API_PATH}/analysis/sentiment`,
                 params: {
-                    tweet: this.props.tweet
+                    tweet: this.props.tweet, 
+                    bias: this.props.bias, lang: this.props.language
                 }
             });
     
