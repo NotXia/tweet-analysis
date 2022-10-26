@@ -1,21 +1,33 @@
-/**
- * 
- * Componente per l'analisi del sentimento di un Tweet
- * In base alla modalità selezionata, visualizza il risultato sottoforma di testo o immagine
- * 
- * Proprietà:
- * - tweet:string      Testo del tweet da analizzare
- * - positive:string   Testo o percorso dell'immagine da visualizzare per risultati positivi
- * - neutral:string    Testo o percorso dell'immagine da visualizzare per risultati neutri
- * - negative:string   Testo o percorso dell'immagine da visualizzare per risultati negativi
- * - language:string   Lingua (ISO2) del tweet, se mancante viene inferito
- * - bias:string       Suggerimento della lingua (ISO2) del tweet a cui far tendere l'inferenza
- * 
- * Attributi:
- * - image             Se si vuole il risultato visualizzato come immagine (è obbligatorio indicare il percorso delle immagine)
- * - text [default]    Se si vuole il risultato visualizzato come testo (se non viene indicato, viene utilizzato del testo di default)
- * 
- */
+/*
+    Componente per l'analisi del sentimento di un Tweet
+    In base alla modalità selezionata, visualizza il sentimento di un dato tweet sottoforma di testo o immagine
+
+
+    Proprietà:
+    - tweet:string          Testo del tweet da analizzare (obbligatorio)
+    - positive:string       Testo o percorso dell'immagine da visualizzare per risultati positivi
+    - neutral:string        Testo o percorso dell'immagine da visualizzare per risultati neutri
+    - negative:string       Testo o percorso dell'immagine da visualizzare per risultati negativi
+    Modalità:
+        - image             Se si vuole il risultato visualizzato come immagine (è obbligatorio indicare il percorso delle immagine)
+        - text [default]    Se si vuole il risultato visualizzato come testo (se non viene indicato, viene utilizzato del testo di default)
+    Lingua:
+        - language:string   Lingua (ISO2) del tweet, se mancante viene inferito
+        - bias:string       Suggerimento della lingua (ISO2) del tweet a cui far tendere l'inferenza
+
+
+    Esempi:
+    - Analisi del tweet "Ciao mondo":
+        <Sentiment tweet="Ciao mondo" />
+    - Equivalente all'esempio precedente
+        <Sentiment tweet="Ciao mondo" text />
+    - Analisi con testo positivo personalizzato
+        <Sentiment tweet="Ciao mondo" text positive="Felicissimo" />
+    - Analisi con immagini
+        <Sentiment tweet="Ciao mondo" image positive="/path/to/positive.png" neutral="/path/to/neutral.png" negative="/path/to/negative.png" />
+    - Analisi specificando la lingua:
+        <Sentiment tweet="Ciao mondo" language="it" />
+*/
 
 import React from "react";
 import axios from "axios";
