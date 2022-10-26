@@ -22,14 +22,14 @@ async function getTweetsByUser(username) {
         
         //NON ANCORA FUNZIONANTE | Dovrebbe controllare se il tweet ha la geolocalizzazione, se si fare una chiamata alle API di twitter per ottenere il luogo,
         //altrimenti inserire una stringa vuota
-        let place;
+        /*let place;
         try {
-            let place_id = resTwts.data[i].geo.place_id;
+            let place_id = resTwts[i].geo.place_id;
             let resPlc = await place_fetch(place_id);
             place = resPlc.full_name;
         } catch (error) {
             place = '';
-        }
+        }*/
 
         tweets.push({
             "name": resUsr.name,
@@ -40,7 +40,7 @@ async function getTweetsByUser(username) {
             "likes": resTwts[i].public_metrics.like_count,
             "comments": resTwts[i].public_metrics.reply_count,
             "retweets": resTwts[i].public_metrics.retweet_count,
-            "location": place
+            //"location": place
         });
     }
     return tweets;
