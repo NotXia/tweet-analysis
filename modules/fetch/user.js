@@ -25,6 +25,7 @@ async function getTweetsByUser(username) {
         //altrimenti registra una stringa vuota
         let place = '';
         try {
+            //Cicla i vari luoghi possibili e ne confronta l'ID con quello registrato nel tweet, fino a trovare un match
             for(let j = 0; j < resTwts.includes.places.length; j++) {
                 if (resTwts.includes.places[j].id == resTwts.data[i].geo.place_id) {
                     place = resTwts.includes.places[j].full_name + ', ' + resTwts.includes.places[j].country;
