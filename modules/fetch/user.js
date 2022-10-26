@@ -3,25 +3,40 @@ const axios = require('axios');
 
 
 /**
- * Restituisce gli ultimi 100 tweet di un utente dato il suo username
- * @param {string} username             Username dell'utente
- * @returns {Promise[100]<{name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, location: string}>} 
+ * Restituisce gli ultimi 100 tweet di un utente dato il suo username, o i 100 tweet nella pagina indicata dal pagination_token
+ * @param {string} username                     Username dell'utente
+ * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
+ * @returns {Promise<{tweets[100]: {name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ *          location: string, media[]: string}, next_token: string}>} 
  *          Array di 100 tweet aventi ciascuno:
- *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, numero di retweet
- *          e posizione del tweet (se abilitata, altrimenti stringa vuota)
+ *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
+ *          numero di retweet, posizione del tweet (se abilitata, altrimenti stringa vuota), array di media (se presenti, altrimenti vuoto)
+ *          Token della prossima pagina da visualizzare, se presente, altrimenti stringa vuota
  */
-async function getTweetsByUser(username) {
+async function getTweetsByUser(username, pagination_token = '') {
     
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await usr_fetch(username);
-    const resTwts = await twt_fetch(resUsr.id);
+    let  resTwts;
+    if (pagination_token == '') {
+        resTwts = await twt_fetch(resUsr.id);
+    } else {
+        resTwts = await twt_fetch_nxtpage(resUsr.id, pagination_token);
+    }
 
-    let tweets = [];
-    
+    let page = {
+        tweets: []
+    };
+    try {
+        page.next_token = resTwts.meta.next_token;
+    } catch (error) {
+        page.next_token = '';
+    }
+
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(let i = 0; i < resTwts.data.length; i++) {
         
-        //Controlla se il tweet ha la geolocalizzazione, se si registra il nome del luogo nella variabile place,
+        //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place,
         //altrimenti registra una stringa vuota
         let place = '';
         try {
@@ -36,6 +51,27 @@ async function getTweetsByUser(username) {
             place = '';
         }
 
+        //Controlla se il tweet ha dei media, se si, registra il link del media nell'array media,
+        //altrimenti registra una stringa vuota
+        let media = [];
+			try {
+				
+                //Per ogni media del tweet recupera l'url
+                for(let k = 0; k < resTwts.data[i].attachments.media_keys.length; k++) {
+
+                    //Cicla i vari media possibili e ne confronta l'ID con quello del media k, fino a trovare un match
+					for(let j = 0; j < resTwts.includes.media.length; j++) {
+						if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
+							if (resTwts.includes.media[j].type == 'video') {
+								media.push(resTwts.includes.media[j].variants[0].url);
+							} else {
+								media.push(resTwts.includes.media[j].url);
+							}
+						}
+					}
+				}
+			} catch (error) {}
+
         tweets.push({
             "name": resUsr.name,
             "username": resUsr.username,
@@ -45,17 +81,17 @@ async function getTweetsByUser(username) {
             "likes": resTwts.data[i].public_metrics.like_count,
             "comments": resTwts.data[i].public_metrics.reply_count,
             "retweets": resTwts.data[i].public_metrics.retweet_count,
-            "location": place
+            "location": place,
+            "media": media
         });
     }
-    return tweets;
+    return page;
 }
 
 /**
  * Chiamata alle API di Twitter per ottenere i dati di un utente dato il suo username
  * @param {string} username             Username dell'utente
- * @returns {Promise<{username: string, id: number, name: string, profile_image_url: string}>} 
- *          Username (@), ID dell'utente, Nome dell'utente, link alla foto profilo dell'utente
+ * @returns {Promise<>}                 Dati vari dell'utente
  */
 async function usr_fetch(username) {
     
@@ -81,12 +117,7 @@ async function usr_fetch(username) {
 /**
  * Chiamata alle API di Twitter per ottenere i dati degli utlimi 100 tweet di un utente dato il suo ID
  * @param {number} userId               ID dell'utente
- * @returns {Promise<{Data[100]: {public_metrics: {retweet_count: number, reply_count: number, like_count: number, quote_count: number}, edit_history_tweet_ids[]: number, 
- *          text: string, id: number, created_at: string}, includes: {places[]: {country: string, full_name: string, id: number}}}>} 
- *          Array di 100 tweet aventi ciascuno:
- *          Numero di retweet, commenti, like e quote, IDs della cronologia delle modifiche, contenuto del tweet, ID del tweet, data e ora di pubblicazione
- *          Oggetto includes avente un array con la lista dei luoghi usati nei 100 tweet, avente ciascuno:
- *          Nome del paese, nome del luogo e ID del luogo
+ * @returns {Promise<>}                 Array di 100 tweet ciascuno con informazioni varie
  */
 async function twt_fetch(userId) {
     
@@ -102,8 +133,42 @@ async function twt_fetch(userId) {
                 'max_results': 100,
                 'exclude': 'retweets',
                 'tweet.fields': 'created_at,text,public_metrics',
-                'expansions': 'geo.place_id',
-				'place.fields': 'country,full_name'
+                'expansions': 'geo.place_id,attachments.media_keys',
+				'place.fields': 'country,full_name',
+                'media.fields': 'url,variants'
+            }
+        });
+        return response.data;
+    
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ * Chiamata alle API di Twitter per ottenere i dati dei 100 tweet della pagina indicata dal pagination token
+ * @param {number} userId                       ID dell'utente
+ * @param {string} pagination_token             Token della pagina da visualizzare
+ * @returns {Promise<>}                         Array di 100 tweet ciascuno con informazioni varie
+ */
+async function twt_fetch_nxtpage(userId, pagination_token) {
+    
+    try {
+        
+        const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, {
+            
+            headers: {
+                'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
+            },
+
+            params: {
+                'max_results': 100,
+                'exclude': 'retweets',
+                'tweet.fields': 'created_at,text,public_metrics',
+                'expansions': 'geo.place_id,attachments.media_keys',
+                'place.fields': 'country,full_name',
+                'media.fields': 'url,variants',
+                'pagination_token': pagination_token
             }
         });
         return response.data;
