@@ -5,6 +5,7 @@ app.disable("x-powered-by");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
+const cors = require("cors");
 
 const sentiment_router = require("./routes/sentiment.js");
 
@@ -12,6 +13,7 @@ const sentiment_router = require("./routes/sentiment.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({ origin: ["http://localhost:3000", "https://tcxia.ddns.net"] }));
 
 // API
 app.use("/analysis", sentiment_router);
