@@ -5,8 +5,8 @@ module.exports = hashtagFetch;
 
 async function hashtagFetch(hashtag) {
     // TODO: controllo dell'input (loLowerCase e togliere eventuale # a inizio stringa)
-
-    let tweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, {
+    try {
+        let tweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
             query: `#${hashtag}`,
@@ -17,9 +17,12 @@ async function hashtagFetch(hashtag) {
             "media.fields": "url,variants",
             "user.fields": "name,profile_image_url,username"
         }
-    });
+        });
 
-    // console.log(tweets.data.includes);
+        // console.log(tweets.data.includes);
 
-    return tweets;
+        return tweets;
+    } catch (error) {
+        console.log(error);
+    }
 }
