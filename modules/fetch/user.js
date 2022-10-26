@@ -20,7 +20,7 @@ async function getTweetsByUser(username) {
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(let i = 0; i < resTwts.length; i++) {
         
-        //NON ANCORA FUNZIONANTE | Dovrebbe se il tweet ha la geolocalizzazione, se si fare una chiamata alle API di twitter per ottenere il luogo,
+        //NON ANCORA FUNZIONANTE | Dovrebbe controllare se il tweet ha la geolocalizzazione, se si fare una chiamata alle API di twitter per ottenere il luogo,
         //altrimenti inserire una stringa vuota
         let place;
         try {
