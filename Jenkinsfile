@@ -10,6 +10,10 @@ pipeline {
         }
 
         stage("Test") {
+            environment {
+                TWITTER_BEARER_TOKEN = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
+            }
+
             stages {
                 stage("Installing dependencies") {
                     steps {
