@@ -16,25 +16,21 @@ async function getTweetsByUser(username) {
     const resTwts = await twt_fetch(resUsr.id);
 
     let tweets = [];
-    //let places = [];
-
-    //NON ANCORA FUNZIONANTE | Dovrebbe controllare ogni tweet e se il tweet i ha la geolocalizzazione inserire il nome del luogo
-    //nell'array places[i], altrimenti inserire una stringa vuota
-    //Problema di rate limit? 
-    /*for(let i = 0; i < resTwts.length; i++) {
-
-        try {
-            let place_id = resTwts[i].geo.place_id;
-            const resPlc = await place_fetch(place_id);
-            places.push(resPlc.full_name);
-        } catch (error) {
-            places.push('');
-        }
-    }*/
     
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(let i = 0; i < resTwts.length; i++) {
         
+        //NON ANCORA FUNZIONANTE | Dovrebbe controllare ogni tweet e se il tweet i ha la geolocalizzazione inserire il nome del luogo
+        //nell'array places[i], altrimenti inserire una stringa vuota
+        let place;
+        try {
+            let place_id = resTwts.data[i].geo.place_id;
+            let resPlc = await place_fetch(place_id);
+            place = resPlc.full_name;
+        } catch (error) {
+            place = '';
+        }
+
         tweets.push({
             "name": resUsr.name,
             "username": resUsr.username,
@@ -44,7 +40,7 @@ async function getTweetsByUser(username) {
             "likes": resTwts[i].public_metrics.like_count,
             "comments": resTwts[i].public_metrics.reply_count,
             "retweets": resTwts[i].public_metrics.retweet_count,
-            //"location": places[i]
+            "location": place
         });
     }
     return tweets;
