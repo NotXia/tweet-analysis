@@ -22,6 +22,7 @@ async function getTweetsByUser(username) {
         
         //NON ANCORA FUNZIONANTE | Dovrebbe controllare se il tweet ha la geolocalizzazione, se si fare una chiamata alle API di twitter per ottenere il luogo,
         //altrimenti inserire una stringa vuota
+        //Problema di rate limit?
         /*let place;
         try {
             let place_id = resTwts[i].geo.place_id;
