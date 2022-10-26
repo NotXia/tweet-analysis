@@ -18,30 +18,31 @@ async function getTweetsByUser(username) {
     let tweets = [];
     
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
-    for(let i = 0; i < resTwts.length; i++) {
+    for(let i = 0; i < resTwts.data.length; i++) {
         
-        //NON ANCORA FUNZIONANTE | Dovrebbe controllare se il tweet ha la geolocalizzazione, se si fare una chiamata alle API di twitter per ottenere il luogo,
-        //altrimenti inserire una stringa vuota
-        //Problema di rate limit?
-        /*let place;
+        //Controlla se il tweet ha la geolocalizzazione, se si registra il nome del luogo nella variabile place,
+        //altrimenti registra una stringa vuota
+        let place = '';
         try {
-            let place_id = resTwts[i].geo.place_id;
-            let resPlc = await place_fetch(place_id);
-            place = resPlc.full_name;
+            for(let j = 0; j < resTwts.includes.places.length; j++) {
+                if (resTwts.includes.places[j].id == resTwts.data[i].geo.place_id) {
+                    place = resTwts.includes.places[j].full_name + ', ' + resTwts.includes.places[j].country;
+                }
+            }
         } catch (error) {
             place = '';
-        }*/
+        }
 
         tweets.push({
             "name": resUsr.name,
             "username": resUsr.username,
             "pfp": resUsr.profile_image_url,
-            "text":  resTwts[i].text,
-            "time": resTwts[i].created_at,
-            "likes": resTwts[i].public_metrics.like_count,
-            "comments": resTwts[i].public_metrics.reply_count,
-            "retweets": resTwts[i].public_metrics.retweet_count,
-            //"location": place
+            "text":  resTwts.data[i].text,
+            "time": resTwts.data[i].created_at,
+            "likes": resTwts.data[i].public_metrics.like_count,
+            "comments": resTwts.data[i].public_metrics.reply_count,
+            "retweets": resTwts.data[i].public_metrics.retweet_count,
+            "location": place
         });
     }
     return tweets;
@@ -76,10 +77,12 @@ async function usr_fetch(username) {
 /**
  * Chiamata alle API di Twitter per ottenere i dati degli utlimi 100 tweet di un utente dato il suo ID
  * @param {number} userId               ID dell'utente
- * @returns {Promise[100]<{public_metrics: {retweet_count: number, reply_count: number, like_count: number, quote_count: number}, edit_history_tweet_ids[]: number, 
- *          text: string, id: number, created_at: string}>} 
+ * @returns {Promise<{Data[100]: {public_metrics: {retweet_count: number, reply_count: number, like_count: number, quote_count: number}, edit_history_tweet_ids[]: number, 
+ *          text: string, id: number, created_at: string}, includes: {places[]: {country: string, full_name: string, id: number}}}>} 
  *          Array di 100 tweet aventi ciascuno:
  *          Numero di retweet, commenti, like e quote, IDs della cronologia delle modifiche, contenuto del tweet, ID del tweet, data e ora di pubblicazione
+ *          Oggetto includes avente un array con la lista dei luoghi usati nei 100 tweet, avente ciascuno:
+ *          Nome del paese, nome del luogo e ID del luogo
  */
 async function twt_fetch(userId) {
     try {
@@ -93,32 +96,12 @@ async function twt_fetch(userId) {
             params: {
                 'max_results': 100,
                 'exclude': 'retweets',
-                'tweet.fields': 'created_at,geo,text,public_metrics'
+                'tweet.fields': 'created_at,text,public_metrics',
+                'expansions': 'geo.place_id',
+				'place.fields': 'country,full_name'
             }
         });
-        return response.data.data;
-    
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-/**
- * Chiamata alle API di Twitter per ottenere i dati di un luogo dato il suo ID
- * @param {number} placeId              ID del luogo
- * @returns {Promise<>}                 Dati vari sul luogo
- */
-async function place_fetch(placeId) {
-    try {
-        
-        const response = await axios.get(`https://api.twitter.com/1.1/geo/id/${placeId}`, {
-            
-            headers: {
-                'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
-            }
-
-        });
-        return response.data.data;
+        return response.data;
     
     } catch (error) {
         console.log(error);
