@@ -25,6 +25,7 @@ async function getTweetsByUser(username) {
         //altrimenti registra una stringa vuota
         let place = '';
         try {
+            
             //Cicla i vari luoghi possibili e ne confronta l'ID con quello registrato nel tweet, fino a trovare un match
             for(let j = 0; j < resTwts.includes.places.length; j++) {
                 if (resTwts.includes.places[j].id == resTwts.data[i].geo.place_id) {
@@ -57,7 +58,8 @@ async function getTweetsByUser(username) {
  *          Username (@), ID dell'utente, Nome dell'utente, link alla foto profilo dell'utente
  */
 async function usr_fetch(username) {
-    try {
+    
+    try {    
         
         const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, {
             
@@ -87,6 +89,7 @@ async function usr_fetch(username) {
  *          Nome del paese, nome del luogo e ID del luogo
  */
 async function twt_fetch(userId) {
+    
     try {
         
         const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, {
