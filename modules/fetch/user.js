@@ -5,9 +5,10 @@ const axios = require('axios');
 /**
  * Restituisce gli ultimi 100 tweet di un utente dato il suo username
  * @param {string} username             Username dell'utente
- * @returns {Promise[100]<{name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number}>} 
+ * @returns {Promise[100]<{name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, location: string}>} 
  *          Array di 100 tweet aventi ciascuno:
- *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti e numero di retweet 
+ *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, numero di retweet
+ *          e posizione del tweet (se abilitata, altrimenti stringa vuota)
  */
 async function getTweetsByUser(username) {
     
