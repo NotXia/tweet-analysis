@@ -24,20 +24,31 @@ class Sentiment extends React.Component {
         this.state = {
             sentiment: null
         };
+
+        // Gestione errori parametri componente
+        if (!this.props.tweet)                          { throw new Error("Tweet da analizzare mancante"); }
+        if (this.props.image && this.props.text)        { throw new Error("Indicare solo una modalità tra 'text' e 'image'"); }
+        if (this.props.image && !this.props.positive)   { throw new Error("Non è stata indicata l'immagine per positive"); }
+        if (this.props.image && !this.props.neutral)    { throw new Error("Non è stata indicata l'immagine per neutral"); }
+        if (this.props.image && !this.props.negative)   { throw new Error("Non è stata indicata l'immagine per negative"); }
     }
 
     componentDidMount() {
     (async () => {
-        // Analisi del tweet
-        const res = await axios({
-            method: "GET",
-            url: `${process.env.REACT_APP_API_PATH}/analysis/sentiment`,
-            params: {
-                tweet: this.props.tweet
-            }
-        });
-
-        this.setState({ sentiment: res.data.sentiment });
+        try {
+            // Analisi del tweet
+            const res = await axios({
+                method: "GET", url: `${process.env.REACT_APP_API_PATH}/analysis/sentiment`,
+                params: {
+                    tweet: this.props.tweet
+                }
+            });
+    
+            this.setState({ sentiment: res.data.sentiment });
+        }
+        catch (err) {
+            this.setState({ sentiment: "" });
+        }
     })();
     }
 
