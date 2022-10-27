@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/search.css">
+    <title>Programma bellissimo</title>
+</head>
+<body>
+    <!-- 
+        Navbar pagina
+    -->
+    <div id="navbar">
+        <a href="">Navbar</a>     
+        <a href="">a</a>  
+        <a href="">b</a>
+        <a href="">c</a>  
+    </div>
+    <!-- 
+        Searchbar principale e filtri
+    -->
+    <div id="main_search" class="searcher">
+        <form action="" method="get">
+            <input type="text" id="main_searchbar" class="searchbar" placeholder="Cerca per # o per utente..">
+            <a href="#" rel="nofollow" onclick="">Filtri avanzati</a>
+            <input type="checkbox" id="geolocalization" value="geolocalization"><label for="geolocalization">Geolocalizzazione</label>
+            <input type="checkbox" id="refresher" value="refresher"><label for="refresher">Live Refresh</label>
+            <input type="submit" hidden/>
+        </form>
+    </div>
+    <!-- 
+        Sezione dashboard
+    -->
+    <div id="dashboard" class="flex-dashboard">
+        <div id="mainsearch_result">Risultato ricerca</div>
+        <div id="barchart_tweets">Diagramma a barre</div>
+        <div id="selected_tweets">Tweet scelti</div>
+        <div id="sentiment_analysis">Analisi del sentimento</div>
+        <div id="termcloud">Term cloud</div>
+        <div id="geolocalization_map">Mappa con geolocalizzazione</div>
+    </div>
+</body>
+</html>
