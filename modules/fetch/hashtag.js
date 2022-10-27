@@ -7,8 +7,8 @@ module.exports = getTweetsByHashtag;
 if (process.env.NODE_ENV === "testing") {
     module.exports = {
         getTweetsByHashtag: getTweetsByHashtag,
-        normalizeHashtag: _normalizeHashtag,
-        hashtagFetch: _hashtagFetch
+        hashtagFetch: _hashtagFetch,
+        normalizeHashtag: _normalizeHashtag
     }
 }
 
@@ -50,6 +50,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         if (tweetData.attachments !== undefined) {
             for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {     // Itera per tutti gli attachment del tweet i-esimo
                 const media_key = tweetData.attachments.media_keys[j];
+                
                 for (let k = 0; k < tweetAttachments.length; k++) {                 // Itera per tutti gli media della pagina
                     const media = tweetAttachments[k];
                     
@@ -72,7 +73,9 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
                             mediaArray.push(media.url);
                         }
                     }
+
                 }
+
             }
         }
 
