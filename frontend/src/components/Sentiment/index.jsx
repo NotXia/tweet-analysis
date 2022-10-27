@@ -58,7 +58,7 @@ class Sentiment extends React.Component {
                     bias: this.props.bias, lang: this.props.language
                 }
             });
-    
+            
             this.setState({ sentiment: res.data.sentiment });
         }
         catch (err) {
@@ -69,8 +69,8 @@ class Sentiment extends React.Component {
 
     render() {
         return (
-            <span>
-                {
+            <span data-testid="span-sentiment">
+                {   this.state.sentiment &&
                     (() => {
                         if (this.props.image) {
                             return <img src={this.getSentimentImageSource(this.state.sentiment)} alt={this.state.sentiment} style={{ maxHeight: "100%", maxWidth: "100%" }} />;
