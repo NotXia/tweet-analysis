@@ -4,8 +4,6 @@ const axios = require('axios');
 module.exports = hashtagFetch;
 
 async function hashtagFetch(hashtag) {
-    // TODO: controllo dell'input (loLowerCase e togliere eventuale # a inizio stringa)
-
     hashtag = normalizeHashtag(hashtag);
 
     let tweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, {
