@@ -69,7 +69,18 @@ async function getTweetsByUser(username, pagination_token = '') {
                 for(let j = 0; j < resTwts.includes.media.length; j++) {
                     if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
                         if (resTwts.includes.media[j].type == 'video') {
-                            media.push(resTwts.includes.media[j].variants[0].url);
+                            //Se il media è un video, cerca il file con estensione .mp4
+                            let found = false;
+                            for (let s = 0; s < resTwts.includes.media[j].variants.length; s++) {
+                                if (resTwts.includes.media[j].variants[s].url.includes('.mp4')) {
+                                    media.push(resTwts.includes.media[j].variants[s].url);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                media.push(resTwts.includes.media[j].variants[0].url);
+                            }
                         } else {
                             media.push(resTwts.includes.media[j].url);
                         }
