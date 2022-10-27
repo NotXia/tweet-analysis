@@ -6,7 +6,7 @@ let userTest;
 
 describe("Test ricerca nome utente", function () {
     test("Controllo esistenza utente", async function () {
-        const user = await user_module.usr_fetch("Luigi82724358");
+        const user = await user_module.usr_fetch("wwe");
         expect( user.name ).toBeDefined();
         expect( user.username ).toBeDefined();
         expect( user.profile_image_url ).toBeDefined();
@@ -43,7 +43,13 @@ describe("Test ricerca tweet dato username utente", function () {
 
     test("Ricerca tweet per username utente", async function () {
         const tweets = await user_module.getTweetsByUser(userTest.username);
-        console.log(tweets);
+
+        tweets.tweets.forEach(tweet => {
+            console.log(tweet.media);
+        });
+        // for(const tweet in tweets.tweets) {
+        //     console.log(tweet);
+        // }
         // expect( tweets.data ).toBeDefined();
         // expect( tweets.data[0].id ).toBeDefined();
         // expect( tweets.data[0].text ).toBeDefined();
@@ -51,3 +57,16 @@ describe("Test ricerca tweet dato username utente", function () {
     });
 });
 
+describe("Test ricerca tweet con pagination_token dato username utente", function () {
+    test("Controllo esistenza utente", function () {
+        expect( userTest.username ).toBeDefined();
+    });
+
+    test("Ricerca tweet per username utente", async function () {
+        const tweets = await user_module.twt_fetch_nxtpage(userTest.username, undefined);
+
+        // tweets.tweets.forEach(tweet => {
+        //     console.log(tweet.media);
+        // });
+    });
+});
