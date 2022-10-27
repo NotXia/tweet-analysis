@@ -15,13 +15,13 @@ if (process.env.NODE_ENV === "testing") {
 
 
 /**
- * Restituisce gli ultimi 100 tweet, o i 100 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
- * per ottenere la pagina successiva con i prossimi 100 tweet
+ * Restituisce gli ultimi 10 tweet, o i 10 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
+ * per ottenere la pagina successiva con i prossimi 10 tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
- * @returns {Promise<{tweets[100]: {name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ * @returns {Promise<{tweets[10]: {name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
  *          location: string, media[]: string}, next_token: string}>} 
- *          Array di 100 tweet aventi ciascuno:
+ *          Array di 10 tweet aventi ciascuno:
  *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata, altrimenti stringa vuota), array di media (se presenti, altrimenti vuoto)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
@@ -30,11 +30,16 @@ async function getTweetsByUser(username, pagination_token = '') {
     
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await usr_fetch(username);
-    let  resTwts;
-    if (pagination_token == '') {
-        resTwts = await twt_fetch(resUsr.id);
-    } else {
-        resTwts = await twt_fetch_nxtpage(resUsr.id, pagination_token);
+    let resTwts;
+    try {       //Controllo se il nome utente esiste e/o il pagination token è corretto, altrimenti restituisce un oggetto vuoto
+        if (pagination_token == '') {
+            resTwts = await twt_fetch(resUsr.id);
+        } else {
+            resTwts = await twt_fetch_nxtpage(resUsr.id, pagination_token);
+            let temp = resTwts.data;
+        }
+    } catch (error) {
+        return {};
     }
 
     let page = {
@@ -86,7 +91,7 @@ async function getTweetsByUser(username, pagination_token = '') {
         } catch (error) {}
 
         //Registrazione dei valori del tweet i
-        tweets.push({
+        page.tweets.push({
             "name": resUsr.name,
             "username": resUsr.username,
             "pfp": resUsr.profile_image_url,
@@ -129,9 +134,9 @@ async function usr_fetch(username) {
 }
 
 /**
- * Chiamata alle API di Twitter per ottenere i dati degli utlimi 100 tweet di un utente dato il suo ID
+ * Chiamata alle API di Twitter per ottenere i dati degli ultimi 10 tweet di un utente dato il suo ID
  * @param {number} userId               ID dell'utente
- * @returns {Promise<>}                 Array di 100 tweet ciascuno con informazioni varie
+ * @returns {Promise<>}                 Array di 10 tweet ciascuno con informazioni varie
  */
 async function twt_fetch(userId) {
     
@@ -144,7 +149,7 @@ async function twt_fetch(userId) {
             },
 
             params: {
-                'max_results': 100,
+                'max_results': 10,
                 'exclude': 'retweets',
                 'tweet.fields': 'created_at,text,public_metrics',
                 'expansions': 'geo.place_id,attachments.media_keys',
@@ -160,10 +165,10 @@ async function twt_fetch(userId) {
 }
 
 /**
- * Chiamata alle API di Twitter per ottenere i dati dei 100 tweet della pagina indicata dal pagination token di un utente dato il suo ID
+ * Chiamata alle API di Twitter per ottenere i dati dei 10 tweet della pagina indicata dal pagination token di un utente dato il suo ID
  * @param {number} userId                       ID dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare
- * @returns {Promise<>}                         Array di 100 tweet ciascuno con informazioni varie
+ * @returns {Promise<>}                         Array di 10 tweet ciascuno con informazioni varie
  */
 async function twt_fetch_nxtpage(userId, pagination_token) {
     
@@ -176,7 +181,7 @@ async function twt_fetch_nxtpage(userId, pagination_token) {
             },
 
             params: {
-                'max_results': 100,
+                'max_results': 10,
                 'exclude': 'retweets',
                 'tweet.fields': 'created_at,text,public_metrics',
                 'expansions': 'geo.place_id,attachments.media_keys',
