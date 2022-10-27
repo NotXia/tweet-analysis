@@ -1,6 +1,16 @@
 require("dotenv").config();
 const axios = require('axios');
 
+module.exports = getTweetsByUser;
+
+/* istanbul ignore next */
+if (process.env.NODE_ENV === "testing") {
+    module.exports = {
+        getTweetsByUser: getTweetsByUser,
+        usr_fetch: usr_fetch,
+        twt_fetch: twt_fetch,
+    }
+}
 
 /**
  * Restituisce gli ultimi 10 tweet, o i 10 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
