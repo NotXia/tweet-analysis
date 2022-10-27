@@ -13,12 +13,14 @@ if (process.env.NODE_ENV === "testing") {
 }
 
 async function getTweetsByHashtag(hashtag, pagination_token="") {
-    fetchedTweets = await _hashtagFetch(hashtag);
+    fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
 
     // Pagina di dimensione max_results che contiene l'array di tweet
     let page = {
         tweets: []
     }
+
+    page.next_token = fetchedTweets.data.meta?.next_token ? fetchedTweets.data.meta.next_token : "";
 
     let lastUser;
 
@@ -46,9 +48,9 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         // Gestione allegati
         let tweetAttachments = fetchedTweets.data.includes.media, mediaArray = [];
         if (tweetData.attachments !== undefined) {
-            for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {
+            for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {     // Itera per tutti gli attachment del tweet i-esimo
                 const media_key = tweetData.attachments.media_keys[j];
-                for (let k = 0; k < tweetAttachments.length; k++) {
+                for (let k = 0; k < tweetAttachments.length; k++) {                 // Itera per tutti gli media della pagina
                     const media = tweetAttachments[k];
                     
                     if (media_key == media.media_key) {
@@ -57,13 +59,13 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
                             let found = false;
                             for (let l = 0; l < media.variants.length; l++) {
                                 const video = media.variants[l];
-                                if (video.includes(".mp4") && !found) {
+                                if (video.url.includes(".mp4") && !found) {
                                     mediaArray.push(video.url);
                                     found = true;
                                 }
                             }
                             if (!found) {
-                                mediaArray.push(media.variants[0].url) // Se non trova alcun .mp4 inserisce il primo video tra le varianti
+                                mediaArray.push(media.variants[0].url)              // Se non trova alcun .mp4 inserisce il primo video tra le varianti
                             }
                         } else {
                             // Gestione foto e gif
@@ -79,6 +81,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
             "username": tweetUser.username,
             "pfp": tweetUser.profile_image_url,
             "text": tweetData.text,
+            "time": tweetData.created_at,
             "likes": tweetData.public_metrics["like_count"],
             "comments": tweetData.public_metrics["reply_count"],
             "retweets": tweetData.public_metrics["retweet_count"],
