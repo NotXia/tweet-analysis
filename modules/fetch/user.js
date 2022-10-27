@@ -7,11 +7,10 @@ module.exports = getTweetsByUser;
 if (process.env.NODE_ENV === "testing") {
     module.exports = {
         getTweetsByUser: getTweetsByUser,
-        usr_fetch: usr_fetch,
-        twt_fetch: twt_fetch,
+        usr_fetch: _usr_fetch,
+        twt_fetch: _twt_fetch,
     }
 }
-
 
 /**
  * Restituisce gli ultimi 10 tweet, o i 10 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
@@ -28,10 +27,10 @@ if (process.env.NODE_ENV === "testing") {
 async function getTweetsByUser(username, pagination_token = '') {
     
     //Chiamate alle API per ottenere l'utente e i relativi tweet
-    const resUsr = await usr_fetch(username);
+    const resUsr = await _usr_fetch(username);
     let resTwts;
     try {       //Controllo se il nome utente esiste e/o il pagination token è corretto, altrimenti restituisce un oggetto vuoto
-        resTwts = await twt_fetch(resUsr.id, pagination_token);
+        resTwts = await _twt_fetch(resUsr.id, pagination_token);
         let temp = resTwts.data;
     } catch (error) {
         return {};
@@ -118,7 +117,7 @@ async function getTweetsByUser(username, pagination_token = '') {
  * @param {string} username             Username dell'utente
  * @returns {Promise<>}                 Dati vari dell'utente
  */
-async function usr_fetch(username) {
+async function _usr_fetch(username) {
     
     try {    
         
@@ -147,7 +146,7 @@ async function usr_fetch(username) {
  * @param {number} pagination_token               Token della pagina da visualizzare
  * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
  */
-async function twt_fetch(userId, pagination_token = '') {
+async function _twt_fetch(userId, pagination_token = '') {
 
     try {
         
