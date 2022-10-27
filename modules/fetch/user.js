@@ -3,7 +3,8 @@ const axios = require('axios');
 
 
 /**
- * Restituisce gli ultimi 100 tweet di un utente dato il suo username, o i 100 tweet nella pagina indicata dal pagination_token
+ * Restituisce gli ultimi 100 tweet, o i 100 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
+ * per ottenere la pagina successiva con i prossimi 100 tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
  * @returns {Promise<{tweets[100]: {name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
@@ -11,7 +12,7 @@ const axios = require('axios');
  *          Array di 100 tweet aventi ciascuno:
  *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata, altrimenti stringa vuota), array di media (se presenti, altrimenti vuoto)
- *          Token della prossima pagina da visualizzare, se presente, altrimenti stringa vuota
+ *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
 async function getTweetsByUser(username, pagination_token = '') {
     
@@ -51,27 +52,28 @@ async function getTweetsByUser(username, pagination_token = '') {
             place = '';
         }
 
-        //Controlla se il tweet ha dei media, se si, registra il link del media nell'array media,
-        //altrimenti registra una stringa vuota
+        //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media,
+        //altrimenti registra un array vuoto
         let media = [];
-			try {
-				
-                //Per ogni media del tweet recupera l'url
-                for(let k = 0; k < resTwts.data[i].attachments.media_keys.length; k++) {
+        try {
+            
+            //Per ogni media del tweet recupera l'url
+            for(let k = 0; k < resTwts.data[i].attachments.media_keys.length; k++) {
 
-                    //Cicla i vari media possibili e ne confronta l'ID con quello del media k, fino a trovare un match
-					for(let j = 0; j < resTwts.includes.media.length; j++) {
-						if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
-							if (resTwts.includes.media[j].type == 'video') {
-								media.push(resTwts.includes.media[j].variants[0].url);
-							} else {
-								media.push(resTwts.includes.media[j].url);
-							}
-						}
-					}
-				}
-			} catch (error) {}
+                //Cicla i vari media possibili e ne confronta l'ID con quello del media k, fino a trovare un match
+                for(let j = 0; j < resTwts.includes.media.length; j++) {
+                    if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
+                        if (resTwts.includes.media[j].type == 'video') {
+                            media.push(resTwts.includes.media[j].variants[0].url);
+                        } else {
+                            media.push(resTwts.includes.media[j].url);
+                        }
+                    }
+                }
+            }
+        } catch (error) {}
 
+        //Registrazione dei valori del tweet i
         tweets.push({
             "name": resUsr.name,
             "username": resUsr.username,
@@ -146,7 +148,7 @@ async function twt_fetch(userId) {
 }
 
 /**
- * Chiamata alle API di Twitter per ottenere i dati dei 100 tweet della pagina indicata dal pagination token
+ * Chiamata alle API di Twitter per ottenere i dati dei 100 tweet della pagina indicata dal pagination token di un utente dato il suo ID
  * @param {number} userId                       ID dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare
  * @returns {Promise<>}                         Array di 100 tweet ciascuno con informazioni varie
