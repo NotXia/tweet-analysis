@@ -56,17 +56,3 @@ describe("Test ricerca tweet dato username utente", function () {
         // expect( tweets.data[0].public_metrics ).toBeDefined();
     });
 });
-
-describe("Test ricerca tweet con pagination_token dato username utente", function () {
-    test("Controllo esistenza utente", function () {
-        expect( userTest.username ).toBeDefined();
-    });
-
-    test("Ricerca tweet per username utente", async function () {
-        const tweets = await user_module.twt_fetch_nxtpage(userTest.username, undefined);
-
-        // tweets.tweets.forEach(tweet => {
-        //     console.log(tweet.media);
-        // });
-    });
-});
