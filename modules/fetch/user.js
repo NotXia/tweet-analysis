@@ -32,12 +32,8 @@ async function getTweetsByUser(username, pagination_token = '') {
     const resUsr = await usr_fetch(username);
     let resTwts;
     try {       //Controllo se il nome utente esiste e/o il pagination token è corretto, altrimenti restituisce un oggetto vuoto
-        if (pagination_token == '') {
-            resTwts = await twt_fetch(resUsr.id);
-        } else {
-            resTwts = await twt_fetch_nxtpage(resUsr.id, pagination_token);
-            let temp = resTwts.data;
-        }
+        resTwts = await twt_fetch(resUsr.id, pagination_token);
+        let temp = resTwts.data;
     } catch (error) {
         return {};
     }
@@ -45,7 +41,7 @@ async function getTweetsByUser(username, pagination_token = '') {
     let page = {
         tweets: []
     };
-    try {
+    try {       //Controllo se esiste il next_token, ovvero se è presente la prossima pagina di tweet da visualizzare
         page.next_token = resTwts.meta.next_token;
     } catch (error) {
         page.next_token = '';
@@ -81,7 +77,18 @@ async function getTweetsByUser(username, pagination_token = '') {
                 for(let j = 0; j < resTwts.includes.media.length; j++) {
                     if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
                         if (resTwts.includes.media[j].type == 'video') {
-                            media.push(resTwts.includes.media[j].variants[0].url);
+                            //Se il media è un video, cerca il file con estensione .mp4
+                            let found = false;
+                            for (let s = 0; s < resTwts.includes.media[j].variants.length; s++) {
+                                if (resTwts.includes.media[j].variants[s].url.includes('.mp4')) {
+                                    media.push(resTwts.includes.media[j].variants[s].url);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                media.push(resTwts.includes.media[j].variants[0].url);
+                            }
                         } else {
                             media.push(resTwts.includes.media[j].url);
                         }
@@ -116,7 +123,7 @@ async function usr_fetch(username) {
     
     try {    
         
-        const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, {
+        const options = {
             
             headers: {
                 'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
@@ -125,7 +132,8 @@ async function usr_fetch(username) {
             params: {
                 'user.fields': 'name,username,profile_image_url'
             }
-        });
+        };
+        const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, options);
         return response.data.data;
     
     } catch (error) {
@@ -134,15 +142,17 @@ async function usr_fetch(username) {
 }
 
 /**
- * Chiamata alle API di Twitter per ottenere i dati degli ultimi 10 tweet di un utente dato il suo ID
- * @param {number} userId               ID dell'utente
- * @returns {Promise<>}                 Array di 10 tweet ciascuno con informazioni varie
+ * Chiamata alle API di Twitter per ottenere i dati degli ultimi 10 tweet, o dei 10 tweet della pagina indicata dal 
+ * pagination token (se presente), di un utente dato il suo ID
+ * @param {number} userId                         ID dell'utente
+ * @param {number} pagination_token               Token della pagina da visualizzare
+ * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
  */
-async function twt_fetch(userId) {
-    
+async function twt_fetch(userId, pagination_token = '') {
+
     try {
         
-        const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, {
+        let options = {
             
             headers: {
                 'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
@@ -156,40 +166,11 @@ async function twt_fetch(userId) {
 				'place.fields': 'country,full_name',
                 'media.fields': 'url,variants'
             }
-        });
-        return response.data;
-    
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-/**
- * Chiamata alle API di Twitter per ottenere i dati dei 10 tweet della pagina indicata dal pagination token di un utente dato il suo ID
- * @param {number} userId                       ID dell'utente
- * @param {string} pagination_token             Token della pagina da visualizzare
- * @returns {Promise<>}                         Array di 10 tweet ciascuno con informazioni varie
- */
-async function twt_fetch_nxtpage(userId, pagination_token) {
-    
-    try {
-        
-        const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, {
-            
-            headers: {
-                'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
-            },
-
-            params: {
-                'max_results': 10,
-                'exclude': 'retweets',
-                'tweet.fields': 'created_at,text,public_metrics',
-                'expansions': 'geo.place_id,attachments.media_keys',
-                'place.fields': 'country,full_name',
-                'media.fields': 'url,variants',
-                'pagination_token': pagination_token
-            }
-        });
+        };
+        if (pagination_token != '') {
+            options.params['pagination_token'] = pagination_token;
+        }
+        const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
         return response.data;
     
     } catch (error) {
