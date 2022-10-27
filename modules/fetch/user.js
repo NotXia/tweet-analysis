@@ -9,7 +9,6 @@ if (process.env.NODE_ENV === "testing") {
         getTweetsByUser: getTweetsByUser,
         usr_fetch: usr_fetch,
         twt_fetch: twt_fetch,
-        twt_fetch_nxtpage: twt_fetch_nxtpage
     }
 }
 
