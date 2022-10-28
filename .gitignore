@@ -102,3 +102,15 @@ dist
 
 # TernJS port file
 .tern-port
+
+frontend/build/
+
+*.aux
+*.fdb_latexmk
+*.fls
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.synctex(busy)
+*.toc
