@@ -5,6 +5,7 @@ const hashtag_module = require("../../modules/fetch/hashtag.js");
 describe("Test normalizzazione stringa di hashtag", function () {
     test("Normalizzazione testo con spazi", function () {
         expect( hashtag_module.normalizeHashtag("stringa con spazi") ).toEqual("stringaconspazi");
+        expect( hashtag_module.normalizeHashtag("    stringa con spazi    ") ).toEqual("stringaconspazi");
     });
 
     test("Normalizzazione testo con #", function () {
