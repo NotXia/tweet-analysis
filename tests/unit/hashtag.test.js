@@ -14,18 +14,22 @@ describe("Test normalizzazione stringa di hashtag", function () {
 });
 
 describe("Test ricerca tweet dato hashtag", function () {
-    test("Ricerca tweet per hashtag senza pagination token", async function () {
-        const tweets = await hashtag_module.getTweetsByHashtag("reazioneacatena");
-        expect( tweets.tweets[0].name ).toBeDefined();
-        expect( tweets.tweets[0].username ).toBeDefined();
-        expect( tweets.tweets[0].pfp ).toBeDefined();
-        expect( tweets.tweets[0].text ).toBeDefined();
-        expect( tweets.tweets[0].time ).toBeDefined();
-        expect( tweets.tweets[0].likes ).toBeDefined();
-        expect( tweets.tweets[0].comments ).toBeDefined();
-        expect( tweets.tweets[0].retweets ).toBeDefined();
-        expect( tweets.tweets[0].location ).toBeDefined();
-        expect( tweets.tweets[0].media ).toBeDefined();
+    test("Ricerca tweet per hashtag senza pagination token - hashtag senza tweet", async function () {
+        try {
+            const tweets = await hashtag_module.getTweetsByHashtag("asdijaosjasdac31284fh92381dsa");
+            expect( tweets.tweets[0].name ).toBeDefined();
+            expect( tweets.tweets[0].username ).toBeDefined();
+            expect( tweets.tweets[0].pfp ).toBeDefined();
+            expect( tweets.tweets[0].text ).toBeDefined();
+            expect( tweets.tweets[0].time ).toBeDefined();
+            expect( tweets.tweets[0].likes ).toBeDefined();
+            expect( tweets.tweets[0].comments ).toBeDefined();
+            expect( tweets.tweets[0].retweets ).toBeDefined();
+            expect( tweets.tweets[0].location ).toBeDefined();
+            expect( tweets.tweets[0].media ).toBeDefined();
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
     });
 
     test("Ricerca tweet per hashtag con pagination token", async function () {
