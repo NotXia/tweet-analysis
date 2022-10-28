@@ -12,6 +12,12 @@ if (process.env.NODE_ENV === "testing") {
     }
 }
 
+/**
+ * Organizza i tweet interrogati.
+ * @param {string} hashtag Hashtag da ricercare
+ * @param {string} pagination_token Token della prossima pagina
+ * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
+ */
 async function getTweetsByHashtag(hashtag, pagination_token="") {
     fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
 
@@ -99,6 +105,12 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
     return page;
 }
 
+/**
+ * Interroga le API di Twitter per ottenere una lista di tweet dato l'hashtag con i parametri indicati
+ * @param {string} hashtag Hashtag da ricercare
+ * @param {string} pagination_token Token della prossima pagina
+ * @returns Lista di dimensione max_results tweet
+ */
 async function _hashtagFetch(hashtag, pagination_token="") {
     hashtag = _normalizeHashtag(hashtag);
 
@@ -123,12 +135,17 @@ async function _hashtagFetch(hashtag, pagination_token="") {
     return fetchedTweets;
 }
 
+/**
+ * Normalizza l'hashtag in input, rimuovendo il carattere # da inizio stringa (se presente) ed eventuali spazi
+ * @param {string} hashtag Hashtag da normalizzare
+ * @returns L'hashtag normalizzato
+ */
 function _normalizeHashtag(hashtag) {
     if(hashtag.length !== 0) {
         if(hashtag[0] == '#') {
-            hashtag = hashtag.slice(1);     // Se la stringa inizia con #, viene rimosso
+            hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
         }
-        hashtag = hashtag.replace(/\s/g, '');    // Imposta tutta la stringa a lower case
+        hashtag = hashtag.replace(/\s/g, '');   // Imposta tutta la stringa a lower case
 
         return hashtag;
     }
