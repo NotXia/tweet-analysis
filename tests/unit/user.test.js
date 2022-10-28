@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const getTweetsByUser = require("../../modules/fetch/user.js");
 const user_module = require("../../modules/fetch/user.js");
 
 let userTest;
@@ -44,6 +45,11 @@ describe("Test ricerca tweet dato ID utente", function () {
         expect( tweetsPage2.data[0].text ).toBeDefined();
         expect( tweetsPage2.data[0].public_metrics ).toBeDefined();
     });
+
+    // test("Ricerca tweet per ID utente con pagination token sbagliato", async function () {
+    //     const tweets = await user_module.twt_fetch(userTest.id, 'dgsfdsfg');
+    //     console.log(tweets);
+    // });
 });
 
 describe("Test ricerca tweet dato username utente", function () {
@@ -79,5 +85,41 @@ describe("Test ricerca tweet dato username utente", function () {
         expect( tweetsPage2.tweets[0].retweets ).toBeDefined();
         expect( tweetsPage2.tweets[0].location ).toBeDefined();
         expect( tweetsPage2.tweets[0].media ).toBeDefined();
+    });
+
+    test("Ricerca tweet per username utente vuoto", async function () {
+        try {
+            await user_module.getTweetsByUser('');
+            fail('Eccezione non lanciata');
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
+    });
+
+    test("Ricerca tweet per username errato", async function () {
+        try {
+            await user_module.getTweetsByUser('sdfsdgfaaaaasd');
+            fail('Eccezione non lanciata');
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
+    });
+
+    test("Ricerca tweet per pagination token errato", async function () {
+        try {
+            await user_module.getTweetsByUser(userTest.username, 'dasfdasfsd');
+            fail('Eccezione non lanciata');
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
+    });
+
+    test("Ricerca tweet per username errato e pagination token errato", async function () {
+        try {
+            await user_module.getTweetsByUser('adfdasdsgsg', 'dasfdasfsd');
+            fail('Eccezione non lanciata');
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
     });
 });

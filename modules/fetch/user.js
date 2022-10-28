@@ -25,25 +25,19 @@ if (process.env.NODE_ENV === "testing") {
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
 async function getTweetsByUser(username, pagination_token = '') {
-    
+    if (!username) {throw new Error('Username mancante');}
+
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
-    let resTwts;
-    try {       //Controllo se il nome utente esiste e/o il pagination token è corretto, altrimenti restituisce un oggetto vuoto
-        resTwts = await _twt_fetch(resUsr.id, pagination_token);
-        let temp = resTwts.data;
-    } catch (error) {
-        return {};
-    }
+    if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
+    const resTwts = await _twt_fetch(resUsr.id, pagination_token);
+    if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
     let page = {
         tweets: []
     };
-    try {       //Controllo se esiste il next_token, ovvero se è presente la prossima pagina di tweet da visualizzare
-        page.next_token = resTwts.meta.next_token;
-    } catch (error) {
-        page.next_token = '';
-    }
+    //Controllo se esistono il next_token e il previous_token, ovvero se è presente la prossima o la precedente pagina di tweet da visualizzare, e li assegno
+    page.next_token = resTwts.meta?.next_token ? resTwts.meta.next_token : "";
 
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(let i = 0; i < resTwts.data.length; i++) {
@@ -51,23 +45,19 @@ async function getTweetsByUser(username, pagination_token = '') {
         //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place,
         //altrimenti registra una stringa vuota
         let place = '';
-        try {
-            
+        if (resTwts.data[i].geo) {
             //Cicla i vari luoghi possibili e ne confronta l'ID con quello registrato nel tweet, fino a trovare un match
             for(let j = 0; j < resTwts.includes.places.length; j++) {
                 if (resTwts.includes.places[j].id == resTwts.data[i].geo.place_id) {
                     place = resTwts.includes.places[j].full_name + ', ' + resTwts.includes.places[j].country;
                 }
             }
-        } catch (error) {
-            place = '';
         }
 
         //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media,
         //altrimenti registra un array vuoto
         let media = [];
-        try {
-            
+        if (resTwts.data[i].attachments) {
             //Per ogni media del tweet recupera l'url
             for(let k = 0; k < resTwts.data[i].attachments.media_keys.length; k++) {
 
@@ -93,7 +83,7 @@ async function getTweetsByUser(username, pagination_token = '') {
                     }
                 }
             }
-        } catch (error) {}
+        }
 
         //Registrazione dei valori del tweet i
         page.tweets.push({
@@ -118,25 +108,20 @@ async function getTweetsByUser(username, pagination_token = '') {
  * @returns {Promise<>}                 Dati vari dell'utente
  */
 async function _usr_fetch(username) {
-    
-    try {    
+    const options = {
         
-        const options = {
-            
-            headers: {
-                'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
-            },
+        headers: {
+            'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
+        },
 
-            params: {
-                'user.fields': 'name,username,profile_image_url'
-            }
-        };
-        const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, options);
-        return response.data.data;
-    
-    } catch (error) {
-        console.log(error);
-    }
+        params: {
+            'user.fields': 'name,username,profile_image_url'
+        },
+
+        validateStatus: () => true
+    };
+    const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, options);
+    return response.data.data;
 }
 
 /**
@@ -147,31 +132,27 @@ async function _usr_fetch(username) {
  * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
  */
 async function _twt_fetch(userId, pagination_token = '') {
-
-    try {
         
-        let options = {
-            
-            headers: {
-                'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
-            },
+    let options = {
+        
+        headers: {
+            'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
+        },
 
-            params: {
-                'max_results': 10,
-                'exclude': 'retweets',
-                'tweet.fields': 'created_at,text,public_metrics',
-                'expansions': 'geo.place_id,attachments.media_keys',
-				'place.fields': 'country,full_name',
-                'media.fields': 'url,variants'
-            }
-        };
-        if (pagination_token != '') {
-            options.params['pagination_token'] = pagination_token;
-        }
-        const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
-        return response.data;
-    
-    } catch (error) {
-        console.log(error);
+        params: {
+            'max_results': 10,
+            'exclude': 'retweets',
+            'tweet.fields': 'created_at,text,public_metrics',
+            'expansions': 'geo.place_id,attachments.media_keys',
+            'place.fields': 'country,full_name',
+            'media.fields': 'url,variants'
+        },
+
+        validateStatus: () => true
+    };
+    if (pagination_token != '') {
+        options.params['pagination_token'] = pagination_token;
     }
+    const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
+    return response.data;
 }
