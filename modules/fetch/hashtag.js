@@ -51,7 +51,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
             for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {     // Itera per tutti gli attachment del tweet i-esimo
                 const media_key = tweetData.attachments.media_keys[j];
                 
-                for (let k = 0; k < tweetAttachments.length; k++) {                 // Itera per tutti gli media della pagina
+                for (let k = 0; k < tweetAttachments.length; k++) {                 // Itera per tutti i media della pagina
                     const media = tweetAttachments[k];
                     
                     if (media_key == media.media_key) {
@@ -63,6 +63,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
                                 if (video.url.includes(".mp4") && !found) {
                                     mediaArray.push(video.url);
                                     found = true;
+                                    break;
                                 }
                             }
                             if (!found) {
