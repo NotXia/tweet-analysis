@@ -30,22 +30,19 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
 
     page.next_token = fetchedTweets.data.meta?.next_token ? fetchedTweets.data.meta.next_token : "";
 
-    let lastUser;
-
     // Gestione tweet data
-    for(const tweetData of fetchedTweets.data.data) {       
+    for (const tweetData of fetchedTweets.data.data) {       
         // Gestione utente autore
         let tweetUsers = fetchedTweets.data.includes.users;     // Lista utenti negli ultimi 10 tweet
         let tweetAuthor;                                        // Autore del tweet
-        for(const user of tweetUsers) {
+        for (const user of tweetUsers) {
             if (user.id == tweetData.author_id) { tweetAuthor = user }
         }
 
         // Gestione geolocalizzazione
         let tweetPlace = fetchedTweets.data.includes.places, fullTweetPlace = "";
         if (tweetData.geo) {
-            for (let j = 0; j < tweetPlace.length; j++) {
-                const place = tweetPlace[j];
+            for (const place of tweetPlace) {
                 if (place.id == tweetData.geo.place_id) {
                     fullTweetPlace = place.full_name + ", " + place.country;
                 }
@@ -55,18 +52,15 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         // Gestione allegati
         let tweetAttachments = fetchedTweets.data.includes.media, mediaArray = [];
         if (tweetData.attchments && "media_keys" in tweetData.attachments) {
-            for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {     // Itera per tutti gli attachment del tweet i-esimo
-                const media_key = tweetData.attachments.media_keys[j];
+            for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
                 
-                for (let k = 0; k < tweetAttachments.length; k++) {                 // Itera per tutti i media della pagina
-                    const media = tweetAttachments[k];
+                for (const media of tweetAttachments) {                             // Itera per tutti i media della pagina
                     
                     if (media_key == media.media_key) {
                         // Gestione video
                         if (media.type == "video") {
                             let found = false;
-                            for (let l = 0; l < media.variants.length; l++) {
-                                const video = media.variants[l];
+                            for (const video of media.variants) {
                                 if (video.url.includes(".mp4") && !found) {
                                     mediaArray.push(video.url);
                                     found = true;
