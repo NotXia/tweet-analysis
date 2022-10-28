@@ -43,6 +43,15 @@ describe("Test ricerca tweet dato hashtag", function () {
         expect( tweetsPage2.tweets[0].location ).toBeDefined();
         expect( tweetsPage2.tweets[0].media ).toBeDefined();
     });
+
+    test("Ricerca tweet per hashtag con pagination token sbagliato", async function () {
+        try {
+            await hashtag_module.getTweetsByHashtag("reazioneacatena", "dsifj");
+            fail("Eccezione non lanciata");
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
+    });
 });
 
 describe("Test ricerca tweet dato hashtag vuoto", function () {
