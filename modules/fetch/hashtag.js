@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === "testing") {
  */
 async function getTweetsByHashtag(hashtag, pagination_token="") {
     if (!hashtag) { throw new Error("Hashtag mancante"); }
-    fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
+    let fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
 
     // Pagina di dimensione max_results che contiene l'array di tweet
     let page = {
