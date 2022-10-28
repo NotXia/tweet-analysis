@@ -128,7 +128,7 @@ function _normalizeHashtag(hashtag) {
         if(hashtag[0] == '#') {
             hashtag = hashtag.slice(1);     // Se la stringa inizia con #, viene rimosso
         }
-        hashtag = hashtag.toLowerCase().replace(/\s/g, '');    // Imposta tutta la stringa a lower case
+        hashtag = hashtag.replace(/\s/g, '');    // Imposta tutta la stringa a lower case
 
         return hashtag;
     }

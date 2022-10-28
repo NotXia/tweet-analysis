@@ -3,16 +3,12 @@ require("dotenv").config();
 const hashtag_module = require("../../modules/fetch/hashtag.js");
 
 describe("Test normalizzazione stringa di hashtag", function () {
-    test("Normalizzazione testo a cammello", function () {
-        expect( hashtag_module.normalizeHashtag("sTrInGaCaMmElLo") ).toEqual("stringacammello");
-    });
-
     test("Normalizzazione testo con spazi", function () {
         expect( hashtag_module.normalizeHashtag("stringa con spazi") ).toEqual("stringaconspazi");
     });
 
-    test("Normalizzazione testo maiuscolo", function () {
-        expect( hashtag_module.normalizeHashtag("STRINGAMAIUSCOLA") ).toEqual("stringamaiuscola");
+    test("Normalizzazione testo con #", function () {
+        expect( hashtag_module.normalizeHashtag("#stringa") ).toEqual("stringa");
     });
 });
 
