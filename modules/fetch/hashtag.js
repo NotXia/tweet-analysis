@@ -32,19 +32,18 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
 
     let lastUser;
 
-    for (let i = 0; i < fetchedTweets.data.data.length; i++) {
-        // Gestione tweet data
-        let tweetData = fetchedTweets.data.data[i];
-
+    // Gestione tweet data
+    for(const tweetData of fetchedTweets.data.data) {       
         // Gestione utente autore
-        let tweetUser = fetchedTweets.data.includes.users[i];
-        if (tweetUser === undefined) {
-            tweetUser = lastUser;
+        let tweetUsers = fetchedTweets.data.includes.users;     // Lista utenti negli ultimi 10 tweet
+        let tweetAuthor;                                        // Autore del tweet
+        for(const user of tweetUsers) {
+            if (user.id == tweetData.author_id) { tweetAuthor = user }
         }
 
         // Gestione geolocalizzazione
         let tweetPlace = fetchedTweets.data.includes.places, fullTweetPlace = "";
-        if (tweetData.geo !== undefined) {
+        if (tweetData.geo) {
             for (let j = 0; j < tweetPlace.length; j++) {
                 const place = tweetPlace[j];
                 if (place.id == tweetData.geo.place_id) {
@@ -55,7 +54,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
 
         // Gestione allegati
         let tweetAttachments = fetchedTweets.data.includes.media, mediaArray = [];
-        if (tweetData.attachments !== undefined) {
+        if (tweetData.attchments && "media_keys" in tweetData.attachments) {
             for (let j = 0; j < tweetData.attachments.media_keys.length; j++) {     // Itera per tutti gli attachment del tweet i-esimo
                 const media_key = tweetData.attachments.media_keys[j];
                 
@@ -89,9 +88,9 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         }
 
         page.tweets.push({
-            "name": tweetUser.name,
-            "username": tweetUser.username,
-            "pfp": tweetUser.profile_image_url,
+            "name": tweetAuthor.name,
+            "username": tweetAuthor.username,
+            "pfp": tweetAuthor.profile_image_url,
             "text": tweetData.text,
             "time": tweetData.created_at,
             "likes": tweetData.public_metrics["like_count"],
@@ -101,7 +100,6 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
             "media": mediaArray
         });
 
-        lastUser = tweetUser;
     }
 
     return page;
