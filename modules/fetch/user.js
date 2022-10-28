@@ -40,16 +40,16 @@ async function getTweetsByUser(username, pagination_token = '') {
     page.next_token = resTwts.meta?.next_token ? resTwts.meta.next_token : "";
 
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
-    for(let i = 0; i < resTwts.data.length; i++) {
+    for(const tweet of resTwts.data) {
         
         //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place,
         //altrimenti registra una stringa vuota
         let place = '';
-        if (resTwts.data[i].geo) {
+        if (tweet.geo) {
             //Cicla i vari luoghi possibili e ne confronta l'ID con quello registrato nel tweet, fino a trovare un match
-            for(let j = 0; j < resTwts.includes.places.length; j++) {
-                if (resTwts.includes.places[j].id == resTwts.data[i].geo.place_id) {
-                    place = resTwts.includes.places[j].full_name + ', ' + resTwts.includes.places[j].country;
+            for(const plc of resTwts.includes.places) {
+                if (plc.id == tweet.geo.place_id) {
+                    place = plc.full_name + ', ' + plc.country;
                 }
             }
         }
@@ -57,28 +57,27 @@ async function getTweetsByUser(username, pagination_token = '') {
         //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media,
         //altrimenti registra un array vuoto
         let media = [];
-        if (resTwts.data[i].attachments) {
+        if (tweet.attachments) {
             //Per ogni media del tweet recupera l'url
-            for(let k = 0; k < resTwts.data[i].attachments.media_keys.length; k++) {
+            for(const md_key of tweet.attachments.media_keys) {
 
                 //Cicla i vari media possibili e ne confronta l'ID con quello del media k, fino a trovare un match
-                for(let j = 0; j < resTwts.includes.media.length; j++) {
-                    if (resTwts.includes.media[j].media_key == resTwts.data[i].attachments.media_keys[k]) {
-                        if (resTwts.includes.media[j].type == 'video') {
-                            //Se il media è un video, cerca il file con estensione .mp4
+                for(const md of resTwts.includes.media) {
+                    if (md.media_key == md_key) {
+                        if (md.type == 'video') {
                             let found = false;
-                            for (let s = 0; s < resTwts.includes.media[j].variants.length; s++) {
-                                if (resTwts.includes.media[j].variants[s].url.includes('.mp4')) {
-                                    media.push(resTwts.includes.media[j].variants[s].url);
+                            for (const video of md.variants) {
+                                if (video.url.includes('.mp4')) {
+                                    media.push(video.url);
                                     found = true;
                                     break;
                                 }
                             }
                             if (!found) {
-                                media.push(resTwts.includes.media[j].variants[0].url);
+                                media.push(md.variants[0].url);
                             }
                         } else {
-                            media.push(resTwts.includes.media[j].url);
+                            media.push(md.url);
                         }
                     }
                 }
@@ -90,11 +89,11 @@ async function getTweetsByUser(username, pagination_token = '') {
             "name": resUsr.name,
             "username": resUsr.username,
             "pfp": resUsr.profile_image_url,
-            "text":  resTwts.data[i].text,
-            "time": resTwts.data[i].created_at,
-            "likes": resTwts.data[i].public_metrics.like_count,
-            "comments": resTwts.data[i].public_metrics.reply_count,
-            "retweets": resTwts.data[i].public_metrics.retweet_count,
+            "text":  tweet.text,
+            "time": tweet.created_at,
+            "likes": tweet.public_metrics.like_count,
+            "comments": tweet.public_metrics.reply_count,
+            "retweets": tweet.public_metrics.retweet_count,
             "location": place,
             "media": media
         });
