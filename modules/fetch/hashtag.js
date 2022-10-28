@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "testing") {
 async function getTweetsByHashtag(hashtag, pagination_token="") {
     if (!hashtag) { throw new Error("Hashtag mancante"); }
     let fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
-    if (!fetchedTweets) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
+    if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
     let page = {
@@ -126,12 +126,14 @@ async function _hashtagFetch(hashtag, pagination_token="") {
             "place.fields": "country,full_name",                                // Campi della località
             "media.fields": "url,variants",                                     // Campi degli allegati
             "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
-        }
+        },
+
+        validateStatus: () => true
     };
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
     }
-
+    
     let fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
 
     return fetchedTweets;
