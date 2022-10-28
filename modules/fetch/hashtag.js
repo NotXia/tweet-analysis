@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === "testing") {
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
 async function getTweetsByHashtag(hashtag, pagination_token="") {
+    if (!hashtag) { throw new Error("Hashtag mancante"); }
     fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
 
     // Pagina di dimensione max_results che contiene l'array di tweet
@@ -145,7 +146,7 @@ function _normalizeHashtag(hashtag) {
         if(hashtag[0] == '#') {
             hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
         }
-        hashtag = hashtag.replace(/\s/g, '');   // Imposta tutta la stringa a lower case
+        hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
 
         return hashtag;
     }
