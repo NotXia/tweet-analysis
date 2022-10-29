@@ -52,6 +52,7 @@ async function getTweetsByUser(username, pagination_token = '') {
 
         //Registrazione dei valori del tweet i
         page.tweets.push({
+            "id": tweet.id,
             "name": resUsr.name,
             "username": resUsr.username,
             "pfp": resUsr.profile_image_url,
