@@ -1,4 +1,4 @@
-const getTweetsByUser = require("../modules/fetch/user.js");
+const { getTweetsByUser } = require("../modules/fetch/user.js");
 
 async function tweetsByUser(req, res) {
     let tweets_response;
