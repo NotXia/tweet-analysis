@@ -1,7 +1,6 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import css from "./navbar.module.css";
 import { Link } from "react-router-dom";
 
 class Navbar extends React.Component {
@@ -19,12 +18,28 @@ class Navbar extends React.Component {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="__navbar">
-                <div className="navbar-nav">
-                    <Link className="nav-link" to="/">Home</Link>
-                    <Link className="nav-link" to="/search-user">Ricerca utente</Link>
-                    <Link className="nav-link" to="/">BBBB</Link>
-                    <Link className="nav-link" to="/">CCCC</Link>
-                </div>
+                    <ul className="navbar-nav">
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">Home</Link>
+                        </li>
+                        <li className="nav-item dropdown">
+                            <Link className="nav-link dropdown-toggle" to="" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ricerca</Link>
+                            <ul className="dropdown-menu">
+                                <li>
+                                    <Link className="dropdown-item" to="">Ricerca per hashtag</Link>
+                                </li>
+                                <li>
+                                    <Link className="dropdown-item" to="/search-user">Ricerca utente</Link>
+                                </li>
+                            </ul>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">BBBB</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">CCCC</Link>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

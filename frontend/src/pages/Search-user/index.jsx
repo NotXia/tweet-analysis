@@ -33,20 +33,27 @@ class Search extends React.Component {
                 <input type="submit" hidden />
             </form>
 
-            <div className="grid col-3 p-3">
-                <div className="text-center">
-                    Risultato della ricerca
-                </div>
-                <div className="grid">
-                    <div className="grid">
-                        <div className="row">
-                            Nome Utente
-                        </div>
-                        <div className="row">
-                            Contenuto Tweet
-                        </div>
+            <div class="list-group col-4 ms-4 my-2">
+            <Link to="" className="list-group-item list-group-item-action" aria-current="true">
+                    <div className="d-flex w-100 justify-content-between">
+                        <row>
+                            <h5>Nickname</h5>
+                            <small>@username</small>
+                        </row>
+                        <small>timestamp</small>
                     </div>
-                </div>
+                    <p>Qui viene messo il contenuto del tweet</p>
+                </Link>
+                <Link to="" className="list-group-item list-group-item-action" aria-current="true">
+                    <div className="d-flex w-100 justify-content-between">
+                        <row>
+                            <h5>Nickname</h5>
+                            <small>@username</small>
+                        </row>
+                        <small>timestamp</small>
+                    </div>
+                    <p>altro messaggio del tweet</p>
+                </Link>
             </div>
 
             
