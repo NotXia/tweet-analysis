@@ -1,4 +1,4 @@
-const sentiment = require("../modules/sentiment.js");
+const { sentiment } = require("../modules/analysis/sentiment.js");
 
 
 async function sentimentAnalysis(req, res) {

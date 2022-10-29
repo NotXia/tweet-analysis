@@ -1,12 +1,11 @@
 require("dotenv").config();
 const describeIf = (condition) => condition ? describe : describe.skip;
 
-const sentiment_module = require("../../modules/sentiment.js");
+const { detectLanguage } = require("../../modules/analysis/language.js");
+const { sentiment } = require("../../modules/analysis/sentiment.js");
 
 
-describeIf(sentiment_module.detectLanguage)("Test rilevamento lingua", function () {
-    const detectLanguage = sentiment_module.detectLanguage;
-
+describeIf(detectLanguage)("Test rilevamento lingua", function () {
     test("Lingua italiana", function () {
         expect( detectLanguage("Questa è una frase in italiano") ).toEqual("it");
         expect( detectLanguage("Questa è una frase in spagnolo") ).toEqual("it");
@@ -25,8 +24,7 @@ describeIf(sentiment_module.detectLanguage)("Test rilevamento lingua", function 
 });
 
 
-describeIf(sentiment_module.sentiment)("Test analisi del sentimento", function () {
-    const sentiment = sentiment_module.sentiment;
+describeIf(sentiment)("Test analisi del sentimento", function () {
     let sentiment_res;
 
     test("Frasi positive", async function () {
