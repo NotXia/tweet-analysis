@@ -30,7 +30,8 @@
 */
 
 import React from "react";
-import axios from "axios";
+import { sentiment } from "../../modules/analysis/sentiment";
+
 
 class Sentiment extends React.Component {
     constructor(props) {
@@ -51,15 +52,9 @@ class Sentiment extends React.Component {
     (async () => {
         try {
             // Analisi del tweet
-            const res = await axios({
-                method: "GET", url: `${process.env.REACT_APP_API_PATH}/analysis/sentiment`,
-                params: {
-                    tweet: this.props.tweet, 
-                    bias: this.props.bias, lang: this.props.language
-                }
-            });
+            const analysis_data = await sentiment(this.props.tweet, { language: this.props.language, bias: this.props.bias });
             
-            this.setState({ sentiment: res.data.sentiment });
+            this.setState({ sentiment: analysis_data.sentiment });
         }
         catch (err) {
             this.setState({ sentiment: "" });

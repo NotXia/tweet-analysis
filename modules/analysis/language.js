@@ -6,7 +6,7 @@ const BIAS_TOLLERANCE = 0.1;
 
 
 module.exports = {
-    detectLanguage
+    detectLanguage: detectLanguage
 };
 
 
