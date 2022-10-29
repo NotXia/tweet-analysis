@@ -7,6 +7,7 @@ async function tweetsByUser(req, res) {
         tweets_response = await getTweetsByUser(req.query.user, req.query.pag_token);
     } catch (error) {
         res.sendStatus(500);
+        return;
     }
 
     res.status(200).json({
