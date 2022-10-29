@@ -1,16 +1,13 @@
 require("dotenv").config();
 const axios = require('axios');
 
-module.exports = getTweetsByHashtag;
+module.exports = {
+    getTweetsByHashtag: getTweetsByHashtag,
 
-/* istanbul ignore next */
-if (process.env.NODE_ENV === "testing") {
-    module.exports = {
-        getTweetsByHashtag: getTweetsByHashtag,
-        hashtagFetch: _hashtagFetch,
+    testing : {
         normalizeHashtag: _normalizeHashtag
     }
-}
+};
 
 /**
  * Organizza i tweet interrogati.
