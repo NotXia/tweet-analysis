@@ -103,14 +103,13 @@ async function _hashtagFetch(hashtag, pagination_token="") {
  * @returns L'hashtag normalizzato
  */
 function _normalizeHashtag(hashtag) {
-    if(hashtag.length !== 0) {
-        if(hashtag[0] == '#') {
-            hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
-        }
-        hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
-
-        return hashtag;
+    if(hashtag.length == 0) { return ""; }
+    if(hashtag[0] == '#') {
+        hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
     }
+    hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
+
+    return hashtag;
 }
 
 function _mediaHandler(tweetAttachments, tweetData) {
