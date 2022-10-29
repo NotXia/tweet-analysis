@@ -1,5 +1,4 @@
 const getTweetsByUser = require("../modules/fetch/user.js");
-const user = require("../modules/fetch/user.js");
 
 async function tweetsByUser (req, res) {
     let pag_token = '';
