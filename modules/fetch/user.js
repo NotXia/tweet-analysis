@@ -17,10 +17,10 @@ if (process.env.NODE_ENV === "testing") {
  * per ottenere la pagina successiva con i prossimi 10 tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
- * @returns {Promise<{tweets[10]: {name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ * @returns {Promise<{tweets[10]: {id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
  *          location: string, media[]: string}, next_token: string}>} 
  *          Array di 10 tweet aventi ciascuno:
- *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
+ *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
@@ -47,7 +47,7 @@ async function getTweetsByUser(username, pagination_token = '') {
         if (tweet.geo) { place = resTwts.includes.places.find(plc => plc.id === tweet.geo.place_id); }
 
         //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media
-        let media = undefined;
+        let media = [];
         if (tweet.attachments) { media = _mediaHandler(resTwts.includes.media, tweet); }
 
         //Registrazione dei valori del tweet i
