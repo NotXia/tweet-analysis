@@ -43,6 +43,16 @@ pipeline {
                         failure { updateGitlabCommitStatus name: "API test", state: "failed" }
                     } 
                 }
+                stage("React tests") { 
+                    steps {
+                        updateGitlabCommitStatus name: "React test", state: "pending"
+                        sh "npm run test:react" 
+                    }
+                    post {
+                        success { updateGitlabCommitStatus name: "React test", state: "success" }
+                        failure { updateGitlabCommitStatus name: "React test", state: "failed" }
+                    } 
+                }
             }
         }
 
@@ -101,6 +111,15 @@ pipeline {
                 success { updateGitlabCommitStatus name: "Development deploy", state: "success" }
                 failure { updateGitlabCommitStatus name: "Development deploy", state: "failed" }
             } 
+        }
+    }
+    post {
+        failure {
+            script {
+                withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
+                    discordSend title: JOB_NAME, description: "🚨 Pipeline failure 🚨", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
+                }
+            }
         }
     }
 }

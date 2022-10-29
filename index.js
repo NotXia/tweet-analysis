@@ -8,6 +8,7 @@ const error_handler = require("./error_handler.js").error_handler;
 const cors = require("cors");
 
 const sentiment_router = require("./routes/sentiment.js");
+const user_router = require("./routes/user.js");
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -17,6 +18,7 @@ app.use(cors({ origin: ["http://localhost:3000", "https://tcxia.ddns.net"] }));
 
 // API
 app.use("/analysis", sentiment_router);
+app.use("/tweets", user_router);
 
 
 app.use(error_handler); // Gestore errori
