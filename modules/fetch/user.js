@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "testing") {
  *          location: string, media[]: string}, next_token: string}>} 
  *          Array di 10 tweet aventi ciascuno:
  *          Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
- *          numero di retweet, posizione del tweet (se abilitata, altrimenti stringa vuota), array di media (se presenti, altrimenti vuoto)
+ *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
 async function getTweetsByUser(username, pagination_token = '') {
@@ -42,47 +42,13 @@ async function getTweetsByUser(username, pagination_token = '') {
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(const tweet of resTwts.data) {
         
-        //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place,
-        //altrimenti registra una stringa vuota
-        let place = '';
-        if (tweet.geo) {
-            //Cicla i vari luoghi possibili e ne confronta l'ID con quello registrato nel tweet, fino a trovare un match
-            for(const plc of resTwts.includes.places) {
-                if (plc.id == tweet.geo.place_id) {
-                    place = plc.full_name + ', ' + plc.country;
-                }
-            }
-        }
+        //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place
+        let place = undefined;
+        if (tweet.geo) { place = resTwts.includes.places.find(plc => plc.id === tweet.geo.place_id); }
 
-        //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media,
-        //altrimenti registra un array vuoto
-        let media = [];
-        if (tweet.attachments) {
-            //Per ogni media del tweet recupera l'url
-            for(const md_key of tweet.attachments.media_keys) {
-
-                //Cicla i vari media possibili e ne confronta l'ID con quello del media k, fino a trovare un match
-                for(const md of resTwts.includes.media) {
-                    if (md.media_key == md_key) {
-                        if (md.type == 'video') {
-                            let found = false;
-                            for (const video of md.variants) {
-                                if (video.url.includes('.mp4')) {
-                                    media.push(video.url);
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                media.push(md.variants[0].url);
-                            }
-                        } else {
-                            media.push(md.url);
-                        }
-                    }
-                }
-            }
-        }
+        //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media
+        let media = undefined;
+        if (tweet.attachments) { media = _mediaHandler(resTwts.includes.media, tweet); }
 
         //Registrazione dei valori del tweet i
         page.tweets.push({
@@ -154,4 +120,39 @@ async function _twt_fetch(userId, pagination_token = '') {
     }
     const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
     return response.data;
+}
+
+/**
+ * Cerca e restituisce gli URL dei media inclusi in un tweet
+ * @param {Promise[]} media               Array di tutti i media inclusi in tutti i tweet
+ * @param {Promise<>} tweet               tweet corrente di cui si vogliono trovare i media
+ * @returns {String[]}                    Array di URL corrispondenti ai media del tweet
+ */
+function _mediaHandler(media, tweet) {
+    let tweetMedia = [];
+    if (!tweet.attachments || !('media_keys' in tweet.attachments)) { return []; }
+    
+    //Per ogni media del tweet recupera l'url
+    for(const md_key of tweet.attachments.media_keys) {
+
+        const md  = media.find(md => md.media_key === md_key)
+        if (!md) { continue; }
+
+        let media_url;
+        switch (md.type) {
+            case 'animated_gif':
+            case 'video':
+                media_url = md.variants.find(video => video.url.includes('.mp4')).url;
+                if (!media_url) { media_url = md.variants[0].url; }
+                break;
+            case 'photo':
+                media_url = md.url;
+                break;
+            default:
+                break;
+        }
+
+        if (media_url) { tweetMedia.push(media_url); }
+    }
+    return tweetMedia;
 }
