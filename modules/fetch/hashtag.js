@@ -31,55 +31,21 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
     page.next_token = fetchedTweets.data.meta?.next_token ? fetchedTweets.data.meta.next_token : "";
 
     // Gestione tweet data
-    for (const tweetData of fetchedTweets.data.data) {       
+    for (const tweetData of fetchedTweets.data.data) {  
         // Gestione utente autore
-        let tweetUsers = fetchedTweets.data.includes.users;     // Lista utenti negli ultimi 10 tweet
-        let tweetAuthor;                                        // Autore del tweet
-        for (const user of tweetUsers) {
-            if (user.id == tweetData.author_id) { tweetAuthor = user }
-        }
+        let tweetUsers = fetchedTweets.data.includes.users;                            // Lista utenti negli ultimi 10 tweet                                        
+        const tweetAuthor = tweetUsers.find(user => user.id === tweetData.author_id);  // Ricerca Autore del tweet
 
         // Gestione geolocalizzazione
-        let tweetPlace = fetchedTweets.data.includes.places, fullTweetPlace = "";
+        let searchedPlace = undefined;
         if (tweetData.geo) {
-            for (const place of tweetPlace) {
-                if (place.id == tweetData.geo.place_id) {
-                    fullTweetPlace = place.full_name + ", " + place.country;
-                }
-            }
+            let tweetPlaces = fetchedTweets.data.includes.places;
+            searchedPlace = tweetPlaces.find(place => place.id === tweetData.geo.place_id);
         }
 
         // Gestione allegati
-        let tweetAttachments = fetchedTweets.data.includes.media, mediaArray = [];
-        if (tweetData.attchments && "media_keys" in tweetData.attachments) {
-            for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
-                
-                for (const media of tweetAttachments) {                             // Itera per tutti i media della pagina
-                    
-                    if (media_key == media.media_key) {
-                        // Gestione video
-                        if (media.type == "video") {
-                            let found = false;
-                            for (const video of media.variants) {
-                                if (video.url.includes(".mp4") && !found) {
-                                    mediaArray.push(video.url);
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                mediaArray.push(media.variants[0].url)              // Se non trova alcun .mp4 inserisce il primo video tra le varianti
-                            }
-                        } else {
-                            // Gestione foto e gif
-                            mediaArray.push(media.url);
-                        }
-                    }
-
-                }
-
-            }
-        }
+        let tweetAttachments = fetchedTweets.data.includes.media
+        let mediaArray = _mediaHandler(tweetAttachments, tweetData);
 
         page.tweets.push({
             "name": tweetAuthor.name,
@@ -90,7 +56,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
             "likes": tweetData.public_metrics["like_count"],
             "comments": tweetData.public_metrics["reply_count"],
             "retweets": tweetData.public_metrics["retweet_count"],
-            "location": fullTweetPlace,
+            "location": searchedPlace,
             "media": mediaArray
         });
 
@@ -145,4 +111,35 @@ function _normalizeHashtag(hashtag) {
 
         return hashtag;
     }
+}
+
+function _mediaHandler(tweetAttachments, tweetData) {
+    let mediaArray = [];
+    if (!tweetData.attachments || !("media_keys" in tweetData.attachments)) { return []; }
+        
+    for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
+        const media = tweetAttachments.find(media => media.media_key == media_key)
+
+        if (!media) { continue; }
+
+        let media_url;
+        switch (media.type) {
+            case "video":
+                media_url = media.variants.find(video => video.url.includes(".mp4"));
+                if (!media_url) { media_url = media.variants[0].url; }
+                break;
+            case "animated_gif":
+                media_url = media.variants.find(video => video.url.includes(".gif"));
+                if (!media_url) { media_url = media.variants[0].url; }
+                break;
+            case "photo":
+                media_url = media.url;
+                break;
+            default:
+                break;
+        }
+
+        if (media_url) { mediaArray.push(media_url); }
+    }
+    return mediaArray;
 }
