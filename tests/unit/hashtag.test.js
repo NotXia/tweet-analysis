@@ -16,17 +16,8 @@ describe("Test normalizzazione stringa di hashtag", function () {
 describe("Test ricerca tweet dato hashtag", function () {
     test("Ricerca tweet per hashtag senza pagination token - hashtag senza tweet", async function () {
         try {
-            const tweets = await hashtag_module.getTweetsByHashtag("asdijaosjasdac31284fh92381dsa");
-            expect( tweets.tweets[0].name ).toBeDefined();
-            expect( tweets.tweets[0].username ).toBeDefined();
-            expect( tweets.tweets[0].pfp ).toBeDefined();
-            expect( tweets.tweets[0].text ).toBeDefined();
-            expect( tweets.tweets[0].time ).toBeDefined();
-            expect( tweets.tweets[0].likes ).toBeDefined();
-            expect( tweets.tweets[0].comments ).toBeDefined();
-            expect( tweets.tweets[0].retweets ).toBeDefined();
-            expect( tweets.tweets[0].location ).toBeDefined();
-            expect( tweets.tweets[0].media ).toBeDefined();
+            await hashtag_module.getTweetsByHashtag("asdijaosjasdac31284fh92381dsa");
+            fail("Eccezione non lanciata");
         } catch (error) {
             expect( error ).toBeDefined();
         }
@@ -36,16 +27,17 @@ describe("Test ricerca tweet dato hashtag", function () {
         const tweetsPage1 = await hashtag_module.getTweetsByHashtag("reazioneacatena");
         expect( tweetsPage1.next_token ).toBeDefined();
         const tweetsPage2 = await hashtag_module.getTweetsByHashtag("reazioneacatena", tweetsPage1.next_token);
-        expect( tweetsPage2.tweets[0].name ).toBeDefined();
-        expect( tweetsPage2.tweets[0].username ).toBeDefined();
-        expect( tweetsPage2.tweets[0].pfp ).toBeDefined();
-        expect( tweetsPage2.tweets[0].text ).toBeDefined();
-        expect( tweetsPage2.tweets[0].time ).toBeDefined();
-        expect( tweetsPage2.tweets[0].likes ).toBeDefined();
-        expect( tweetsPage2.tweets[0].comments ).toBeDefined();
-        expect( tweetsPage2.tweets[0].retweets ).toBeDefined();
-        expect( tweetsPage2.tweets[0].location ).toBeDefined();
-        expect( tweetsPage2.tweets[0].media ).toBeDefined();
+        for (const tweet of tweetsPage2.tweets) {
+            expect( tweet.name ).toBeDefined();
+            expect( tweet.username ).toBeDefined();
+            expect( tweet.pfp ).toBeDefined();
+            expect( tweet.text ).toBeDefined();
+            expect( tweet.time ).toBeDefined();
+            expect( tweet.likes ).toBeDefined();
+            expect( tweet.comments ).toBeDefined();
+            expect( tweet.retweets ).toBeDefined();
+            expect( tweet.media ).toBeDefined();
+        }
     });
 
     test("Ricerca tweet per hashtag con pagination token sbagliato", async function () {
