@@ -1,6 +1,7 @@
 require("dotenv").config();
 
-const { getTweetsByUser, testing } = require("../../modules/fetch/user.js");
+const { getTweetsByUser } = require("../../modules/fetch/user.js");
+const { testing } = require("../../modules/fetch/user.js");
 
 let userTest;
 
