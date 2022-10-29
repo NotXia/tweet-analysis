@@ -48,6 +48,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         let mediaArray = _mediaHandler(tweetAttachments, tweetData);
 
         page.tweets.push({
+            "id": tweetData.id,
             "name": tweetAuthor.name,
             "username": tweetAuthor.username,
             "pfp": tweetAuthor.profile_image_url,
@@ -123,12 +124,9 @@ function _mediaHandler(tweetAttachments, tweetData) {
 
         let media_url;
         switch (media.type) {
-            case "video":
-                media_url = media.variants.find(video => video.url.includes(".mp4"));
-                if (!media_url) { media_url = media.variants[0].url; }
-                break;
             case "animated_gif":
-                media_url = media.variants.find(video => video.url.includes(".gif"));
+            case "video":
+                media_url = media.variants.find(video => video.url.includes(".mp4")).url;
                 if (!media_url) { media_url = media.variants[0].url; }
                 break;
             case "photo":
