@@ -44,7 +44,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         }
 
         // Gestione allegati
-        let tweetAttachments = fetchedTweets.data.includes.media
+        let tweetAttachments = fetchedTweets.data.includes.media;
         let mediaArray = _mediaHandler(tweetAttachments, tweetData);
 
         page.tweets.push({
@@ -115,9 +115,9 @@ function _normalizeHashtag(hashtag) {
 function _mediaHandler(tweetAttachments, tweetData) {
     let mediaArray = [];
     if (!tweetData.attachments || !("media_keys" in tweetData.attachments)) { return []; }
-        
+    
     for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
-        const media = tweetAttachments.find(media => media.media_key == media_key)
+        const media = tweetAttachments.find(media => media.media_key === media_key)
 
         if (!media) { continue; }
 
