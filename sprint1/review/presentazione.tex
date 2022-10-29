@@ -3,6 +3,21 @@
   \def\\{}%
   \def\texttt#1{<#1>}%
 }
+\beamertemplatenavigationsymbolsempty
+
+
+% Footnote
+\setbeamertemplate{footline}{\leavevmode%
+  \begin{beamercolorbox}[wd=.33\paperwidth,left,ht=2.5ex,dp=1.5ex,rightskip=4pt plus 1pt, leftskip=4pt]{subsection in head/foot}
+    Team 12
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.33\paperwidth,center,ht=2.5ex,dp=1.5ex]{section in head/foot}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.5ex,dp=1.5ex,leftskip=4pt plus 1pt,rightskip=4pt plus 1pt]{subsection in head/foot}
+    \hfill\insertframenumber/\inserttotalframenumber
+  \end{beamercolorbox}%
+}
+
 
 \title{Stato di avanzamento}
 \subtitle{Sprint 1}
@@ -21,6 +36,14 @@
 
 \begin{document}
 
-\frame{\titlepage}
+{
+\setbeamertemplate{footline}{} 
+\begin{frame}
+  \titlepage
+\end{frame}
+}
+\addtocounter{framenumber}{-1}
+
+
 
 \end{document}
