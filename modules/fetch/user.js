@@ -72,7 +72,7 @@ async function getTweetsByUser(username, pagination_token = '') {
  */
 async function _usr_fetch(username) {
     //Rimuove eventuali spazi all'inizio e alla fine dell'username
-    username = username.replace(/\s/g, '');
+    username = _normalizeUsername(username);
 
     const options = {
         
@@ -88,6 +88,22 @@ async function _usr_fetch(username) {
     };
     const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, options);
     return response.data.data;
+}
+
+/**
+ * Normalizza l'username in input, rimuovendo il carattere @ da inizio stringa (se presente) ed eventuali spazi
+ * @param {string} username         Username da normalizzare
+ * @returns {string}                L'username normalizzato
+ */
+ function _normalizeUsername(username) {
+    if(username.length == 0) { return ""; }
+    
+    username = username.replace(/\s/g, '');   // Rimuove tutti gli spazi
+    if(username[0] == '@') {
+        username = username.slice(1);         // Se la stringa inizia con @, viene rimosso
+    }
+
+    return username;
 }
 
 /**
