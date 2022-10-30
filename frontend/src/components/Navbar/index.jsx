@@ -26,7 +26,7 @@ class Navbar extends React.Component {
                             <Link className="nav-link dropdown-toggle" to="" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ricerca</Link>
                             <ul className="dropdown-menu">
                                 <li>
-                                    <Link className="dropdown-item" to="">Ricerca per hashtag</Link>
+                                    <Link className="dropdown-item" to="/search-hashtag">Ricerca per hashtag</Link>
                                 </li>
                                 <li>
                                     <Link className="dropdown-item" to="/search-user">Ricerca utente</Link>
