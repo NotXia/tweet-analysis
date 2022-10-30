@@ -16,9 +16,12 @@ describe("Test ricerca nome utente", function () {
     test("Controllo conformità username", async function () {
         const user1 = await testing.usr_fetch("Luigi82724358");
         const user2 = await testing.usr_fetch("LUIGI82724358");
+        const user3 = await testing.usr_fetch("  Luigi82724358    ");
         expect( user1 ).toBeDefined();
         expect( user2 ).toBeDefined();
+        expect( user3 ).toBeDefined();
         expect( user1 ).toEqual( user2 );
+        expect( user1 ).toEqual( user3 );
     });
 });
 

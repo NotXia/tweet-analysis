@@ -23,7 +23,7 @@ module.exports = {
  */
 async function getTweetsByUser(username, pagination_token = '') {
     if (!username) {throw new Error('Username mancante');}
-
+    
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
@@ -71,6 +71,9 @@ async function getTweetsByUser(username, pagination_token = '') {
  * @returns {Promise<>}                 Dati vari dell'utente
  */
 async function _usr_fetch(username) {
+    //Rimuove eventuali spazi all'inizio e alla fine dell'username
+    username = username.replace(/\s/g, '');
+
     const options = {
         
         headers: {
