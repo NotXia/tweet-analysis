@@ -27,11 +27,11 @@ class SearchHashtag extends React.Component {
             
             <Navbar />
 
-            <form className="row align-items-start p-4" method="get">
+            <form className="row align-items-start p-4" onSubmit={(e) => { this.fetchHashtagTweets(e) }}>
                 <div className="col-4">
                     <div className="input-group flex-nowrap">
                         <span className="input-group-text bg-white" id="addon-wrapping">#</span>
-                        <input className="form-control" type="text" placeholder="Inserisci un hashtag" />
+                        <input ref={this.input.hashtag} className="form-control" type="text" placeholder="Inserisci un hashtag" />
                         <input className="input-group-text bg-white" type="submit"/>
                     </div>
                 </div>

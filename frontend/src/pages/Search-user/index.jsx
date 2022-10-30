@@ -32,7 +32,7 @@ class SearchUser extends React.Component {
                 <div className="col-4">
                     <div className="input-group flex-nowrap">
                         <span className="input-group-text bg-white" id="addon-wrapping">@</span>
-                        <input ref={this.input.username} className="form-control" type="text" placeholder="Inserisci un nome utente" aria-label="Username" aria-describedby="addon-wrapping" />
+                        <input ref={this.input.username} className="form-control" type="text" placeholder="Inserisci un nome utente" aria-label="Username" />
                         <input className="input-group-text bg-white" type="submit"/>
                     </div>
                 </div>
