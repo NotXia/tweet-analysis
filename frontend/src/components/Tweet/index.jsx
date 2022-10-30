@@ -89,15 +89,15 @@ class Tweet extends React.Component {
                         <p className="me-2">{tweet.likes}</p> 
                     </div>
                 </div>
-                <div className={tweet.location!==undefined ? "" : "d-none"}>
+                <div className={tweet.location!=undefined ? "" : "d-none"}>
                     <div className="d-flex mt-2">
                         <img className="mt-1 mx-2" src="./icons/Tweet/earth.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
                         {
                             (() => {
-                                if(tweet.location?.full_name!==undefined) {
+                                if(tweet.location?.full_name!=undefined) {
                                     return <p>{tweet.location.full_name} - {
                                         (() => {
-                                            if(tweet.location?.country!==undefined)
+                                            if(tweet.location?.country!=undefined)
                                                 return tweet.location.country
                                         })()
                                     }
