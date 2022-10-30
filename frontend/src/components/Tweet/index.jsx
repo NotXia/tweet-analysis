@@ -24,7 +24,7 @@ class Tweet extends React.Component {
         const tweet = this.props.tweet;
 
         return (<>
-            <Link to="" className="list-group-item list-group-item-action px-4 pt-4" aria-current="true">
+            <a href={"https://twitter.com/twitter/status/" + tweet.id} target="_blank" className="list-group-item list-group-item-action px-4 pt-4" aria-current="true">
                 <div className="d-flex w-100 justify-content-between">
                     <div className="d-flex align-items-center mb-2">
                         <div className="me-2">
@@ -89,7 +89,7 @@ class Tweet extends React.Component {
                         <p className="me-2">{tweet.likes}</p> 
                     </div>
                 </div>
-            </Link>
+            </a>
         </>);
     }
 }
