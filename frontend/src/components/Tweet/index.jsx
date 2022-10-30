@@ -13,19 +13,13 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from "react-router-dom";
 import moment from "moment";
-import $ from "jquery";
 
 class Tweet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
-    componentDidUpdate() {
-        $("#media-carousel").carousel();
-    }
-    componentDidMount() {
-        $("#media-carousel").carousel();
-    }
+
     render() {
         const tweet = this.props.tweet;
 
@@ -44,7 +38,7 @@ class Tweet extends React.Component {
                     <p>{moment(tweet.time).format("DD-MM-YYYY HH:MM:ss")}</p>
                 </div>
                 <p className="m-0">{tweet.text}</p>
-                <div id="media-carousel" className="carousel slide" data-bs-ride="carousel">
+                <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
                 <div className="carousel-inner">
                     {
                         tweet.media.map((media, index) => {
@@ -71,11 +65,11 @@ class Tweet extends React.Component {
                     }
                 </div>
                     <div className={tweet.media.length>1 ? "" : "d-none"}>
-                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <button className="carousel-control-prev" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="prev">
                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Previous</span>
                         </button>
-                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <button className="carousel-control-next" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="next">
                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Next</span>
                         </button>
