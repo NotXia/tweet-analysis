@@ -76,9 +76,18 @@ class Tweet extends React.Component {
                     </div>
                 </div>
                 <div className="d-flex w-100 justify-content-between mt-4">
-                    <p>Commenti: {tweet.comments}</p>
-                    <p>Retweets: {tweet.retweets}</p>
-                    <p>Likes: {tweet.likes}</p> 
+                    <div className="d-flex mt-2">
+                        <img className="mt-1 mx-2" src="./icons/Tweet/comment.png" alt="" style={{ width:"1.2em", height:"1.2em" }} />
+                        <p className="me-2">{tweet.comments}</p>
+                    </div>
+                    <div className="d-flex mt-2">
+                        <img className="mt-1 mx-2" src="./icons/Tweet/retweet.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
+                        <p className="me-2">{tweet.retweets}</p>
+                    </div>
+                    <div className="d-flex mt-2">
+                        <img className="mt-1 mx-2" src="./icons/Tweet/like.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
+                        <p className="me-2">{tweet.likes}</p> 
+                    </div>
                 </div>
             </Link>
         </>);
