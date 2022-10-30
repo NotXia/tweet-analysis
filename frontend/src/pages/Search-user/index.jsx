@@ -59,7 +59,6 @@ class SearchUser extends React.Component {
             tweets: tweets_data.tweets,
             page: tweets_data.token
         })
-        console.log(tweets_data)
     }
 }
 
