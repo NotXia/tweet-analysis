@@ -4,7 +4,7 @@ import axios from "axios";
 /**
  * Ritorna il risultato della ricerca eseguita
  * @param {String} hashtag              Hashtag da cui prendere i tweet
- * @param {string} pag_token            Token della pagina dei tweet (default undefined)
+ * @param {string} pag_token            Token della pagina dei tweet (default "")
  * @returns I tweet di output a seconda dei parametri inviati
  */
 
