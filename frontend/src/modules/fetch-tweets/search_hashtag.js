@@ -2,14 +2,14 @@ import axios from "axios";
 
 
 /**
- * Analizza il sentimento di un tweet
- * @param {String} tweet                Tweet da analizzare
- * @param {Object} options              Opzioni di analisi
- * @param {string} options.language     Lingua della frase
- * @param {string} options.bias         Lingua a cui far tendere la rilevazione (se la lingua della frase è incerta)
- * @returns {Promise<{sentiment:string, score:number, language:string}>} Sentimento ("positive", "neutral", "negative"), score della frase e lingua con cui è stata analizzata
+ * Ritorna il risultato della ricerca eseguita
+ * @param {String} hashtag              Hashtag da cui prendere i tweet
+ * @param {string} pag_token            Token della pagina dei tweet (default "")
+ * @returns I tweet di output a seconda dei parametri inviati
  */
- export async function hashtagSearchTweet(hashtag, pag_token="") {
+
+
+export async function hashtagSearchTweet(hashtag, pag_token="") {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/tweets/hashtag`,
         params: {
