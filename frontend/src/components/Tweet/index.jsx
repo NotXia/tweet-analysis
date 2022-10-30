@@ -94,7 +94,7 @@ class Tweet extends React.Component {
                         <img className="mt-1 mx-2" src="./icons/Tweet/earth.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
                         {
                             (() => {
-                                if(tweet.location?.full_name!=undefined) {
+                                if(tweet.location?.full_name!==undefined) {
                                     return <p>{tweet.location.full_name} - {
                                         (() => {
                                             if(tweet.location?.country!=undefined)
