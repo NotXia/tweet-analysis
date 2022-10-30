@@ -14,7 +14,10 @@
   "jest": {
     "testPathIgnorePatterns": [
       "./tests/utils/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "\\.(css)$": "<rootDir>/tests/utils/style_mock.js"
+    }
   },
   "dependencies": {
     "axios": "^1.1.3",
