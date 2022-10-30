@@ -52,7 +52,6 @@ class SearchUser extends React.Component {
 
     async fetchUserTweets(e) {
         e.preventDefault()
-        console.log(this.input.username.current.value)
         const tweets_data = await userSearchTweet(this.input.username.current.value)
 
 
