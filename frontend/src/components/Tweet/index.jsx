@@ -12,14 +12,12 @@ import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
-import { sentiment } from "../../modules/analysis/sentiment.js"
+import Sentiment from "../Sentiment"
 
 class Tweet extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            sentiment: ""
-        };
+        this.state = {};
     }
 
     render() {
@@ -109,17 +107,9 @@ class Tweet extends React.Component {
                         }
                     </div>
                 </div>
-                <p>{this.sentiment}</p>
+                <Sentiment tweet={tweet.text} />
             </a>
         </>);
-    }
-    async searchForSentiment(e) {
-        e.preventDefault()
-        const analysis = await sentiment(this.props.tweet.text)
-
-        this.setState({
-            sentiment: analysis.sentiment
-        })
     }
 }
 
