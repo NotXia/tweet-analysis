@@ -24,6 +24,7 @@
     "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "http-errors": "^2.0.0",
+    "jquery": "^3.6.1",
     "languagedetect": "^2.0.0",
     "moment": "^2.29.4",
     "node-nlp": "^4.24.0",

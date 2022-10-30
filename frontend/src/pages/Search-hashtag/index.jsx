@@ -31,7 +31,7 @@ class SearchHashtag extends React.Component {
                 <div className="col-4">
                     <div className="input-group flex-nowrap">
                         <span className="input-group-text bg-white" id="addon-wrapping">#</span>
-                        <input className="form-control" type="text" placeholder="Inserisci un hashtag"/>
+                        <input className="form-control" type="text" placeholder="Inserisci un hashtag" />
                         <input className="input-group-text bg-white" type="submit"/>
                     </div>
                 </div>
