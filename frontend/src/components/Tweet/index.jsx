@@ -97,7 +97,7 @@ class Tweet extends React.Component {
                                 if(tweet.location?.full_name!==undefined) {
                                     return <p>{tweet.location.full_name} - {
                                         (() => {
-                                            if(tweet.location?.country!=undefined)
+                                            if(tweet.location?.country!==undefined)
                                                 return tweet.location.country
                                         })()
                                     }
