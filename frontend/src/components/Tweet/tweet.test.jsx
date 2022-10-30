@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import nock from "nock";
+process.env.REACT_APP_API_PATH = "http://localhost";
 
 import Tweet from "./index";
 
@@ -113,5 +115,25 @@ describe("Test visualizzazione tweet", function () {
         expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image2.png") ).toBeTruthy();
         expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
         expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
+    });
+
+    test("Tweet sentiment analysis", async function () {
+        nock("http://localhost")
+        .get('/analysis/sentiment').query({ tweet: "Sono veramente tanto felice #catenaareazione" })
+        .reply(200, { sentiment: "positive", score: 3, language: "it" });
+
+        const tweet = {
+            id: "0000000000000000000",
+            name: "Giggi", username: "Luiggi",
+            pfp: "https://dominiofittizio.org/percorso/fittizio/file",
+            text: "Sono veramente tanto felice #catenaareazione",
+            time: "2022-10-30T09:00:00.000Z",
+            likes: 5, comments: 6, retweets: 7,
+            location: {},
+            media: []
+        }
+
+        render(<Tweet tweet={tweet} />);
+        expect( await screen.findByText("🙂") ).toBeInTheDocument();
     });
 });
