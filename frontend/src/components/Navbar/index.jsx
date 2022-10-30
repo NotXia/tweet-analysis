@@ -22,16 +22,8 @@ class Navbar extends React.Component {
                         <li className="nav-item">
                             <Link className="nav-link" to="/">Home</Link>
                         </li>
-                        <li className="nav-item dropdown">
-                            <Link className="nav-link dropdown-toggle" to="" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ricerca</Link>
-                            <ul className="dropdown-menu">
-                                <li>
-                                    <Link className="dropdown-item" to="/search-hashtag">Ricerca per hashtag</Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/search-user">Ricerca utente</Link>
-                                </li>
-                            </ul>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/search">Ricerca</Link>
                         </li>
                     </ul>
                 </div>
