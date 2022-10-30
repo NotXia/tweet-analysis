@@ -134,7 +134,7 @@ function _mediaHandler(tweetAttachments, tweetData) {
                 break;
         }
 
-        if (media_url) { mediaArray.push(media_url); }
+        if (media_url) { mediaArray.push({url: media_url, type: media.type}); }
     }
     return mediaArray;
 }
