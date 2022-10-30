@@ -3,10 +3,12 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
+// import { Link } from "react-router-dom";
+import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
 import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
 import Tweet from "../../components/Tweet"
 
-class SearchHashtag extends React.Component {
+class SearchUser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -15,25 +17,26 @@ class SearchHashtag extends React.Component {
         };
 
         this.input = {
-            hashtag: React.createRef()
+            username: React.createRef()
         }
     }
 
     render() {
         return (<>
             <Helmet>
-                <title>Ricerca hashtag</title>
+                <title>Ricerca tweet</title>
             </Helmet>
             
             <Navbar />
 
-            <form className="row align-items-start p-4" onSubmit={(e) => { this.fetchHashtagTweets(e) }}>
+            <form className="row align-items-start p-4" onSubmit={(e) => { this.fetchUserTweets(e) }}>
                 <div className="col-4">
                     <div className="input-group flex-nowrap">
-                        <span className="input-group-text bg-white" id="addon-wrapping">#</span>
-                        <input ref={this.input.hashtag} className="form-control" type="text" placeholder="Inserisci un hashtag" />
+                        {/* <span className="input-group-text bg-white" id="addon-wrapping">@</span> */}
+                        <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                         <input className="input-group-text bg-white" type="submit"/>
                     </div>
+                    <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
                 </div>
             </form>
 
@@ -47,12 +50,17 @@ class SearchHashtag extends React.Component {
 
             
         </>);
-
     }
 
-    async fetchHashtagTweets(e) {
+    async fetchUserTweets(e) {
         e.preventDefault()
-        const tweets_data = await hashtagSearchTweet(this.input.hashtag.current.value)
+        
+        const query = this.input.username.current.value.trim();
+        let tweets_data = [];
+
+        if (query[0] === "@") { tweets_data = await userSearchTweet(query); }
+        else if (query[0] === "#") { tweets_data = await hashtagSearchTweet(query) }
+        else { return; }
 
         this.setState({ 
             tweets: tweets_data.tweets,
@@ -61,4 +69,4 @@ class SearchHashtag extends React.Component {
     }
 }
 
-export default SearchHashtag;
+export default SearchUser;
