@@ -15,7 +15,7 @@ module.exports = {
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
  * @returns {Promise<{tweets[10]: {id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: string, media[]: string}, next_token: string}>} 
+ *          location: string, media[]: {url: string, type: string}}, next_token: string}>} 
  *          Array di 10 tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
@@ -125,9 +125,9 @@ async function _twt_fetch(userId, pagination_token = '') {
 
 /**
  * Cerca e restituisce gli URL dei media inclusi in un tweet
- * @param {Promise[]} media               Array di tutti i media inclusi in tutti i tweet
- * @param {Promise<>} tweet               tweet corrente di cui si vogliono trovare i media
- * @returns {String[]}                    Array di URL corrispondenti ai media del tweet
+ * @param {Promise[]} media                     Array di tutti i media inclusi in tutti i tweet
+ * @param {Promise<>} tweet                     tweet corrente di cui si vogliono trovare i media
+ * @returns {[{url: string, type: string}]}     Array di URL e tipo corrispondenti ai media del tweet
  */
 function _mediaHandler(media, tweet) {
     let tweetMedia = [];
@@ -153,7 +153,7 @@ function _mediaHandler(media, tweet) {
                 break;
         }
 
-        if (media_url) { tweetMedia.push(media_url); }
+        if (media_url) { tweetMedia.push({url: media_url, type: md.type }); }
     }
     return tweetMedia;
 }
