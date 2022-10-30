@@ -56,32 +56,32 @@ describe("Richieste corrette a /tweets/hashtag", function () {
         expect( res.body.next_token ).toBeDefined();
     });
 
-    // test("Tweet dato hashtag con # all'inizio", async function () {
-    //     const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "#reazioneacatena" }).expect(200);
-    //     const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
-    //     expect( res.body.tweets ).toBeDefined();
-    //     expect( res.body.tweets ).toEqual( res2.body.tweets );
-    //     expect( res.body.next_token ).toBeDefined();
-    //     expect( res.body.next_token ).toEqual( res2.body.next_token );
-    // });
+    test("Tweet dato hashtag con # all'inizio", async function () {
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "#reazioneacatena" }).expect(200);
+        const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
+        expect( res.body.tweets ).toBeDefined();
+        expect( res.body.tweets ).toEqual( res2.body.tweets );
+        expect( res.body.next_token ).toBeDefined();
+        expect( res.body.next_token ).toEqual( res2.body.next_token );
+    });
 
-    // test("Tweet dato hashtag con spazi", async function () {
-    //     const res = await curr_session.get("/tweets/hashtag").query({ hashtag: " reazione a catena " }).expect(200);
-    //     const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
-    //     expect( res.body.tweets ).toBeDefined();
-    //     expect( res.body.tweets ).toEqual( res2.body.tweets );
-    //     expect( res.body.next_token ).toBeDefined();
-    //     expect( res.body.next_token ).toEqual( res2.body.next_token );
-    // });
+    test("Tweet dato hashtag con spazi", async function () {
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: " reazione a catena " }).expect(200);
+        const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
+        expect( res.body.tweets ).toBeDefined();
+        expect( res.body.tweets ).toEqual( res2.body.tweets );
+        expect( res.body.next_token ).toBeDefined();
+        expect( res.body.next_token ).toEqual( res2.body.next_token );
+    });
 
-    // test("Tweet dato hashtag con # e spazi", async function () {
-    //     const res = await curr_session.get("/tweets/hashtag").query({ hashtag: " # reazione a catena " }).expect(200);
-    //     const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
-    //     expect( res.body.tweets ).toBeDefined();
-    //     expect( res.body.tweets ).toEqual( res2.body.tweets );
-    //     expect( res.body.next_token ).toBeDefined();
-    //     expect( res.body.next_token ).toEqual( res2.body.next_token );
-    // });
+    test("Tweet dato hashtag con # e spazi", async function () {
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: " # reazione a catena " }).expect(200);
+        const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
+        expect( res.body.tweets ).toBeDefined();
+        expect( res.body.tweets ).toEqual( res2.body.tweets );
+        expect( res.body.next_token ).toBeDefined();
+        expect( res.body.next_token ).toEqual( res2.body.next_token );
+    });
 });
 
 describe("Richieste errate a /tweets/hashtag", function () {

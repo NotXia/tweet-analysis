@@ -102,10 +102,11 @@ async function _hashtagFetch(hashtag, pagination_token="") {
  */
 function _normalizeHashtag(hashtag) {
     if(hashtag.length == 0) { return ""; }
+    
+    hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
     if(hashtag[0] == '#') {
         hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
     }
-    hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
 
     return hashtag;
 }
