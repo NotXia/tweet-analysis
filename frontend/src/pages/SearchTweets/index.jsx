@@ -32,27 +32,39 @@ class SearchUser extends React.Component {
             <Navbar />
 
             <main className="mt-4">
-                <div className="text-center text-danger fw-semibold">
-                    { this.state.error_message}
-                </div>
-
-                <form className="row align-items-start px-4" onSubmit={(e) => { this.fetchUserTweets(e) }}>
-                    <div className="col-4">
-                        <div className="input-group flex-nowrap">
-                            {/* <span className="input-group-text bg-white" id="addon-wrapping">@</span> */}
-                            <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
-                            <input className="input-group-text bg-white" type="submit"/>
+                <div className="container-fluid">
+                    
+                    <div className="row">
+                        <div className="col-12 text-center text-danger fw-semibold">
+                            { this.state.error_message}
                         </div>
-                        <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
                     </div>
-                </form>
 
-                <div className="list-group col-4 ms-4 my-2">
-                    {
-                        this.state.tweets.map((tweet) => (
-                            <Tweet key={tweet.id} tweet={tweet} />
-                        ))
-                    }
+                    <div className="row">
+                        <div className="col-12 col-md-6 col-lg-4">
+                            <form className="align-items-start" onSubmit={(e) => { this.fetchUserTweets(e) }}>
+                                <div className="input-group flex-nowrap">
+                                    <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
+                                    {/* <input className="input-group-text bg-white" type="submit" /> */}
+                                </div>
+                                <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-12 col-md-6 col-lg-4 my-2">
+                            <div className="list-group ">
+                            {
+                                this.state.tweets.map((tweet) => (
+                                    <Tweet key={tweet.id} tweet={tweet} />
+                                ))
+                            }
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </main>
         </>);
