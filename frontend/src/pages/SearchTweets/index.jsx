@@ -46,9 +46,9 @@ class SearchTweets extends React.Component {
                             <form className="align-items-start" onSubmit={(e) => { this.fetchTweets(e) }}>
                                 <div className="input-group flex-nowrap">
                                     <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
-                                    <button className="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
+                                    <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                 </div>
-                                <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag(#) o nome utente(@)</p>
+                                <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
                             </form>
                         </div>
                     </div>
@@ -61,7 +61,7 @@ class SearchTweets extends React.Component {
                                         <Tweet key={tweet.id} tweet={tweet} />
                                     ))
                                 }
-                                <button className={this.state.query===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }}>Prossima pagina</button>
+                                <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }}>Prossima pagina</button>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,6 @@ class SearchTweets extends React.Component {
             let tweets_data = [];      
             
             if(this.state.next_page==="") {
-                this.setState({error_message: "Non ci sono altre pagine"});
                 return;
             }
             else if (this.state.query === "@") { 
