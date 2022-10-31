@@ -8,7 +8,7 @@ module.exports = {
  * @returns {string} Frase senza punteggiatura e senza spazi multipli
  */
 function removePunctuation(sentence) {
-    return sentence.replace(/[.,!?;:'"()]/g," ") // Rimuove punteggiatura
+    return sentence.replace(/[.,!?;:'"()-]/g," ") // Rimuove punteggiatura
                    .replace(/\s{2,}/g," ")                        // Collassa multipli spazi in uno solo
                    .trim();
 }
