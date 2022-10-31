@@ -74,6 +74,7 @@ class SearchUser extends React.Component {
         e.preventDefault()
         
         try {
+            this.setState({ error_message: "" });
             const query = this.input.username.current.value.trim();
             let tweets_data = [];
     
