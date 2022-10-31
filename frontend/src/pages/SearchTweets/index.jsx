@@ -3,7 +3,6 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
-// import { Link } from "react-router-dom";
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
 import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
 import Tweet from "../../components/Tweet"
@@ -46,9 +45,8 @@ class SearchUser extends React.Component {
                                 <div className="input-group flex-nowrap">
                                     <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
-                                    {/* <input className="input-group-text bg-white" type="submit" /> */}
                                 </div>
-                                <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag(#) o nome utente(@)</p>
                             </form>
                         </div>
                     </div>
