@@ -43,7 +43,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row">
                         <div className="col-12 col-md-6 col-lg-4">
-                            <form className="align-items-start" onSubmit={(e) => { this.fetchUserTweets(e) }}>
+                            <form className="align-items-start" onSubmit={(e) => { this.fetchTweets(e) }}>
                                 <div className="input-group flex-nowrap">
                                     <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                                     <button className="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
