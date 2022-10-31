@@ -1,0 +1,13 @@
+/* md */
+/* @media (min-width: 768px) and (max-width: 991.98px) { */
+    .button-carousel-navigation {
+        height: 50%;
+    }
+/* } */
+
+/* lg */
+@media (min-width: 991.98px) { 
+    .button-carousel-navigation {
+        height: 75%;
+    }
+}

@@ -13,6 +13,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import Sentiment from "../Sentiment"
+import css from "./tweet.module.css"
 
 class Tweet extends React.Component {
     constructor(props) {
@@ -64,12 +65,12 @@ class Tweet extends React.Component {
                             })
                         }
                     </div>
-                    <div className={tweet.media.length>1 ? "" : "d-none"}>
-                        <button className="carousel-control-prev" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="prev">
+                    <div className={tweet.media.length>1 ? "h-100" : "d-none"}>
+                        <button className={`carousel-control-prev my-auto ${css["button-carousel-navigation"]}`} type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="prev">
                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Previous</span>
                         </button>
-                        <button className="carousel-control-next" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="next">
+                        <button className={`carousel-control-next my-auto ${css["button-carousel-navigation"]}`} type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="next">
                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Next</span>
                         </button>
