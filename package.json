@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build": "npm run build --prefix ./frontend",
     "test": "npm run test:unit && npm run test:api && npm run test:react",
-    "test:unit": "jest --passWithNoTests --coverage --coverageDirectory ./coverage/unit --globalSetup ./tests/utils/unit.global_init.js ./tests/unit/.*.test.js",
-    "test:api": "jest --passWithNoTests --coverage --coverageDirectory ./coverage/api --globalSetup ./tests/utils/api.global_init.js ./tests/api/.*.test.js",
-    "test:react": "jest --passWithNoTests --coverage --coverageDirectory ./coverage/react --globalSetup ./tests/utils/react.global_init.js ./frontend/src/.*.test.jsx --env=jsdom",
-    "build": "npm run build --prefix ./frontend"
+   
+    "jest:unit": "jest --passWithNoTests --globalSetup ./tests/utils/unit.global_init.js",
+    "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
+    "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
+
+    "test:unit": "npm run jest:unit --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
+    "test:api": "npm run jest:api --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
+    "test:react": "npm run jest:react --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
