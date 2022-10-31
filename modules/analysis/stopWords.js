@@ -27,9 +27,9 @@ function removeStopWords(sentence, options) {
     
     let stopwords_list = _getStopwordsList(to_use_language);
 
-    sentence = _removeStopwords(sentence, stopwords_list);  // Prima passata preliminare
+    sentence = _removeSentenceStopwords(sentence, stopwords_list);  // Prima passata preliminare
     sentence = removePunctuation(sentence);
-    sentence = _removeStopwords(sentence, stopwords_list);  // Seconda passata senza la punteggiatura
+    sentence = _removeSentenceStopwords(sentence, stopwords_list);  // Seconda passata senza la punteggiatura
     
     return sentence;
 }
@@ -40,7 +40,7 @@ function removeStopWords(sentence, options) {
  * @param {[string]} stopwords_list     Lista di stop words da rimuovere
  * @returns {string} Stringa senza gli stop words indicati
  */
-function _removeStopwords(sentence, stopwords_list) {
+function _removeSentenceStopwords(sentence, stopwords_list) {
     let no_stopwords_list = stopword.removeStopwords(sentence.split(" "), stopwords_list);
     sentence = no_stopwords_list.join(" "); // Ricomposizione della stringa
 
