@@ -21,7 +21,10 @@ const sentiment = [
     }
 ];
 
+const stopwords = sentiment;
+
 
 module.exports = {
-    sentimentValidation: sentiment
+    sentimentValidation: sentiment,
+    stopwordsRemovalValidation: stopwords
 }

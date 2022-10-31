@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
 const cors = require("cors");
 
-const sentiment_router = require("./routes/sentiment.js");
+const analysis_router = require("./routes/analysis.js");
 const user_router = require("./routes/user.js");
 const hashtag_router = require("./routes/hashtag.js");
 
@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(cors({ origin: ["http://localhost:3000", "https://tcxia.ddns.net"] }));
 
 // API
-app.use("/analysis", sentiment_router);
+app.use("/analysis", analysis_router);
 app.use("/tweets", user_router);
 app.use("/tweets", hashtag_router);
 
