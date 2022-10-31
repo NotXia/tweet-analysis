@@ -13,6 +13,8 @@ class SearchUser extends React.Component {
         this.state = {
             tweets: [],
             page: "",
+            query: "",
+            next_page: "",
 
             error_message: ""
         };
@@ -44,7 +46,7 @@ class SearchUser extends React.Component {
                             <form className="align-items-start" onSubmit={(e) => { this.fetchUserTweets(e) }}>
                                 <div className="input-group flex-nowrap">
                                     <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
-                                    <button class="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
+                                    <button className="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
                                 </div>
                                 <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag(#) o nome utente(@)</p>
                             </form>
@@ -54,11 +56,12 @@ class SearchUser extends React.Component {
                     <div className="row">
                         <div className="col-12 col-md-6 col-lg-4 my-2">
                             <div className="list-group ">
-                            {
-                                this.state.tweets.map((tweet) => (
-                                    <Tweet key={tweet.id} tweet={tweet} />
-                                ))
-                            }
+                                {
+                                    this.state.tweets.map((tweet) => (
+                                        <Tweet key={tweet.id} tweet={tweet} />
+                                    ))
+                                }
+                                <button className={this.state.query===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }}>Prossima pagina</button>
                             </div>
                         </div>
                     </div>
@@ -78,10 +81,43 @@ class SearchUser extends React.Component {
             if (query[0] === "@") { tweets_data = await userSearchTweet(query); }
             else if (query[0] === "#") { tweets_data = await hashtagSearchTweet(query) }
             else { return; }
+            
+            this.setState({ 
+                tweets: tweets_data.tweets,
+                query: query[0],
+                next_page: tweets_data.next_token,
+                error_message:""
+            })
+        }
+        catch (err) {
+            this.setState({ error_message: "Si è verificato un errore durante la ricerca" });
+        }
+    }
+
+    async fetchNextPage(e) {
+        e.preventDefault()
+
+        try {
+            const query = this.input.username.current.value;
+            let tweets_data = [];
+            
+            if(this.state.next_page==="") {
+                this.setState({error_message: "Non ci sono altre pagine"})
+                return;
+            }
+            else if (this.state.query === "@") { 
+                tweets_data = await userSearchTweet(query, this.state.next_page); 
+            }
+            else if (this.state.query === "#") { 
+                tweets_data = await hashtagSearchTweet(query.username, this.state.next_page) 
+            }
+            else { return; }
     
             this.setState({ 
                 tweets: tweets_data.tweets,
-                page: tweets_data.token
+                page: this.state.next_page,
+                next_page: tweets_data.next_token,
+                error_message:""
             })
         }
         catch (err) {
