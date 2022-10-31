@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const { removeStopWords } = require("../../modules/analysis/stopwords");
+const { removeStopWords } = require("../../modules/analysis/stopWords.js");
 
 
 describe("Rimozione stop words", function () {

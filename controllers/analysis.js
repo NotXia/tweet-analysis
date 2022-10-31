@@ -1,5 +1,5 @@
 const { sentiment } = require("../modules/analysis/sentiment.js");
-const { removeStopWords } = require("../modules/analysis/stopwords");
+const { removeStopWords } = require("../modules/analysis/stopwords.js");
 
 
 async function sentimentAnalysis(req, res) {
