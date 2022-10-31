@@ -9,5 +9,6 @@ module.exports = {
  */
 function removePunctuation(sentence) {
     return sentence.replace(/[.,\/#!$%\^&\*;:{}=\-_`'"~()]/g," ") // Rimuove punteggiatura
-                   .replace(/\s{2,}/g," ");                       // Collassa multipli spazi in uno solo
+                   .replace(/\s{2,}/g," ")                        // Collassa multipli spazi in uno solo
+                   .trim();
 }
