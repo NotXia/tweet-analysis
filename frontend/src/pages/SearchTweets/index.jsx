@@ -84,7 +84,7 @@ class SearchTweets extends React.Component {
 
             this.setState({ 
                 tweets: tweets_data.tweets,
-                query: query[0],
+                query: query,
                 next_page: tweets_data.next_token,
                 error_message:""
             })
@@ -98,16 +98,17 @@ class SearchTweets extends React.Component {
         e.preventDefault()
 
         try {
-            const query = this.input.query.current.value;
-            let tweets_data = [];      
+            const query = this.state.query;
+            let tweets_data = [];
+            console.log(query)
             
             if(this.state.next_page==="") {
                 return;
             }
-            else if (this.state.query === "@") { 
+            else if (query[0] === "@") { 
                 tweets_data = await userSearchTweet(query, this.state.next_page); 
             }
-            else if (this.state.query === "#") { 
+            else if (query[0] === "#") { 
                 tweets_data = await hashtagSearchTweet(query, this.state.next_page);
             }
             else { return; }
