@@ -14,7 +14,7 @@ export async function hashtagSearchTweet(hashtag, pag_token="") {
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/tweets/hashtag`,
         params: {
             hashtag: hashtag,
-            pagination_token: pag_token
+            pag_token: pag_token
         }
     });
 
