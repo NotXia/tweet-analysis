@@ -28,8 +28,9 @@ class Tweet extends React.Component {
     }
 
     componentDidMount() {
+        // Richiamato quando si cambia slide del carousel
         document.querySelector(`#${this.carousel_id}`).addEventListener("slid.bs.carousel", (e) => {
-            this.setState({ carousel_media_index: $(`#${this.carousel_id} div.active`).index() });
+            this.setState({ carousel_media_index: $(`#${this.carousel_id} div.active`).index() }); // Aggiorna indice media attualmente attivo
         })
     }
 
