@@ -7,6 +7,10 @@ import Tweet from "./index";
 
 
 describe("Test visualizzazione tweet", function () {
+    nock("http://localhost")
+    .get('/analysis/sentiment').query({ tweet: "Ciao a tutti #catenaareazione" })
+    .times(5).reply(200, { sentiment: "positive", score: 3, language: "it" });
+
     test("Tweet testuale", async function () {
         const tweet = {
             id: "0000000000000000000",
@@ -132,7 +136,6 @@ describe("Test visualizzazione tweet", function () {
             location: {},
             media: []
         }
-
         render(<Tweet tweet={tweet} />);
         expect( await screen.findByText("🙂") ).toBeInTheDocument();
     });
