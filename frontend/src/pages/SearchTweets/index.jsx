@@ -20,7 +20,7 @@ class SearchTweets extends React.Component {
         };
 
         this.input = {
-            username: React.createRef()
+            query: React.createRef()
         }
     }
 
@@ -75,7 +75,7 @@ class SearchTweets extends React.Component {
         e.preventDefault()
         
         try {
-            const query = this.input.username.current.value.trim();
+            const query = this.input.query.current.value.trim();
             let tweets_data = [];
     
             if (query[0] === "@") { tweets_data = await userSearchTweet(query); }
@@ -98,7 +98,7 @@ class SearchTweets extends React.Component {
         e.preventDefault()
 
         try {
-            const query = this.input.username.current.value;
+            const query = this.input.query.current.value;
             let tweets_data = [];      
             
             if(this.state.next_page==="") {
