@@ -100,7 +100,6 @@ class SearchTweets extends React.Component {
         try {
             const query = this.state.query;
             let tweets_data = [];
-            console.log(query)
             
             if(this.state.next_page==="") {
                 return;
