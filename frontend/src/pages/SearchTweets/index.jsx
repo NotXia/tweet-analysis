@@ -71,7 +71,7 @@ class SearchTweets extends React.Component {
         </>);
     }
 
-    async fetchUserTweets(e) {
+    async fetchTweets(e) {
         e.preventDefault()
         
         try {
