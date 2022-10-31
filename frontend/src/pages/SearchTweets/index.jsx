@@ -7,13 +7,13 @@ import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
 import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
 import Tweet from "../../components/Tweet"
 
-class SearchUser extends React.Component {
+class SearchTweets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             tweets: [],
-            page: "",
             query: "",
+            page: "",
             next_page: "",
 
             error_message: ""
@@ -79,9 +79,9 @@ class SearchUser extends React.Component {
             let tweets_data = [];
     
             if (query[0] === "@") { tweets_data = await userSearchTweet(query); }
-            else if (query[0] === "#") { tweets_data = await hashtagSearchTweet(query) }
+            else if (query[0] === "#") { tweets_data = await hashtagSearchTweet(query); }
             else { return; }
-            
+
             this.setState({ 
                 tweets: tweets_data.tweets,
                 query: query[0],
@@ -99,22 +99,22 @@ class SearchUser extends React.Component {
 
         try {
             const query = this.input.username.current.value;
-            let tweets_data = [];
+            let tweets_data = [];      
             
             if(this.state.next_page==="") {
-                this.setState({error_message: "Non ci sono altre pagine"})
+                this.setState({error_message: "Non ci sono altre pagine"});
                 return;
             }
             else if (this.state.query === "@") { 
                 tweets_data = await userSearchTweet(query, this.state.next_page); 
             }
             else if (this.state.query === "#") { 
-                tweets_data = await hashtagSearchTweet(query.username, this.state.next_page) 
+                tweets_data = await hashtagSearchTweet(query, this.state.next_page);
             }
             else { return; }
     
             this.setState({ 
-                tweets: tweets_data.tweets,
+                tweets: this.state.tweets.concat(tweets_data.tweets),
                 page: this.state.next_page,
                 next_page: tweets_data.next_token,
                 error_message:""
@@ -126,4 +126,4 @@ class SearchUser extends React.Component {
     }
 }
 
-export default SearchUser;
+export default SearchTweets;
