@@ -1,5 +1,6 @@
 require("dotenv").config();
 const stopword = require("stopword");
+const stopwordsiso  = require("stopwords-iso");
 const getCountryISO3 = require("country-iso-2-to-3");
 const { detectLanguage } = require("./language");
 const { removePunctuation } = require("./utils/removePunctuation");
@@ -20,6 +21,7 @@ module.exports = {
  */
 function removeStopWords(sentence, options) {
     let to_use_language;
+    sentence = sentence.trim();
 
     if (!options?.language && !options?.bias) { to_use_language = detectLanguage(sentence); }  // Rilevamento lingua senza indizzi
     else if (options.language) { to_use_language = options.language; }                         // Lingua fornita in input
@@ -55,12 +57,20 @@ function _removeSentenceStopwords(sentence, stopwords_list) {
 function _getStopwordsList(language) {
     let stopwords_list;
 
-    // Seleziona la libreria con gli stop words migliori per la lingua
-    switch (language) {
-        case "ita":     stopwords_list = require('stopwords-it'); break;
-        default:        stopwords_list = stopword[getCountryISO3(language.toUpperCase()).toLowerCase()]; break; // La libreria accetta i codici ISO 3 delle nazioni
+    try {
+        // Seleziona la libreria con gli stop words migliori per la lingua
+        if (language in stopwordsiso) {
+            stopwords_list = stopwordsiso[language];
+        }
+        else {
+            stopwords_list = stopword[getCountryISO3(language.toUpperCase()).toLowerCase()]; // La libreria accetta codici ISO-3 delle nazioni
+        }
+
+        if (!stopwords_list) { stopwords_list = []; }
+    }
+    catch (err) {
+        stopwords_list = [];
     }
 
-    if (!stopwords_list) { stopwords_list = []; }
     return stopwords_list;
 }
