@@ -13,6 +13,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import Sentiment from "../Sentiment"
+import he from "he"
 
 class Tweet extends React.Component {
     constructor(props) {
@@ -38,7 +39,7 @@ class Tweet extends React.Component {
                     </div>
                     <p>{moment(tweet.time).format("DD-MM-YYYY HH:MM:ss")}</p>
                 </div>
-                <p className="m-0 mt-3">{tweet.text}</p>
+                <p className="m-0 mt-3">{he.decode(tweet.text)}</p>
                 <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-inner">
                         {
