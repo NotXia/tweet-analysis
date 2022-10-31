@@ -45,7 +45,7 @@ class SearchTweets extends React.Component {
                         <div className="col-12 col-md-6 col-lg-4">
                             <form className="align-items-start" onSubmit={(e) => { this.fetchUserTweets(e) }}>
                                 <div className="input-group flex-nowrap">
-                                    <input ref={this.input.username} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
+                                    <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                                     <button className="btn btn-outline-secondary" type="button" id="button-addon1">Cerca</button>
                                 </div>
                                 <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag(#) o nome utente(@)</p>
