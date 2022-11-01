@@ -2,24 +2,10 @@ import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { sentiment } from "../../modules/analysis/sentiment";
-// import 'bootstrap';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-/*
-
-    this.props.tweets = [
-        {
-
-        }
-    ]
-
-    sentiment()
-
-*/
-
+//Componente che genera un grafico a torta che rappresenta il numero di tweet positivi, neutri e negativi
 class SentimentPie extends React.Component {
     constructor(props) {
         super(props);
@@ -29,12 +15,7 @@ class SentimentPie extends React.Component {
     
     }
 
-    // componentDidMount() {
-    //     this.getSentimentCount().then((res) => {
-    //         this.setState({sentimentArray: res})
-    //     })
-    // }
-    
+    //Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori del grafico
     componentDidUpdate() {
         this.getSentimentCount().then((res) => {
             console.log(res)
@@ -43,18 +24,17 @@ class SentimentPie extends React.Component {
         })
     }
     
+    //Mostra il grafico
     render() {
         const data = {
             labels: ['Positive', 'Neutral', 'Negative'],
-            datasets: [
-              {
+            datasets: [{
                 label: 'Sentiment Analysis',
                 data: this.state.sentimentArray,
                 backgroundColor: [ '#007a1250', '#bfb90050', '#b0000050' ],
                 borderColor: [ '#007a12', '#bfb900', '#b00000' ],
-                borderWidth: 1,
-              },
-            ],
+                borderWidth: 1
+            }]
         };
 
         return (
@@ -62,6 +42,7 @@ class SentimentPie extends React.Component {
         );
     }
 
+    //Restituisce un array di 3 valori ciascuno contenente il numero di tweet positivi, neutri o negativi
     async getSentimentCount() {
         let sentimentArray = [0, 0, 0];
         for (const tweet of this.props.tweets) {
