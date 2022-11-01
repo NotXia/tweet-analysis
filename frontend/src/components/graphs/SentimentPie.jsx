@@ -47,7 +47,7 @@ class SentimentPie extends React.Component {
                 data: this.state.sentimentArray,
                 backgroundColor: [ '#007a1250', '#bfb90050', '#b0000050' ],
                 // borderColor: [ '#007a12', '#bfb900', '#b00000' ],
-                borderColor: [ '#ffffff', '#ffffff', '#ffffff' ],
+                borderColor: [ '#ffffff', '#ffffff', '#ffffff' ],       //Da modificare in base al colore dello sfondo della pagina 
                 borderWidth: 3,
                 hoverOffset: 8,
                 hoverBorderWidth: 0
