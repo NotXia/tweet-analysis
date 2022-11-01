@@ -1,9 +1,9 @@
 import React from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { sentiment } from "../../modules/analysis/sentiment";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
 //Componente che genera un grafico a torta che rappresenta il numero di tweet positivi, neutri e negativi
 class SentimentPie extends React.Component {
@@ -26,19 +26,36 @@ class SentimentPie extends React.Component {
     
     //Mostra il grafico
     render() {
+        const options = {
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Analisi del sentimento dei tweet'
+                }
+            },
+            layout: {
+                padding: {
+                    bottom: 6
+                }
+            }
+        };
+        
         const data = {
-            labels: ['Positive', 'Neutral', 'Negative'],
+            labels: ['Positivo', 'Neutro', 'Negativo'],
             datasets: [{
-                label: 'Sentiment Analysis',
                 data: this.state.sentimentArray,
                 backgroundColor: [ '#007a1250', '#bfb90050', '#b0000050' ],
-                borderColor: [ '#007a12', '#bfb900', '#b00000' ],
-                borderWidth: 1
-            }]
+                // borderColor: [ '#007a12', '#bfb900', '#b00000' ],
+                borderColor: [ '#ffffff', '#ffffff', '#ffffff' ],
+                borderWidth: 3,
+                hoverOffset: 8,
+                hoverBorderWidth: 0
+            }],
         };
 
         return (
-            <Pie options={{ maintainAspectRatio: false }} data={data} />
+            <Pie options={options} data={data} />
         );
     }
 
