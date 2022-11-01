@@ -15,6 +15,7 @@ import 'bootstrap/js/dist/carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import Sentiment from "../Sentiment"
+import he from "he"
 import css from "./tweet.module.css"
 
 class Tweet extends React.Component {
@@ -52,8 +53,8 @@ class Tweet extends React.Component {
                     </div>
                     <p>{moment(tweet.time).format("DD-MM-YYYY HH:MM:ss")}</p>
                 </div>
-                <p className="m-0 mt-3">{tweet.text}</p>
-                <div id={this.carousel_id} className="carousel slide" data-bs-ride="false" data-bs-wrap="false" data-bs-interval="false" >
+                <p className="m-0 mt-3">{he.decode(tweet.text)}</p>
+                <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-inner">
                         {
                             tweet.media.map((media, index) => {
