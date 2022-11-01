@@ -9,7 +9,9 @@
 */
 
 import React from "react";
+import $ from "jquery"
 import 'bootstrap';
+import 'bootstrap/js/dist/carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import Sentiment from "../Sentiment"
@@ -18,7 +20,18 @@ import he from "he"
 class Tweet extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            carousel_media_index: 0
+        };
+
+        this.carousel_id = `media-carousel-${this.props.tweet.id}`;
+    }
+
+    componentDidMount() {
+        // Richiamato quando si cambia slide del carousel
+        document.querySelector(`#${this.carousel_id}`).addEventListener("slid.bs.carousel", (e) => {
+            this.setState({ carousel_media_index: $(`#${this.carousel_id} div.active`).index() }); // Aggiorna indice media attualmente attivo
+        })
     }
 
     render() {
@@ -66,12 +79,12 @@ class Tweet extends React.Component {
                             })
                         }
                     </div>
-                    <div className={tweet.media.length>1 ? "" : "d-none"}>
-                        <button className="carousel-control-prev" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="prev">
+                    <div className={tweet.media.length>1 ? "h-100" : "d-none"}>
+                        <button className={`carousel-control-prev my-auto ${css["button-carousel-navigation"]} ${this.state.carousel_media_index === 0 ? "d-none" : ""}`} type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="prev">
                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Previous</span>
                         </button>
-                        <button className="carousel-control-next" type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="next">
+                        <button className={`carousel-control-next my-auto ${css["button-carousel-navigation"]} ${this.state.carousel_media_index === tweet.media.length-1 ? "d-none" : ""}`} type="button" data-bs-target={`#media-carousel-${tweet.id}`} data-bs-slide="next">
                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                             <span className="visually-hidden">Next</span>
                         </button>
