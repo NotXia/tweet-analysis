@@ -1,4 +1,5 @@
 const { sentiment } = require("../modules/analysis/sentiment.js");
+const { removeStopWords } = require("../modules/analysis/stopwords.js");
 
 
 async function sentimentAnalysis(req, res) {
@@ -24,7 +25,29 @@ async function sentimentAnalysis(req, res) {
     });
 }
 
+async function stopwordsRemoval(req, res) {
+    let options = {};
+    let sentence_no_stopwords;
+
+    // Composizione opzioni
+    if (req.query.lang) { options.language = req.query.lang; }
+    if (req.query.bias) { options.bias = req.query.bias; }
+    
+    try {
+        // Rimozione stop words
+        sentence_no_stopwords = removeStopWords(req.query.tweet, options);
+    }
+    catch (err) {
+        return res.sendStatus(500);
+    }
+
+    return res.status(200).json({ 
+        sentence: sentence_no_stopwords
+    });
+}
+
 
 module.exports = {
-    sentimentAnalysis: sentimentAnalysis
+    sentimentAnalysis: sentimentAnalysis,
+    stopwordsRemoval: stopwordsRemoval
 };
