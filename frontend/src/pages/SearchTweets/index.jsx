@@ -16,6 +16,8 @@ class SearchTweets extends React.Component {
             page: "",
             next_page: "",
 
+            fetching: false, // Indica se attualmente si sta richiedendo dei tweet
+
             error_message: ""
         };
 
@@ -43,7 +45,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row">
                         <div className="col-12 col-md-6 col-lg-4">
-                            <form className="align-items-start" onSubmit={(e) => { this.fetchTweets(e) }}>
+                            <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                 <div className="input-group flex-nowrap">
                                     <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                                     <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
@@ -61,7 +63,23 @@ class SearchTweets extends React.Component {
                                         <Tweet key={tweet.id} tweet={tweet} />
                                     ))
                                 }
-                                <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }}>Prossima pagina</button>
+                                <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
+                                    {
+                                        (() => {
+                                            if (this.state.fetching) {
+                                                return (
+                                                    <span>
+                                                        Caricamento
+                                                        <span class="spinner-grow spinner-grow-sm ms-2" role="status" aria-hidden="true"></span>
+                                                    </span>
+                                                )
+                                            }
+                                            else {
+                                                return <span>Prossima pagina</span>
+                                            }
+                                        })()
+                                    }
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -71,16 +89,12 @@ class SearchTweets extends React.Component {
         </>);
     }
 
-    async fetchTweets(e) {
+    async searchTweets(e) {
         e.preventDefault()
         
         try {
             const query = this.input.query.current.value.trim();
-            let tweets_data = [];
-    
-            if (query[0] === "@") { tweets_data = await userSearchTweet(query); }
-            else if (query[0] === "#") { tweets_data = await hashtagSearchTweet(query); }
-            else { return; }
+            let tweets_data = await this.fetchTweets(query);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
@@ -99,18 +113,11 @@ class SearchTweets extends React.Component {
 
         try {
             const query = this.state.query;
-            let tweets_data = [];
             
             if(this.state.next_page==="") {
                 return;
             }
-            else if (query[0] === "@") { 
-                tweets_data = await userSearchTweet(query, this.state.next_page); 
-            }
-            else if (query[0] === "#") { 
-                tweets_data = await hashtagSearchTweet(query, this.state.next_page);
-            }
-            else { return; }
+            let tweets_data = await this.fetchTweets(query, this.state.next_page);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
@@ -122,6 +129,23 @@ class SearchTweets extends React.Component {
         catch (err) {
             this.setState({ error_message: "Si è verificato un errore durante la ricerca" });
         }
+    }
+
+    async fetchTweets(query, next_token="") {
+        let tweets_data = { tweets: [], next_token: "" };
+        
+        this.setState({ fetching: true }); // Inizio fetching
+
+        if (query[0] === "@") { 
+            tweets_data = await userSearchTweet(query, next_token); 
+        }
+        else if (query[0] === "#") { 
+            tweets_data = await hashtagSearchTweet(query, next_token);
+        }
+
+        this.setState({ fetching: false }); // Termine fetching
+
+        return tweets_data;
     }
 }
 
