@@ -16,6 +16,8 @@ class SearchTweets extends React.Component {
             page: "",
             next_page: "",
 
+            fetching: false, // Indica se attualmente si sta richiedendo dei tweet
+
             error_message: ""
         };
 
@@ -61,7 +63,23 @@ class SearchTweets extends React.Component {
                                         <Tweet key={tweet.id} tweet={tweet} />
                                     ))
                                 }
-                                <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }}>Prossima pagina</button>
+                                <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
+                                    {
+                                        (() => {
+                                            if (this.state.fetching) {
+                                                return (
+                                                    <span>
+                                                        Caricamento
+                                                        <span class="spinner-grow spinner-grow-sm ms-2" role="status" aria-hidden="true"></span>
+                                                    </span>
+                                                )
+                                            }
+                                            else {
+                                                return <span>Prossima pagina</span>
+                                            }
+                                        })()
+                                    }
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -114,14 +132,18 @@ class SearchTweets extends React.Component {
     }
 
     async fetchTweets(query, next_token="") {
-        let tweets_data = [];
-            
+        let tweets_data = { tweets: [], next_token: "" };
+        
+        this.setState({ fetching: true }); // Inizio fetching
+
         if (query[0] === "@") { 
             tweets_data = await userSearchTweet(query, next_token); 
         }
         else if (query[0] === "#") { 
             tweets_data = await hashtagSearchTweet(query, next_token);
         }
+
+        this.setState({ fetching: false }); // Termine fetching
 
         return tweets_data;
     }
