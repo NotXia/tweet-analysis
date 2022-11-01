@@ -44,7 +44,8 @@ class TweetsTimeChart extends React.Component {
         
         this.setState({
             labels: graph_data.labels,
-            data: graph_data.data
+            data: graph_data.data,
+            chartXLimit: Math.max(this.data) + 1
         })
     }
     
@@ -53,9 +54,17 @@ class TweetsTimeChart extends React.Component {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                position: 'top',
-              }
+                title: {
+                    display: true,
+                    text: 'Numero di tweets per giorno'
+                  },
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'rect'
+                    }
+                }
             },
         };
 
@@ -63,9 +72,10 @@ class TweetsTimeChart extends React.Component {
             labels: this.state.labels,
             datasets: [
                 {
-                    label: 'Tweet per giorno',
+                    label: 'Tweets',
                     data: this.state.data,
                     backgroundColor: 'rgba(0, 191, 255, 0.5)',
+                    inflateAmount: 1,
                 }
             ],
         };
