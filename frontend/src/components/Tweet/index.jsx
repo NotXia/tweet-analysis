@@ -16,6 +16,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import Sentiment from "../Sentiment"
 import he from "he"
+import css from "./tweet.module.css"
 
 class Tweet extends React.Component {
     constructor(props) {
