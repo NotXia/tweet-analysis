@@ -12,9 +12,9 @@
     "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
     "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
 
-    "test:unit": "npm run jest:unit --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
-    "test:api": "npm run jest:api --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
-    "test:react": "npm run jest:react --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
+    "test:unit": "npm run jest:unit -- --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
+    "test:api": "npm run jest:api -- --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
+    "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
