@@ -70,7 +70,7 @@ class SearchTweets extends React.Component {
                                                 return (
                                                     <span>
                                                         Caricamento
-                                                        <span class="spinner-grow spinner-grow-sm ms-2" role="status" aria-hidden="true"></span>
+                                                        <span className="spinner-grow spinner-grow-sm ms-2" role="status" aria-hidden="true"></span>
                                                     </span>
                                                 )
                                             }
