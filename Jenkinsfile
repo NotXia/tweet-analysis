@@ -17,7 +17,7 @@ pipeline {
             stages {
                 stage("Installing dependencies") {
                     steps {
-                        sh "npm install"
+                        sh "npm install --force"
                     }
                     post {
                         failure { updateGitlabCommitStatus name: "Installing test dependencies", state: "failed" }
