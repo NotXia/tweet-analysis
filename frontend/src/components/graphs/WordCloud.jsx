@@ -59,7 +59,7 @@ class WordCloud extends React.Component {
 
         sentence = sentence.replace(/(\r\n|\n|\r)/gm, " ");     // Rimuove a capo
         sentence = sentence.toUpperCase();
-        sentence = sentence.replace( /\s\s+/g, " ");
+        sentence = sentence.replace( /\s\s+/g, " ");            // Rimuove spazi multipli
 
         sentence = await removeStopwords(sentence);
     
