@@ -6,7 +6,6 @@ import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
 import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
 import Tweet from "../../components/Tweet"
-import WordCloud from "../../components/graphs/WordCloud";
 
 class SearchTweets extends React.Component {
     constructor(props) {
@@ -82,9 +81,6 @@ class SearchTweets extends React.Component {
                                     }
                                 </button>
                             </div>
-                        </div>
-                        <div className="col-lg-8">
-                            <div style={{height: "30rem", width: "35rem"}}> <WordCloud tweets={this.state.tweets} /> </div>
                         </div>
                     </div>
 
