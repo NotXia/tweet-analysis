@@ -68,6 +68,7 @@ class SentimentPie extends React.Component {
                 case 'positive': sentimentArray[0]++; break;
                 case 'neutral': sentimentArray[1]++; break;
                 case 'negative': sentimentArray[2]++; break;
+                default: break;
             }
         }
         return sentimentArray;
