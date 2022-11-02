@@ -19,13 +19,13 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-);
-
-/*
- *  Componente che genera un grafico a barre con il numero di tweet per giorno dei tweet fetchati
- *  Utilizzo: '<TweetsTimeChart tweets={tweets} />' dove @param tweets: l'array di oggetti contenente i tweet
-*/
-
+  );
+  
+  
+/**
+ * Componente che genera un grafico a barre con il numero di tweet al giorno per i tweet fetchati
+ * Utilizzo: <TweetsTimeChart tweets={tweets} /> dove tweets indica l'array di oggetti contenente i tweet.
+ */
 class TweetsTimeChart extends React.Component {
     constructor(props) {
         super(props);
@@ -66,6 +66,13 @@ class TweetsTimeChart extends React.Component {
                     }
                 }
             },
+            scales: {
+                y: {
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
         };
 
         const data = {
