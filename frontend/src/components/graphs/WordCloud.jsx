@@ -27,7 +27,6 @@ class WordCloud extends React.Component {
                 text: word,
                 value: globalWordCount[word]
             }));
-            // out = out.filter((elem) => elem.value > 1);
             if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { this.setState({words: out}); }
         })()
     }
