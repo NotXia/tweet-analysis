@@ -6,6 +6,7 @@ import { sentiment } from "../../modules/analysis/sentiment";
 ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
 //Componente che genera un grafico a torta che rappresenta il numero di tweet positivi, neutri e negativi
+//Il componente deve essere richiamato tramite <SentimentPie tweets={tweets} /> e ricevere come parametro {tweets} l'array di oggetti contenente i tweet
 class SentimentPie extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +19,6 @@ class SentimentPie extends React.Component {
     //Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori del grafico
     componentDidUpdate() {
         this.getSentimentCount().then((res) => {
-            console.log(res)
             if (res[0] === this.state.sentimentArray[0] && res[1] === this.state.sentimentArray[1] && res[2] === this.state.sentimentArray[2]) { return; }
             this.setState({sentimentArray: res})
         })
