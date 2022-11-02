@@ -21,9 +21,6 @@ ChartJS.register(
   Legend
 );
 
-export function App() {
-  return ;
-}
 
 
 class TweetsTimeChart extends React.Component {
