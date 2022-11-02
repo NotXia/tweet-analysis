@@ -1,5 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
+const { _mediaHandler } = require("../analysis/utils/mediaHandler");
+const { _normalizeQuery } = require("../analysis/utils/normalizeQuery");
 
 module.exports = {
     getTweetsByUser: getTweetsByUser,
@@ -72,7 +74,7 @@ async function getTweetsByUser(username, pagination_token = '') {
  */
 async function _usr_fetch(username) {
     //Rimuove eventuali spazi all'inizio e alla fine dell'username
-    username = _normalizeUsername(username);
+    username = _normalizeQuery(username);
 
     const options = {
         
@@ -88,22 +90,6 @@ async function _usr_fetch(username) {
     };
     const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, options);
     return response.data.data;
-}
-
-/**
- * Normalizza l'username in input, rimuovendo il carattere @ da inizio stringa (se presente) ed eventuali spazi
- * @param {string} username         Username da normalizzare
- * @returns {string}                L'username normalizzato
- */
- function _normalizeUsername(username) {
-    if(username.length == 0) { return ""; }
-    
-    username = username.replace(/\s/g, '');   // Rimuove tutti gli spazi
-    if(username[0] == '@') {
-        username = username.slice(1);         // Se la stringa inizia con @, viene rimosso
-    }
-
-    return username;
 }
 
 /**
@@ -137,39 +123,4 @@ async function _twt_fetch(userId, pagination_token = '') {
     }
     const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
     return response.data;
-}
-
-/**
- * Cerca e restituisce gli URL dei media inclusi in un tweet
- * @param {Promise[]} media                     Array di tutti i media inclusi in tutti i tweet
- * @param {Promise<>} tweet                     tweet corrente di cui si vogliono trovare i media
- * @returns {[{url: string, type: string}]}     Array di URL e tipo corrispondenti ai media del tweet
- */
-function _mediaHandler(media, tweet) {
-    let tweetMedia = [];
-    if (!tweet.attachments || !('media_keys' in tweet.attachments)) { return []; }
-    
-    //Per ogni media del tweet recupera l'url
-    for(const md_key of tweet.attachments.media_keys) {
-
-        const md  = media.find(md => md.media_key === md_key)
-        if (!md) { continue; }
-
-        let media_url;
-        switch (md.type) {
-            case 'animated_gif':
-            case 'video':
-                media_url = md.variants.find(video => video.url.includes('.mp4')).url;
-                if (!media_url) { media_url = md.variants[0].url; }
-                break;
-            case 'photo':
-                media_url = md.url;
-                break;
-            default:
-                break;
-        }
-
-        if (media_url) { tweetMedia.push({url: media_url, type: md.type }); }
-    }
-    return tweetMedia;
 }

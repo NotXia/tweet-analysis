@@ -1,11 +1,13 @@
 require("dotenv").config();
 const axios = require('axios');
+const { _mediaHandler } = require("../analysis/utils/mediaHandler");
+const { _normalizeQuery } = require("../analysis/utils/normalizeQuery");
 
 module.exports = {
     getTweetsByHashtag: getTweetsByHashtag,
 
     testing : {
-        normalizeHashtag: _normalizeHashtag
+        
     }
 };
 
@@ -70,7 +72,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
  * @returns Lista di dimensione max_results tweet
  */
 async function _hashtagFetch(hashtag, pagination_token="") {
-    hashtag = _normalizeHashtag(hashtag);
+    hashtag = _normalizeQuery(hashtag);
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
@@ -93,48 +95,4 @@ async function _hashtagFetch(hashtag, pagination_token="") {
     let fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
 
     return fetchedTweets;
-}
-
-/**
- * Normalizza l'hashtag in input, rimuovendo il carattere # da inizio stringa (se presente) ed eventuali spazi
- * @param {string} hashtag Hashtag da normalizzare
- * @returns L'hashtag normalizzato
- */
-function _normalizeHashtag(hashtag) {
-    if(hashtag.length == 0) { return ""; }
-    
-    hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
-    if(hashtag[0] == '#') {
-        hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
-    }
-
-    return hashtag;
-}
-
-function _mediaHandler(tweetAttachments, tweetData) {
-    let mediaArray = [];
-    if (!tweetAttachments || !tweetData.attachments || !("media_keys" in tweetData.attachments)) { return []; }
-
-    for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
-        const media = tweetAttachments.find(media => media.media_key === media_key)
-
-        if (!media) { continue; }
-
-        let media_url;
-        switch (media.type) {
-            case "animated_gif":
-            case "video":
-                media_url = media.variants.find(video => video.url.includes(".mp4")).url;
-                if (!media_url) { media_url = media.variants[0].url; }
-                break;
-            case "photo":
-                media_url = media.url;
-                break;
-            default:
-                break;
-        }
-
-        if (media_url) { mediaArray.push({url: media_url, type: media.type}); }
-    }
-    return mediaArray;
 }
