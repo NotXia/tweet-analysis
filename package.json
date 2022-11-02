@@ -7,11 +7,9 @@
     "start": "node index.js",
     "build": "npm run build --prefix ./frontend",
     "test": "npm run test:unit && npm run test:api && npm run test:react",
-    
     "jest:unit": "jest --passWithNoTests --globalSetup ./tests/utils/unit.global_init.js",
     "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
     "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
-    
     "test:unit": "npm run jest:unit -- --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
     "test:api": "npm run jest:api -- --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
     "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
@@ -45,6 +43,7 @@
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
+    "react-wordcloud": "^1.2.7",
     "sentiment-multilang": "^0.0.2",
     "stopword": "^2.0.5",
     "stopwords-iso": "^1.1.0",
