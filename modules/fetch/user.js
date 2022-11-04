@@ -16,6 +16,7 @@ module.exports = {
  * per ottenere la pagina successiva con i prossimi 10 tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
+ * @param {number} quantity                     Quantità di tweet da visualizzare
  * @returns {Promise<{tweets[10]: {id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
  *          location: string, media[]: {url: string, type: string}}, next_token: string}>} 
  *          Array di 10 tweet aventi ciascuno:
@@ -23,13 +24,13 @@ module.exports = {
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
-async function getTweetsByUser(username, pagination_token = '') {
+async function getTweetsByUser(username, pagination_token = '', quantity=10) {
     if (!username) {throw new Error('Username mancante');}
     
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
-    const resTwts = await _twt_fetch(resUsr.id, pagination_token);
+    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
     let page = {
@@ -97,9 +98,10 @@ async function _usr_fetch(username) {
  * pagination token (se presente), di un utente dato il suo ID
  * @param {number} userId                         ID dell'utente
  * @param {number} pagination_token               Token della pagina da visualizzare
+ * @param {number} quantity                       Quantità di tweet da visualizzare
  * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
  */
-async function _twt_fetch(userId, pagination_token = '') {
+async function _twt_fetch(userId, pagination_token = '', quantity=10) {
         
     let options = {
         
@@ -108,7 +110,7 @@ async function _twt_fetch(userId, pagination_token = '') {
         },
 
         params: {
-            'max_results': 10,
+            'max_results': quantity,
             'exclude': 'retweets',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
