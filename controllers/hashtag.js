@@ -7,7 +7,6 @@ async function tweetsByHashtag(req, res) {
     try {
         tweets_response = await multipleTweetsFetch(getTweetsByHashtag, req.query.hashtag, req.query.pag_token, req.query.quantity);
     } catch (error) {
-        console.log(error);
         res.sendStatus(500);
         return;
     }
