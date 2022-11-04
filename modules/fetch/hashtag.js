@@ -13,11 +13,12 @@ module.exports = {
  * Organizza i tweet interrogati.
  * @param {string} hashtag Hashtag da ricercare
  * @param {string} pagination_token Token della prossima pagina
+ * @param {number} result Numero di tweet da ricercare
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
-async function getTweetsByHashtag(hashtag, pagination_token="") {
+async function getTweetsByHashtag(hashtag, pagination_token="", result=10) {
     if (!hashtag) { throw new Error("Hashtag mancante"); }
-    let fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
+    let fetchedTweets = await _hashtagFetch(hashtag, pagination_token, result);
     if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
@@ -67,16 +68,17 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
  * Interroga le API di Twitter per ottenere una lista di tweet dato l'hashtag con i parametri indicati
  * @param {string} hashtag Hashtag da ricercare
  * @param {string} pagination_token Token della prossima pagina
+ * @param {number} result Numero di tweet da ricercare
  * @returns Lista di dimensione max_results tweet
  */
-async function _hashtagFetch(hashtag, pagination_token="") {
+async function _hashtagFetch(hashtag, pagination_token="", result=10) {
     hashtag = _normalizeHashtag(hashtag);
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
             query: `#${hashtag} -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
-            "max_results": 10,                                                  // Numero massimo Tweet per pagina
+            "max_results": result,                                              // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
             "place.fields": "country,full_name",                                // Campi della località
