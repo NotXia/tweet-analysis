@@ -12,7 +12,7 @@ function _normalizeQuery(query) {
     
     query = query.replace(/\s/g, '');   // Rimuove tutti gli spazi
     if(query[0] == '@' || query[0] == '#') {
-        query = query.slice(1);         // Se la stringa inizia con @, viene rimosso
+        query = query.slice(1);         // Se la stringa inizia con @ o con #, viene rimosso
     }
 
     return query;
