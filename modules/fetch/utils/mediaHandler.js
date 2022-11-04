@@ -4,8 +4,8 @@ module.exports = {
 
 /**
  * Cerca e restituisce gli URL dei media inclusi in un tweet
- * @param {Promise[]} media                     Array di tutti i media inclusi in tutti i tweet
- * @param {Promise<>} tweet                     tweet corrente di cui si vogliono trovare i media
+ * @param {Object[]} media                     Array di tutti i media inclusi in tutti i tweet
+ * @param {Object} tweet                     tweet corrente di cui si vogliono trovare i media
  * @returns {[{url: string, type: string}]}     Array di URL e tipo corrispondenti ai media del tweet
  */
 function _mediaHandler(media, tweet) {
