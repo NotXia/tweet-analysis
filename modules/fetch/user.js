@@ -73,7 +73,7 @@ async function getTweetsByUser(username, pagination_token = '') {
  * @returns {Promise<>}                 Dati vari dell'utente
  */
 async function _usr_fetch(username) {
-    //Rimuove eventuali spazi all'inizio e alla fine dell'username
+    //Normalizza lo username inserito
     username = _normalizeQuery(username);
 
     const options = {
