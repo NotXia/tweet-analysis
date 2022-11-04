@@ -1,10 +1,11 @@
+const { multipleTweetsFetch } = require("../modules/fetch/multiple_tweets.js");
 const { getTweetsByUser } = require("../modules/fetch/user.js");
 
 async function tweetsByUser(req, res) {
     let tweets_response;
 
     try {
-        tweets_response = await getTweetsByUser(req.query.user, req.query.pag_token);
+        tweets_response = await multipleTweetsFetch(getTweetsByUser, req.query.user, req.query.pag_token, req.query.quantity);
     } catch (error) {
         res.sendStatus(500);
         return;

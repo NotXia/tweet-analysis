@@ -56,6 +56,30 @@ describe("Richieste corrette a /tweets/hashtag", function () {
         expect( res.body.next_token ).toBeDefined();
     });
 
+    test("Tweet dato hashtag, pagination token e quantità", async function () {
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena", pag_token: pagination_token, quantity: 120 }).expect(200);
+        expect( res.body.tweets ).toBeDefined();
+        expect( res.body.tweets.length ).toEqual(120);
+        for(const tweet of res.body.tweets) {
+            expect( tweet ).toBeDefined();
+            expect( tweet.id ).toBeDefined();
+            expect( tweet.name ).toBeDefined();
+            expect( tweet.username ).toBeDefined();
+            expect( tweet.pfp ).toBeDefined();
+            expect( tweet.text ).toBeDefined();
+            expect( tweet.time ).toBeDefined();
+            expect( tweet.likes ).toBeDefined();
+            expect( tweet.likes ).not.toBeNaN();
+            expect( tweet.comments ).toBeDefined();
+            expect( tweet.comments ).not.toBeNaN();
+            expect( tweet.retweets ).toBeDefined();
+            expect( tweet.retweets ).not.toBeNaN();
+            expect( tweet.media ).toBeDefined();
+            expect(Array.isArray(tweet.media)).toBe(true);
+        }
+        expect( res.body.next_token ).toBeDefined();
+    });
+
     test("Tweet dato hashtag con # all'inizio", async function () {
         const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "#reazioneacatena" }).expect(200);
         const res2 = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena" });
@@ -98,14 +122,14 @@ describe("Richieste errate a /tweets/hashtag", function () {
     });
 
     test("Tweet con hashtag senza tweet", async function () {
-        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "uniboswe39393948aaa999zed" }).expect(500);
-        expect( res.body.tweets ).not.toBeDefined();
-        expect( res.body.next_token ).not.toBeDefined();
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "uniboswe39393948aaa999zed" }).expect(200);
+        expect( res.body.tweets.length ).toEqual(0);
+        expect( res.body.next_token ).toEqual("");
     });
 
     test("Tweet con token errato", async function () {
-        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena", pag_token: "123456789" }).expect(500);
-        expect( res.body.tweets ).not.toBeDefined();
-        expect( res.body.next_token ).not.toBeDefined();
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena", pag_token: "123456789" }).expect(200);
+        expect( res.body.tweets.length ).toEqual(0);
+        expect( res.body.next_token ).toEqual("");
     });
 });
