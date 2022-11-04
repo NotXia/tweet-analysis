@@ -9,7 +9,7 @@ import axios from "axios";
  * @param {string} options.bias         Lingua a cui far tendere la rilevazione (se la lingua della frase è incerta)
  * @returns {Promise<{sentiment:string, score:number, language:string}>} Sentimento ("positive", "neutral", "negative"), score della frase e lingua con cui è stata analizzata
  */
-export async function sentiment(tweet, options) {
+export async function sentiment(tweet, options={}) {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/analysis/sentiment`,
         params: {
