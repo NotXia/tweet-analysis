@@ -7,7 +7,7 @@ module.exports = {
     getTweetsByHashtag: getTweetsByHashtag,
 
     testing : {
-        
+        normalizeHashtag: _normalizeQuery
     }
 };
 
