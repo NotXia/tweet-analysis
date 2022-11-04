@@ -1,7 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
-const { _mediaHandler } = require("../analysis/utils/mediaHandler");
-const { _normalizeQuery } = require("../analysis/utils/normalizeQuery");
+const { _mediaHandler } = require("./utils/mediaHandler");
+const { _normalizeQuery } = require("./utils/normalizeQuery");
 
 module.exports = {
     getTweetsByUser: getTweetsByUser,
