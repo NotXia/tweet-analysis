@@ -1,5 +1,5 @@
 import React from "react";
-import CreateWordCloud from "wordcloud";
+import D3WordCloud from 'react-d3-cloud';
 import { removeStopwords } from "../../modules/analysis/stopwords";
 import $ from "jquery";
 import "bootstrap";
@@ -34,18 +34,6 @@ class WordCloud extends React.Component {
         this.no_stopwords_cache = {};
     }
 
-    componentDidMount() {
-        window.addEventListener("resize", () => {
-            // Rigenera la word cloud se la finestra viene ridimensionata
-            this.renderWordCloud();
-        });
-
-        $("#__canvas_wordcloud").on("mouseleave", () => {
-            // Nasconde tooltip quando il mouse esce dal canvas
-            $("#__tooltip_wordcloud").hide();
-        })
-    }
-
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud
     componentDidUpdate() {
         (async () => {
@@ -62,7 +50,15 @@ class WordCloud extends React.Component {
                 value: globalWordCount[word]
             }));
             if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { 
-                this.setState({words: out}, () => this.renderWordCloud()); 
+                const all_values = Object.values(globalWordCount);
+                const min_count_value = Math.min(...all_values);
+                const max_count_value = Math.max(...all_values);
+                
+                this.setState({
+                    words: out,
+                    min_count: min_count_value,
+                    max_count: max_count_value
+                }); 
             }
         })()
     }
@@ -70,58 +66,32 @@ class WordCloud extends React.Component {
     // Mostra la word cloud
     render() {
         return (
-            <div className="w-100 h-100" style={{position:"relative"}}>
-                <span id="__tooltip_wordcloud" className="p-1 px-2" style={{position:"absolute", top: 0, left: 0, backgroundColor: "#e0e0e0", borderRadius: "0.7rem", display: "none"}}></span>
-                <canvas id="__canvas_wordcloud" style={{height: "100%", width: "100%"}} height={$("#__canvas_wordcloud").height()} width={$("#__canvas_wordcloud").width()} ></canvas>
+            <div id="__container_wordcloud" className="w-100 h-100" style={{position: "relative"}}>
+                <span id="__tooltip_wordcloud" className="p-1 px-2" style={{position:"fixed", top: 0, left: 0, backgroundColor: "#e0e0e0", borderRadius: "0.7rem", display: "none"}}></span>
+                <D3WordCloud
+                    width={$("#__container_wordcloud").width()}
+                    height={$("#__container_wordcloud").height()}
+                    data={JSON.parse(JSON.stringify(this.state.words))}
+                    font="impact"
+                    fontSize={(word) => this.scaleToFontSize(word.value, 15, 60)}
+                    spiral="rectangular"
+                    rotate={(_) => 0}
+                    random={() => 0.5}
+                    onWordMouseOver={(event, d) => {
+                        $("#__tooltip_wordcloud").show();
+                        $("#__tooltip_wordcloud").css({ top: event.clientY, left: event.clientX });
+                        $("#__tooltip_wordcloud").html(`${d.text} ${d.value}`)
+                    }}
+                    onWordMouseOut={(event, d) => {
+                        $("#__tooltip_wordcloud").hide();
+                    }}
+                />
             </div>
         );
     }
 
-    /* Ridimensiona le dimensioni del canvas (nota: la dimensione del canvas e quella indicata dal CSS sono per cose diverse) */
-    resizeWordCloudCanvas() {
-        let ctx = $("#__canvas_wordcloud")[0].getContext('2d');
-        
-        ctx.canvas.height = $("#__canvas_wordcloud").height();
-        ctx.canvas.width = $("#__canvas_wordcloud").width();
-    }
-
-    /* Disenga la word cloud nel canvas */
-    renderWordCloud() {
-        if (this.state.words?.length === 0) { return; }
-
-        // Genera le parole come un vettore di coppie [parola, numerosità]
-        let word_count_pairs = this.state.words.map((word_entry) => [word_entry.text, word_entry.value]);
-        
-        // Estrazione delle prime parole più frequenti
-        word_count_pairs.sort((e1, e2) => e2[1] - e1[1]);
-        word_count_pairs = word_count_pairs.slice(0, 50);
-        
-        const min_font = 15, max_font = 70;
-        const count_values = word_count_pairs.map((word_entry) => word_entry[1]);
-        const min_word_count = Math.min(...count_values), max_word_count = Math.max(...count_values); // Minima e massima numerosità
-        
-        this.resizeWordCloudCanvas(); // Ridimensiona il canvas prima di generare la word cloud
-        CreateWordCloud(document.getElementById("__canvas_wordcloud"), { 
-            list: word_count_pairs,
-            fontFamily: "impact", 
-            minRotation: 0, maxRotation: 0,
-            shrinkToFit: true,      // Se troppo grande, la dimensione viene scalata
-            abortThreshold: 2000,   // Interrompe la generazione se ci mette troppo
-            
-            // Fattore che stabilisce la dimensione delle parole: calcolato dalla numerosità della parola scalata nell'intervallo del range del font
-            weightFactor: (size) => _offsetIntervalTo(size, [min_word_count, max_word_count], [min_font, max_font]),
-            
-            hover: (item, dimension, event) => {
-                try {
-                    $("#__tooltip_wordcloud").show();
-                    $("#__tooltip_wordcloud").css({ top: dimension.y-$("#__tooltip_wordcloud").height()-10, left: dimension.x });
-                    $("#__tooltip_wordcloud").html(`${item[0]} ${item[1]}`)
-                }
-                catch (err) {
-                    $("#__tooltip_wordcloud").hide();
-                }
-            }
-        });
+    scaleToFontSize(value, min_font, max_font) {
+        return _offsetIntervalTo(value, [this.state.min_count, this.state.max_count], [min_font, max_font]);
     }
 
     // Restituisce un oggetto che indica le occorrenze di ogni parola non-stopword in una data frase
