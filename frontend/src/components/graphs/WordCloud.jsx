@@ -1,6 +1,23 @@
 import React from "react";
-import ReactWordcloud from "react-wordcloud";
+import CreateWordCloud from "wordcloud";
 import { removeStopwords } from "../../modules/analysis/stopwords";
+import $ from "jquery";
+
+
+/**
+ * Converte il valore di un intervallo in quello corrispondente di un altro
+ * Fonte: https://math.stackexchange.com/questions/914823/shift-numbers-into-a-different-range
+ * @param {number} value                        Valore dell'intervallo di partenza
+ * @param {[number, number]} source_range       Intervallo di partenza
+ * @param {[number, number]} target_range       Intervallo di arrivo
+ * @returns {number} Valore traslato nell'intervallo target
+ */
+function _offsetIntervalTo(value, source_range, target_range) {
+    const [a, b] = source_range;
+    const [c, d] = target_range;
+
+    return c + ((d-c)/(b-a)) * (value-a);
+}
 
 // Componente che genera una word cloud basata sulle parole più utilizzate nei tweet
 // Il componente deve essere richiamato tramite <WordCloud tweets={tweets} /> e ricevere come parametro {tweet} ossia l'array di oggetti contenente i tweet
@@ -12,6 +29,13 @@ class WordCloud extends React.Component {
         };
 
         this.no_stopwords_cache = {};
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", () => {
+            // Rigenera la word cloud se la finestra viene ridimensionata
+            this.renderWordCloud();
+        });
     }
 
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud
@@ -29,27 +53,53 @@ class WordCloud extends React.Component {
                 text: word,
                 value: globalWordCount[word]
             }));
-            if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { this.setState({words: out}); }
+            if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { 
+                this.setState({words: out}, () => this.renderWordCloud()); 
+            }
         })()
     }
     
     // Mostra la word cloud
     render() {
         return (
-            <ReactWordcloud words={this.state.words} options= {{
-                enableTooltip: true,
-                deterministic: true,
-                fontFamily: "impact",
-                fontSizes: [10, 70],
-                fontStyle: "normal",
-                fontWeight: "normal",
-                padding: 1,
-                rotations: 1,
-                rotationAngles: [0, 0],
-                spiral: "archimedean",
-                transitionDuration: 1000
-            }} />
+            <canvas id="wordcloud" style={{height: "100%", width: "100%"}} height={$("#wordcloud").height()} width={$("#wordcloud").width()} ></canvas>
         );
+    }
+
+    /* Ridimensiona le dimensioni del canvas (nota: la dimensione del canvas e quella indicata dal CSS sono per cose diverse) */
+    resizeWordCloudCanvas() {
+        let ctx = $("#wordcloud")[0].getContext('2d');
+        
+        ctx.canvas.height = $("#wordcloud").height();
+        ctx.canvas.width = $("#wordcloud").width();
+    }
+
+    /* Disenga la word cloud nel canvas */
+    renderWordCloud() {
+        if (this.state.words?.length === 0) { return; }
+
+        // Genera le parole come un vettore di coppie [parola, numerosità]
+        let word_count_pairs = this.state.words.map((word_entry) => [word_entry.text, word_entry.value]);
+        
+        // Estrazione delle prime parole più frequenti
+        word_count_pairs.sort((e1, e2) => e2[1] - e1[1]);
+        word_count_pairs = word_count_pairs.slice(0, 50);
+        
+        const min_font = 20, max_font = 70;
+        const count_values = word_count_pairs.map((word_entry) => word_entry[1]);
+        const min_word_count = Math.min(...count_values), max_word_count = Math.max(...count_values); // Minima e massima numerosità
+        
+        this.resizeWordCloudCanvas(); // Ridimensiona il canvas prima di generare la word cloud
+        CreateWordCloud(document.getElementById("wordcloud"), { 
+            list: word_count_pairs,
+            fontFamily: "impact", 
+            minRotation: 0, maxRotation: 0,
+            shrinkToFit: true, // Se troppo grande, la dimensione viene scalata
+            // Fattore che stabilisce la dimensione delle parole: calcolato dalla numerosità della parola scalata nell'intervallo del range del font
+            weightFactor: (size) => _offsetIntervalTo(size, [min_word_count, max_word_count], [min_font, max_font]),
+            abortThreshold: 2000, // Interrompe la generazione se ci mette troppo
+            // hover: (item, dimension, event) => { console.log(item, dimension, event) }
+        })
     }
 
     // Restituisce un oggetto che indica le occorrenze di ogni parola non-stopword in una data frase
