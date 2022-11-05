@@ -80,15 +80,15 @@ class SearchTweets extends React.Component {
 
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div style={{ height: "20rem", width: "100%" }}>
+                                        <div style={{ height: "30vh", width: "100%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
-                                        <div style={{ height: "20rem", width: "30%" }}>
+                                        <div style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
-                                        <div className="d-flex justify-content-center" style={{ height: "20rem", width: "70%" }}>
+                                        <div className="d-flex justify-content-center" style={{ height: "30vh", width: "70%" }}>
                                             <WordCloud tweets={this.state.tweets} />
                                         </div>
                                     </div>
