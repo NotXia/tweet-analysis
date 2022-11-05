@@ -16,8 +16,9 @@ function _normalizeDate(start_time = '', end_time = '') {
         start_time = new Date(start_time);
         start_time.setUTCHours(0,0,1,0);
         today.setUTCHours(0,0,1,0);
-        if (start_time.getTime() === today.getTime()) { start_time = ''; }
-        else if (start_time > today) { throw new Error('Data di inizio non valida') }
+        let limit = new Date('2010-11-06T00:00:01Z');
+        if (start_time < limit) { start_time = ''; }
+        else if (start_time.getTime() !== today.getTime() && start_time > today) { throw new Error('Data di inizio non valida') }
     }
     if (end_time != '') { 
         end_time = new Date(end_time);
