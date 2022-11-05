@@ -3,6 +3,8 @@ const axios = require('axios');
 const { _mediaHandler } = require("./utils/mediaHandler");
 const { _normalizeDate } = require("./utils/normalizeDate");
 const { _normalizeQuery } = require("./utils/normalizeQuery");
+const moment = require('moment');
+moment().format();
 
 module.exports = {
     getTweetsByHashtag: getTweetsByHashtag,
@@ -21,7 +23,7 @@ module.exports = {
  * @param {number} end_time Data massima dei tweet da ottenere
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
-async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
+async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, start_time = '', end_time = '') {
     if (!hashtag) { throw new Error("Hashtag mancante"); }
     let fetchedTweets = await _hashtagFetch(hashtag, pagination_token, quantity, start_time, end_time);
     if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
@@ -78,17 +80,22 @@ async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, sta
  * @param {number} end_time Data massima dei tweet da ottenere
  * @returns Lista di dimensione max_results tweet
  */
-async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
+async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_time = '', end_time = '') {
     hashtag = _normalizeQuery(hashtag);
     const date = _normalizeDate(start_time, end_time);
+
+    // Controlla che le date siano nel range limite di twitter (7 giorni)
+    let today = new Date();
+    let aweekago = new Date(moment(today).subtract(7, 'days'));
+    if (date.start_time != "" && moment(date.start_time).isBefore(aweekago)) { date.start_time = ''; }
+    aweekago.setUTCHours(23,59,59,0);
+    if (date.end_time != "" && moment(date.end_time).isBefore(aweekago)) { date.end_time = aweekago; }
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
             query: `#${hashtag} -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
-            'start_time': date.start_time,                                      // Data minima dei tweet
-            'end_time': date.end_time,                                          // Data massima dei tweet
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
             "place.fields": "country,full_name",                                // Campi della località
@@ -100,6 +107,12 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_ti
     };
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
+    }
+    if (date.start_time != "") {
+        options.params["start_time"] = date.start_time;
+    }
+    if (date.end_time != "") {
+        options.params["end_time"] = date.end_time;
     }
     
     let fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);

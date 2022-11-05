@@ -10,7 +10,7 @@ module.exports = { multipleTweetsFetch: multipleTweetsFetch };
  * @param {number} end_time                 Data massima dei tweet da ottenere
  * @returns Una pagina di dimensione richiesta di tweet
  */
-async function multipleTweetsFetch(fetcher, query, pagination_token="", quantity=10, start_time='2010-11-06T00:00:01Z', end_time='') {
+async function multipleTweetsFetch(fetcher, query, pagination_token="", quantity=10, start_time='', end_time='') {
     let fetchedTweets = [];
 
     while (quantity > 0) {

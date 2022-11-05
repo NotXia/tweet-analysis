@@ -27,7 +27,7 @@ module.exports = {
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
-async function getTweetsByUser(username, pagination_token = '', quantity=10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
+async function getTweetsByUser(username, pagination_token = '', quantity=10, start_time = '', end_time = '') {
     if (!username) {throw new Error('Username mancante');}
 
     //Chiamate alle API per ottenere l'utente e i relativi tweet
@@ -106,7 +106,7 @@ async function _usr_fetch(username) {
  * @param {number} end_time                       Data massima dei tweet da ottenere (facoltativo)
  * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
  */
-async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
+async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
         
     const date = _normalizeDate(start_time, end_time);
 
@@ -118,8 +118,6 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
 
         params: {
             'max_results': quantity,
-            'start_time': date.start_time,
-            'end_time': date.end_time,
             'exclude': 'retweets',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
@@ -132,6 +130,13 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
     if (pagination_token != '') {
         options.params['pagination_token'] = pagination_token;
     }
+    if (date.start_time != "") {
+        options.params["start_time"] = date.start_time;
+    }
+    if (date.end_time != "") {
+        options.params["end_time"] = date.end_time;
+    }
+
     const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
     return response.data;
 }
