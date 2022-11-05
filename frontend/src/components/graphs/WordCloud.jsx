@@ -38,7 +38,7 @@ class WordCloud extends React.Component {
         return (
             <ReactWordcloud words={this.state.words} options= {{
                 enableTooltip: true,
-                deterministic: false,
+                deterministic: true,
                 fontFamily: "impact",
                 fontSizes: [10, 70],
                 fontStyle: "normal",
