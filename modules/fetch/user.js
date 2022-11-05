@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
 const { _mediaHandler } = require("./utils/mediaHandler");
+const { _normalizeDate } = require("./utils/normalizeDate");
 const { _normalizeQuery } = require("./utils/normalizeQuery");
 
 module.exports = {
@@ -17,6 +18,8 @@ module.exports = {
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
  * @param {number} quantity                     Quantità di tweet da visualizzare (facoltativo, 10 di default)
+ * @param {number} start_time                   Data minima dei tweet da ottenere (facoltativo)
+ * @param {number} end_time                     Data massima dei tweet da ottenere (facoltativo)
  * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
  *          location: {country: string, full_name: string, id: string}, media: [{url: string, type: string}]}], next_token: string}
  *          Array di tweet aventi ciascuno:
@@ -24,13 +27,13 @@ module.exports = {
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
-async function getTweetsByUser(username, pagination_token = '', quantity=10) {
+async function getTweetsByUser(username, pagination_token = '', quantity=10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
     if (!username) {throw new Error('Username mancante');}
-    
+
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
-    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity);
+    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity, start_time, end_time);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
     let page = {
@@ -99,10 +102,14 @@ async function _usr_fetch(username) {
  * @param {number} userId                         ID dell'utente
  * @param {number} pagination_token               Token della pagina da visualizzare
  * @param {number} quantity                       Quantità di tweet da visualizzare
+ * @param {number} start_time                     Data minima dei tweet da ottenere (facoltativo)
+ * @param {number} end_time                       Data massima dei tweet da ottenere (facoltativo)
  * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
  */
-async function _twt_fetch(userId, pagination_token = '', quantity=10) {
+async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '2010-11-06T00:00:01Z', end_time = '') {
         
+    const date = _normalizeDate(start_time, end_time);
+
     let options = {
         
         headers: {
@@ -111,6 +118,8 @@ async function _twt_fetch(userId, pagination_token = '', quantity=10) {
 
         params: {
             'max_results': quantity,
+            'start_time': date.start_time,
+            'end_time': date.end_time,
             'exclude': 'retweets',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
