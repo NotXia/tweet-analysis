@@ -66,7 +66,7 @@ class WordCloud extends React.Component {
     // Mostra la word cloud
     render() {
         return (
-            <div id="__container_wordcloud" className="w-100 h-100" style={{position: "relative"}}>
+            <div id="__container_wordcloud" className={`w-100 h-100`} style={{position: "relative"}}>
                 <span id="__tooltip_wordcloud" className="p-1 px-2" style={{position:"fixed", top: 0, left: 0, backgroundColor: "#e0e0e0", borderRadius: "0.7rem", display: "none"}}></span>
                 <D3WordCloud
                     width={$("#__container_wordcloud").width()}
@@ -80,10 +80,12 @@ class WordCloud extends React.Component {
                     onWordMouseOver={(event, d) => {
                         $("#__tooltip_wordcloud").show();
                         $("#__tooltip_wordcloud").css({ top: event.clientY, left: event.clientX });
-                        $("#__tooltip_wordcloud").html(`${d.text} ${d.value}`)
+                        $("#__tooltip_wordcloud").html(`${d.text} ${d.value}`);
+                        $(event.target).animate({ "font-size": `${parseInt($(event.target).css("font-size"))+5}px` }, 0);
                     }}
                     onWordMouseOut={(event, d) => {
                         $("#__tooltip_wordcloud").hide();
+                        $(event.target).animate({ "font-size": `${parseInt($(event.target).css("font-size"))-5}px` }, 0);
                     }}
                 />
             </div>
