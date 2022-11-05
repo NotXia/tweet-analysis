@@ -13,7 +13,8 @@ class SentimentPie extends React.Component {
         this.state = {
             sentimentArray: [0, 0, 0]
         };
-    
+        
+        this.sentiment_cache = {};
     }
 
     //Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori del grafico
@@ -63,7 +64,12 @@ class SentimentPie extends React.Component {
     async getSentimentCount() {
         let sentimentArray = [0, 0, 0];
         for (const tweet of this.props.tweets) {
-            let tweetSentiment = (await sentiment(tweet.text)).sentiment;
+            let tweetSentiment = this.sentiment_cache[tweet.text]; // Estrazione sentimento dai dati in cache
+            if (!tweetSentiment) { // Cache miss
+                tweetSentiment = (await sentiment(tweet.text)).sentiment;
+                this.sentiment_cache[tweet.text] = tweetSentiment
+            }
+
             switch (tweetSentiment) {
                 case 'positive': sentimentArray[0]++; break;
                 case 'neutral': sentimentArray[1]++; break;
