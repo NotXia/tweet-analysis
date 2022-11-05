@@ -96,7 +96,7 @@ class WordCloud extends React.Component {
         word_count_pairs.sort((e1, e2) => e2[1] - e1[1]);
         word_count_pairs = word_count_pairs.slice(0, 50);
         
-        const min_font = 20, max_font = 70;
+        const min_font = 15, max_font = 70;
         const count_values = word_count_pairs.map((word_entry) => word_entry[1]);
         const min_word_count = Math.min(...count_values), max_word_count = Math.max(...count_values); // Minima e massima numerosità
         
