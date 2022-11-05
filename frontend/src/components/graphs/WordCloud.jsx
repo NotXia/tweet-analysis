@@ -2,6 +2,8 @@ import React from "react";
 import CreateWordCloud from "wordcloud";
 import { removeStopwords } from "../../modules/analysis/stopwords";
 import $ from "jquery";
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 /**
@@ -36,6 +38,10 @@ class WordCloud extends React.Component {
             // Rigenera la word cloud se la finestra viene ridimensionata
             this.renderWordCloud();
         });
+
+        $("#__canvas_wordcloud").on("mouseleave", () => {
+            $("#__tooltip_wordcloud").hide(); // Nasconde tooltip quando il mouse esce dal canvas
+        })
     }
 
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud
@@ -62,16 +68,19 @@ class WordCloud extends React.Component {
     // Mostra la word cloud
     render() {
         return (
-            <canvas id="wordcloud" style={{height: "100%", width: "100%"}} height={$("#wordcloud").height()} width={$("#wordcloud").width()} ></canvas>
+            <div className="w-100 h-100" style={{position:"relative"}}>
+                <span id="__tooltip_wordcloud" className="p-1 px-2" style={{position:"absolute", top: 0, left: 0, backgroundColor: "#e0e0e0", borderRadius: "0.7rem", display: "none"}}></span>
+                <canvas id="__canvas_wordcloud" style={{height: "100%", width: "100%"}} height={$("#__canvas_wordcloud").height()} width={$("#__canvas_wordcloud").width()} ></canvas>
+            </div>
         );
     }
 
     /* Ridimensiona le dimensioni del canvas (nota: la dimensione del canvas e quella indicata dal CSS sono per cose diverse) */
     resizeWordCloudCanvas() {
-        let ctx = $("#wordcloud")[0].getContext('2d');
+        let ctx = $("#__canvas_wordcloud")[0].getContext('2d');
         
-        ctx.canvas.height = $("#wordcloud").height();
-        ctx.canvas.width = $("#wordcloud").width();
+        ctx.canvas.height = $("#__canvas_wordcloud").height();
+        ctx.canvas.width = $("#__canvas_wordcloud").width();
     }
 
     /* Disenga la word cloud nel canvas */
@@ -90,7 +99,7 @@ class WordCloud extends React.Component {
         const min_word_count = Math.min(...count_values), max_word_count = Math.max(...count_values); // Minima e massima numerosità
         
         this.resizeWordCloudCanvas(); // Ridimensiona il canvas prima di generare la word cloud
-        CreateWordCloud(document.getElementById("wordcloud"), { 
+        CreateWordCloud(document.getElementById("__canvas_wordcloud"), { 
             list: word_count_pairs,
             fontFamily: "impact", 
             minRotation: 0, maxRotation: 0,
@@ -98,8 +107,17 @@ class WordCloud extends React.Component {
             // Fattore che stabilisce la dimensione delle parole: calcolato dalla numerosità della parola scalata nell'intervallo del range del font
             weightFactor: (size) => _offsetIntervalTo(size, [min_word_count, max_word_count], [min_font, max_font]),
             abortThreshold: 2000, // Interrompe la generazione se ci mette troppo
-            // hover: (item, dimension, event) => { console.log(item, dimension, event) }
-        })
+            hover: (item, dimension, event) => {
+                try {
+                    $("#__tooltip_wordcloud").show();
+                    $("#__tooltip_wordcloud").css({ top: dimension.y-$("#__tooltip_wordcloud").height()-10, left: dimension.x });
+                    $("#__tooltip_wordcloud").html(`${item[0]} ${item[1]}`)
+                }
+                catch (err) {
+                    $("#__tooltip_wordcloud").hide();
+                }
+            }
+        });
     }
 
     // Restituisce un oggetto che indica le occorrenze di ogni parola non-stopword in una data frase
