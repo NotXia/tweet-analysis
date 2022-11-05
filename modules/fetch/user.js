@@ -12,16 +12,16 @@ module.exports = {
 };
 
 /**
- * Restituisce gli ultimi 10 tweet, o i 10 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
- * per ottenere la pagina successiva con i prossimi 10 tweet
+ * Restituisce gli ultimi {quantity} tweet, o i {quantity} tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
+ * per ottenere la pagina successiva con i prossimi {quantity} tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
- * @param {number} quantity                     Quantità di tweet da visualizzare
- * @returns {Promise<{tweets[10]: {id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: string, media[]: {url: string, type: string}}, next_token: string}>} 
- *          Array di 10 tweet aventi ciascuno:
+ * @param {number} quantity                     Quantità di tweet da visualizzare (facoltativo, 10 di default)
+ * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ *          location: {country: string, full_name: string, id: string}, media: [{url: string, type: string}]}], next_token: string}
+ *          Array di tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
- *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
+ *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
 async function getTweetsByUser(username, pagination_token = '', quantity=10) {
@@ -36,7 +36,7 @@ async function getTweetsByUser(username, pagination_token = '', quantity=10) {
     let page = {
         tweets: []
     };
-    //Controllo se esistono il next_token e il previous_token, ovvero se è presente la prossima o la precedente pagina di tweet da visualizzare, e li assegno
+    //Controlla se esiste il next_token, ovvero se è presente la prossima pagina di tweet da visualizzare, e lo assegna, altrimenti assegna stringa vuota
     page.next_token = resTwts.meta?.next_token ? resTwts.meta.next_token : "";
 
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
@@ -71,7 +71,7 @@ async function getTweetsByUser(username, pagination_token = '', quantity=10) {
 /**
  * Chiamata alle API di Twitter per ottenere i dati di un utente dato il suo username
  * @param {string} username             Username dell'utente
- * @returns {Promise<>}                 Dati vari dell'utente
+ * @returns {Object}                    Dati vari dell'utente
  */
 async function _usr_fetch(username) {
     //Normalizza lo username inserito
@@ -99,7 +99,7 @@ async function _usr_fetch(username) {
  * @param {number} userId                         ID dell'utente
  * @param {number} pagination_token               Token della pagina da visualizzare
  * @param {number} quantity                       Quantità di tweet da visualizzare
- * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
+ * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
  */
 async function _twt_fetch(userId, pagination_token = '', quantity=10) {
         
