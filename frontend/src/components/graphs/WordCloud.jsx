@@ -10,6 +10,8 @@ class WordCloud extends React.Component {
         this.state = {
             words : [ ]
         };
+
+        this.no_stopwords_cache = {};
     }
 
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud
@@ -52,17 +54,23 @@ class WordCloud extends React.Component {
 
     // Restituisce un oggetto che indica le occorrenze di ogni parola non-stopword in una data frase
     async wordCountOccurrencies(sentence) {
-        sentence = sentence.replace(/(?:https?|ftp|http):\/\/[\n\S]+/g, " ");       // Rimuove URL
+        const original_sentence = sentence;
         
-        sentence = sentence.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2580-\u27BF]|\uD83E[\uDD10-\uDDFF]/g, " ");     // Rimuove emoji
+        sentence = this.no_stopwords_cache[original_sentence]; // Ricerca in cache
+        if (!sentence) { // Cache miss
+            sentence = original_sentence;
 
-        sentence = sentence.replace(/(\r\n|\n|\r)/gm, " ");     // Rimuove a capo
-        sentence = sentence.toUpperCase();
-        sentence = sentence.replace( /\s\s+/g, " ");            // Rimuove spazi multipli
-        sentence = sentence.trim();
-
-        if (sentence !== "") { 
-            sentence = await removeStopwords(sentence);
+            sentence = sentence.replace(/(?:https?|ftp|http):\/\/[\n\S]+/g, " ");       // Rimuove URL
+            sentence = sentence.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2580-\u27BF]|\uD83E[\uDD10-\uDDFF]/g, " ");     // Rimuove emoji
+            sentence = sentence.replace(/(\r\n|\n|\r)/gm, " ");     // Rimuove a capo
+            sentence = sentence.toUpperCase();
+            sentence = sentence.replace( /\s\s+/g, " ");            // Rimuove spazi multipli
+            sentence = sentence.trim();
+    
+            if (sentence !== "") { 
+                sentence = await removeStopwords(sentence);
+                this.no_stopwords_cache[original_sentence] = sentence;
+            }
         }
         
         const res = {};
