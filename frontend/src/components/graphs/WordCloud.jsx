@@ -21,6 +21,7 @@ function _offsetIntervalTo(value, source_range, target_range) {
     return c + ((d-c)/(b-a)) * (value-a);
 }
 
+
 // Componente che genera una word cloud basata sulle parole più utilizzate nei tweet
 // Il componente deve essere richiamato tramite <WordCloud tweets={tweets} /> e ricevere come parametro {tweet} ossia l'array di oggetti contenente i tweet
 class WordCloud extends React.Component {
@@ -40,7 +41,8 @@ class WordCloud extends React.Component {
         });
 
         $("#__canvas_wordcloud").on("mouseleave", () => {
-            $("#__tooltip_wordcloud").hide(); // Nasconde tooltip quando il mouse esce dal canvas
+            // Nasconde tooltip quando il mouse esce dal canvas
+            $("#__tooltip_wordcloud").hide();
         })
     }
 
@@ -103,10 +105,12 @@ class WordCloud extends React.Component {
             list: word_count_pairs,
             fontFamily: "impact", 
             minRotation: 0, maxRotation: 0,
-            shrinkToFit: true, // Se troppo grande, la dimensione viene scalata
+            shrinkToFit: true,      // Se troppo grande, la dimensione viene scalata
+            abortThreshold: 2000,   // Interrompe la generazione se ci mette troppo
+            
             // Fattore che stabilisce la dimensione delle parole: calcolato dalla numerosità della parola scalata nell'intervallo del range del font
             weightFactor: (size) => _offsetIntervalTo(size, [min_word_count, max_word_count], [min_font, max_font]),
-            abortThreshold: 2000, // Interrompe la generazione se ci mette troppo
+            
             hover: (item, dimension, event) => {
                 try {
                     $("#__tooltip_wordcloud").show();
