@@ -69,14 +69,13 @@ class WordCloud extends React.Component {
             <div id="__container_wordcloud" className={`w-100 h-100`} style={{position: "relative"}}>
                 <span id="__tooltip_wordcloud" className="p-1 px-2" style={{position:"fixed", top: 0, left: 0, backgroundColor: "#e0e0e0", borderRadius: "0.7rem", display: "none"}}></span>
                 <D3WordCloud
-                    width={$("#__container_wordcloud").width()}
-                    height={$("#__container_wordcloud").height()}
-                    data={JSON.parse(JSON.stringify(this.state.words))}
-                    font="impact"
-                    fontSize={(word) => this.scaleToFontSize(word.value, 15, 60)}
+                    width={$("#__container_wordcloud").width()}         // Prende le dimensioni del contenitore
+                    height={$("#__container_wordcloud").height()}       //
+                    data={JSON.parse(JSON.stringify(this.state.words))} // Serve fare una copia perché apparentemente cambia i valori dello stato
+                    font="impact" fontSize={(word) => this.scaleToFontSize(word.value, 15, 70)}
                     spiral="rectangular"
-                    rotate={(_) => 0}
-                    random={() => 0.5}
+                    rotate={(_) => 0}   // Nessuna rotazione
+                    random={() => 0.5}  // Generazione deterministica
                     onWordMouseOver={(event, d) => {
                         $("#__tooltip_wordcloud").show();
                         $("#__tooltip_wordcloud").css({ top: event.clientY, left: event.clientX });
