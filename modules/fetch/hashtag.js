@@ -88,7 +88,6 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_ti
     let today = new Date();
     let aweekago = new Date(moment(today).subtract(7, 'days'));
     if (date.start_time != "" && moment(date.start_time).isBefore(aweekago)) { date.start_time = ''; }
-    aweekago.setUTCHours(23,59,59,0);
     if (date.end_time != "" && moment(date.end_time).isBefore(aweekago)) { throw new Error('Data di fine non valida'); }
 
     let options = {
