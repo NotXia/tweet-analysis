@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
 const { _mediaHandler } = require("./utils/mediaHandler");
+const { _normalizeDate } = require("./utils/normalizeDate");
 const { _normalizeQuery } = require("./utils/normalizeQuery");
 
 module.exports = {
@@ -12,30 +13,33 @@ module.exports = {
 };
 
 /**
- * Restituisce gli ultimi 10 tweet, o i 10 tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
- * per ottenere la pagina successiva con i prossimi 10 tweet
+ * Restituisce gli ultimi {quantity} tweet, o i {quantity} tweet nella pagina indicata dal pagination_token, di un utente dato il suo username, e l'eventuale token
+ * per ottenere la pagina successiva con i prossimi {quantity} tweet
  * @param {string} username                     Username dell'utente
  * @param {string} pagination_token             Token della pagina da visualizzare (facoltativo)
- * @param {number} quantity                     Quantità di tweet da visualizzare
- * @returns {Promise<{tweets[10]: {id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: string, media[]: {url: string, type: string}}, next_token: string}>} 
- *          Array di 10 tweet aventi ciascuno:
+ * @param {number} quantity                     Quantità di tweet da visualizzare (facoltativo, 10 di default)
+ * @param {number} start_time                   Data minima dei tweet da ottenere (facoltativo)
+ * @param {number} end_time                     Data massima dei tweet da ottenere (facoltativo)
+ * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ *          location: {country: string, full_name: string, id: string}, media: [{url: string, type: string}]}], next_token: string}
+ *          Array di tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
- *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
+ *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
-async function getTweetsByUser(username, pagination_token ="", quantity=10) {
+async function getTweetsByUser(username, pagination_token ="", quantity=10, start_time = '', end_time = '') {
     if (!username) {throw new Error('Username mancante');}
+
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
-    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity);
+    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity, start_time, end_time);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
     let page = {
         tweets: []
     };
-    //Controllo se esistono il next_token e il previous_token, ovvero se è presente la prossima o la precedente pagina di tweet da visualizzare, e li assegno
+    //Controlla se esiste il next_token, ovvero se è presente la prossima pagina di tweet da visualizzare, e lo assegna, altrimenti assegna stringa vuota
     page.next_token = resTwts.meta?.next_token ? resTwts.meta.next_token : "";
 
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
@@ -70,7 +74,7 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10) {
 /**
  * Chiamata alle API di Twitter per ottenere i dati di un utente dato il suo username
  * @param {string} username             Username dell'utente
- * @returns {Promise<>}                 Dati vari dell'utente
+ * @returns {Object}                    Dati vari dell'utente
  */
 async function _usr_fetch(username) {
     //Normalizza lo username inserito
@@ -98,10 +102,14 @@ async function _usr_fetch(username) {
  * @param {number} userId                         ID dell'utente
  * @param {number} pagination_token               Token della pagina da visualizzare
  * @param {number} quantity                       Quantità di tweet da visualizzare
- * @returns {Promise<>}                           Array di 10 tweet ciascuno con informazioni varie
+ * @param {number} start_time                     Data minima dei tweet da ottenere (facoltativo)
+ * @param {number} end_time                       Data massima dei tweet da ottenere (facoltativo)
+ * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
  */
-async function _twt_fetch(userId, pagination_token = '', quantity=10) {
-        
+async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
+    const limit = new Date('2010-11-06T00:00:01Z');
+    const date = _normalizeDate(limit, start_time, end_time);
+
     let options = {
         
         headers: {
@@ -110,7 +118,7 @@ async function _twt_fetch(userId, pagination_token = '', quantity=10) {
 
         params: {
             'max_results': quantity,
-            'exclude': 'retweets',
+            'exclude': 'retweets,replies',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
             'place.fields': 'country,full_name',
@@ -122,6 +130,13 @@ async function _twt_fetch(userId, pagination_token = '', quantity=10) {
     if (pagination_token != '') {
         options.params['pagination_token'] = pagination_token;
     }
+    if (date.start_time != "") {
+        options.params["start_time"] = date.start_time;
+    }
+    if (date.end_time != "") {
+        options.params["end_time"] = date.end_time;
+    }
+
     const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
     return response.data;
 }
