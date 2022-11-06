@@ -18,14 +18,18 @@ class SearchTweets extends React.Component {
             query: "",
             page: "",
             next_page: "",
+            quantity: 0,
 
             fetching: false, // Indica se attualmente si sta richiedendo dei tweet
 
             error_message: ""
         };
 
+        this.tweets_buffer = [];
+
         this.input = {
-            query: React.createRef()
+            query: React.createRef(),
+            quantity: React.createRef()
         }
     }
 
@@ -48,7 +52,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="list-group ">
+                            <div className="list-group border border-white rounded-4">
                                 {
                                     this.state.tweets.map((tweet) => (
                                         <Tweet key={tweet.id} tweet={tweet} />
@@ -61,21 +65,37 @@ class SearchTweets extends React.Component {
                         <div className="col-12 order-1 col-md-6 order-md-2 col-lg-8">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
-                                <div className="d-flex justify-content-center w-100 p-2">
-                                    <div className="col-12 col-md-6 col-lg-4 mt-4">
+                                <div className="d-flex justify-content-center w-100 p-2 ">
+                                    <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             <div className="input-group flex-nowrap">
-                                                <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
+                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                            <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
+                                            <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <div className="collapse" id="advancedOptions">
+                                                <div className="d-flex flex-row">
+                                                    <div className="col-12 col-md-6 col-lg-4">
+                                                        <div className="col-12 col-md-10 col-lg-8">
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
+                                                            <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
+                                                                    defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
+                                                        </div>
+                                                    </div>
+                                                </div>    
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
 
                                 {/* Carica tweet */}
-                                <div className="d-flex justify-content-center w-100 p-2">
-                                    { this.nextPageButton() }
+                                <div>
+                                    <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} >Attualmente mostrati: {this.state.tweets.length} tweet</p>
+                                    <div className="d-flex justify-content-center w-100 p-2">
+                                        { this.nextPageButton() }
+                                    </div>
                                 </div>
 
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
@@ -107,11 +127,14 @@ class SearchTweets extends React.Component {
         
         try {
             const query = this.input.query.current.value.trim();
-            let tweets_data = await this.fetchTweets(query);
+            const quantity = parseInt(this.input.quantity.current.value.trim());
+            this.tweets_buffer = [];
+            let tweets_data = await this.fetchTweets(query, "", quantity);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
                 query: query,
+                quantity: quantity,
                 next_page: tweets_data.next_token,
                 error_message:""
             })
@@ -126,11 +149,12 @@ class SearchTweets extends React.Component {
 
         try {
             const query = this.state.query;
+            const quantity = parseInt(this.input.quantity.current.value.trim());
             
             if(this.state.next_page==="") {
                 return;
             }
-            let tweets_data = await this.fetchTweets(query, this.state.next_page);
+            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
@@ -144,20 +168,47 @@ class SearchTweets extends React.Component {
         }
     }
 
-    async fetchTweets(query, next_token="") {
-        let tweets_data = { tweets: [], next_token: "" };
+    async fetchTweets(query, next_token="", quantity=10) {
+        quantity = parseInt(quantity);
+
+        let fetched_tweets = [];
+        let tweets_data = { tweets: [], next_token: "", quantity:undefined};
         
         this.setState({ fetching: true }); // Inizio fetching
 
-        if (query[0] === "@") { 
-            tweets_data = await userSearchTweet(query, next_token); 
+        // Estrae dal buffer eventuali tweet salvati
+        if (this.tweets_buffer.length > 0) {
+            fetched_tweets = this.tweets_buffer.slice(0, quantity);     // Estrae dal buffer
+            this.tweets_buffer = this.tweets_buffer.slice(quantity);    // Aggiorna buffer
+            quantity -= fetched_tweets.length;                          // Aggiorna quantità mancante
         }
-        else if (query[0] === "#") { 
-            tweets_data = await hashtagSearchTweet(query, next_token);
+
+        // Se il buffer non soddisfa la richiesta
+        if (quantity > 0) {
+            if (query[0] === "@") { 
+                tweets_data = await userSearchTweet(query, next_token, quantity); 
+            }
+            else if (query[0] === "#") { 
+                tweets_data = await hashtagSearchTweet(query, next_token, quantity);
+            }
+
+            if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
+                this.tweets_buffer = this.tweets_buffer.concat(tweets_data.tweets.slice(-(tweets_data.tweets.length-quantity)))
+                
+                // Rimuove i tweet in eccesso
+                fetched_tweets = fetched_tweets.concat(tweets_data.tweets.slice(0, quantity));
+            }
+            else { // I tweet sono nella quantità esatta
+                fetched_tweets = tweets_data.tweets;
+            }
+        }
+        else {
+            tweets_data.next_token = next_token; // Mantiene il token salvato se la richiesta è totalmente soddisfatta dal buffer
         }
 
         this.setState({ fetching: false }); // Termine fetching
 
+        tweets_data.tweets = fetched_tweets;
         return tweets_data;
     }
 
@@ -175,7 +226,7 @@ class SearchTweets extends React.Component {
                         )
                     }
                     else {
-                        return <span>Prossima pagina</span>
+                        return <span>Prossima pagina ({this.state.quantity})</span>
                     }
                 })()
             }
