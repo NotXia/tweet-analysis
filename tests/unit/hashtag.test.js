@@ -78,7 +78,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con solo data d'inizio", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con solo data d'inizio", async function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, date1);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -86,7 +86,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con solo data di fine", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con solo data di fine", async function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, '', date2);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -94,7 +94,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di inizio prima del limite", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio prima del limite", async function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, '2009-11-06T00:00:01Z');
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -102,7 +102,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di fine nel futuro", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di fine nel futuro", async function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, '', future);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -110,7 +110,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con date nello stesso giorno", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con date nello stesso giorno", async function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, date1, date1);
         let date1_end = new Date();
         date1_end = new Date(moment(date1_end).subtract(5, 'days'));
@@ -122,7 +122,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di inizio e data di fine a oggi", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio e data di fine a oggi", async function () {
         const tweets = await getTweetsByHashtag("wwe", '', 20, today, today);
         const today_start = new Date();
         today_start.setUTCHours(0,0,0,0);
@@ -133,7 +133,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di fine prima di data d'inizio", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima di data d'inizio", async function () {
         try {
             await getTweetsByHashtag("reazioneacatena", '', 20, date2, date1);
             fail('Eccezione non lanciata');
@@ -142,7 +142,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di inizio nel futuro", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio nel futuro", async function () {
         try {
             await getTweetsByHashtag("reazioneacatena", '', 20, future);
             fail('Eccezione non lanciata');
@@ -151,7 +151,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per username in intervallo temporale con data di fine prima del limite", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima del limite", async function () {
         try {
             await getTweetsByHashtag("reazioneacatena", '', 20, '', '2009-11-06T00:00:01Z');
             fail('Eccezione non lanciata');
