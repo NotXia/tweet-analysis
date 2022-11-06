@@ -121,7 +121,7 @@ describe("Test ricerca tweet dato username utente", function () {
     test("Ricerca tweet per username in intervallo temporale con data di inizio e data di fine a oggi", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, today, today);
         const today_start = new Date();
-        today_start.setUTCHours(0,0,0,0);
+        today_start.setHours(0,0,0,0);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= today_start ).toBeTruthy();

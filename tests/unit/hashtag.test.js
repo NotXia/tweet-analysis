@@ -11,10 +11,10 @@ let future = new Date();
 future = new Date(moment(future).add(7, 'days'));
 let date1 = new Date();
 date1 = new Date(moment(date1).subtract(5, 'days'));
-date1.setUTCHours(0,0,0,0);
+date1.setHours(0,0,0,0);
 let date2 = new Date();
 date2 = new Date(moment(date2).subtract(1, 'days'));
-date2.setUTCHours(23,59,59,999);
+date2.setHours(23,59,59,999);
 
 describe("Test normalizzazione stringa di hashtag", function () {
     test("Normalizzazione testo con spazi", function () {
@@ -114,7 +114,7 @@ describe("Test ricerca tweet dato hashtag", function () {
         const tweets = await getTweetsByHashtag("reazioneacatena", '', 20, date1, date1);
         let date1_end = new Date();
         date1_end = new Date(moment(date1_end).subtract(5, 'days'));
-        date1_end.setUTCHours(23,59,59,999);
+        date1_end.setHours(23,59,59,999);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= date1 ).toBeTruthy();
@@ -125,7 +125,7 @@ describe("Test ricerca tweet dato hashtag", function () {
     test("Ricerca tweet per hashtag in intervallo temporale con data di inizio e data di fine a oggi", async function () {
         const tweets = await getTweetsByHashtag("wwe", '', 20, today, today);
         const today_start = new Date();
-        today_start.setUTCHours(0,0,0,0);
+        today_start.setHours(0,0,0,0);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= today_start ).toBeTruthy();
