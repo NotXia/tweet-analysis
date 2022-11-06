@@ -5,9 +5,9 @@ const { getTweetsByUser } = require("../../modules/fetch/user.js");
 const { multipleTweetsFetch } = require("../../modules/fetch/multiple_tweets.js");
 
 describe("Test ricerca tweet", function () {
-    test("Ricerca 70 tweet per hashtag", async function () {
-        const tweetsPage = await multipleTweetsFetch(getTweetsByHashtag, "reazioneacatena", "", 70);
-        expect( tweetsPage.tweets.length ).toEqual(70);
+    test("Ricerca 40 tweet per hashtag", async function () {
+        const tweetsPage = await multipleTweetsFetch(getTweetsByHashtag, "reazioneacatena", "", 40);
+        expect( tweetsPage.tweets.length ).toBeGreaterThanOrEqual(40);
         for (const tweet of tweetsPage.tweets) {
             expect( tweet.name ).toBeDefined();
             expect( tweet.username ).toBeDefined();
@@ -23,7 +23,7 @@ describe("Test ricerca tweet", function () {
 
     test("Ricerca 110 tweet per utente", async function () {
         const tweetsPage = await multipleTweetsFetch(getTweetsByUser, "elonmusk", "", 110);
-        expect( tweetsPage.tweets.length ).toEqual(110);
+        expect( tweetsPage.tweets.length ).toBeGreaterThanOrEqual(110);
         for (const tweet of tweetsPage.tweets) {
             expect( tweet.name ).toBeDefined();
             expect( tweet.username ).toBeDefined();
@@ -39,7 +39,7 @@ describe("Test ricerca tweet", function () {
 
     test("Ricerca 5 tweet per utente", async function () {
         const tweetsPage = await multipleTweetsFetch(getTweetsByUser, "elonmusk", "", 5);
-        expect( tweetsPage.tweets.length ).toEqual(10); // Il minimo consentito è 10
+        expect( tweetsPage.tweets.length ).toBeGreaterThanOrEqual(10); // Il minimo consentito è 10
         for (const tweet of tweetsPage.tweets) {
             expect( tweet.name ).toBeDefined();
             expect( tweet.username ).toBeDefined();
