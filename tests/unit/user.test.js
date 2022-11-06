@@ -74,22 +74,22 @@ describe("Test ricerca tweet dato username utente", function () {
     test("Ricerca tweet per username in intervallo temporale con date valide", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z', '2022-11-05T11:12:31Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time >= '2022-11-01T00:00:01Z' ).toBeTruthy();
-            expect( tweet.time <= '2022-11-05T23:59:59Z' ).toBeTruthy();
+            expect( tweet.time >= '2022-11-01T00:00:00:000Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-05T23:59:59:999Z' ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con solo data d'inizio", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time >= '2022-11-01T00:00:01Z' ).toBeTruthy();
+            expect( tweet.time >= '2022-11-01T00:00:00:000Z' ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con solo data di fine", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '', '2022-11-05T11:12:31Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time <= '2022-11-05T23:59:59Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-05T23:59:59:999Z' ).toBeTruthy();
         }
     });
 
@@ -98,7 +98,7 @@ describe("Test ricerca tweet dato username utente", function () {
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= limit ).toBeTruthy();
-            expect( tweet.time <= '2022-11-05T23:59:59Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-05T23:59:59:999Z' ).toBeTruthy();
         }
     });
 
@@ -113,8 +113,8 @@ describe("Test ricerca tweet dato username utente", function () {
     test("Ricerca tweet per username in intervallo temporale con date nello stesso giorno", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z', '2022-11-01T17:12:31Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time >= '2022-11-01T00:00:01Z' ).toBeTruthy();
-            expect( tweet.time <= '2022-11-01T23:59:59Z' ).toBeTruthy();
+            expect( tweet.time >= '2022-11-01T00:00:00:000Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-01T23:59:59:999Z' ).toBeTruthy();
         }
     });
 
