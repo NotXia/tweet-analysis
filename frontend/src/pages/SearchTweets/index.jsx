@@ -52,7 +52,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="list-group">
+                            <div className="list-group border border-white rounded-4">
                                 {
                                     this.state.tweets.map((tweet) => (
                                         <Tweet key={tweet.id} tweet={tweet} />
@@ -78,8 +78,8 @@ class SearchTweets extends React.Component {
                                             <div className="collapse" id="advancedOptions">
                                                 <div className="d-flex flex-row">
                                                     <div className="col-12 col-md-6 col-lg-4">
-                                                        <div className="col-12 col-md-10 col-lg-7">
-                                                            <label className="form-label small text-muted ms-1" htmlFor="SearchAmount">Num. ricerche</label>
+                                                        <div className="col-12 col-md-10 col-lg-8">
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
                                                             <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
                                                                     defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                         </div>
