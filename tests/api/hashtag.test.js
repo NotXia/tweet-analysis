@@ -57,9 +57,9 @@ describe("Richieste corrette a /tweets/hashtag", function () {
     });
 
     test("Tweet dato hashtag, pagination token e quantità", async function () {
-        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena", pag_token: pagination_token, quantity: 50 }).expect(200);
+        const res = await curr_session.get("/tweets/hashtag").query({ hashtag: "reazioneacatena", pag_token: pagination_token, quantity: 120 }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeGreaterThanOrEqual(50);
+        expect( res.body.tweets.length ).toBeGreaterThanOrEqual(120);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
