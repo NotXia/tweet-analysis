@@ -5,7 +5,7 @@ const { getTweetsByUser } = require("../../modules/fetch/user.js");
 const { multipleTweetsFetch } = require("../../modules/fetch/multiple_tweets.js");
 
 describe("Test ricerca tweet", function () {
-    test("Ricerca 70 tweet per hashtag", async function () {
+    test("Ricerca 40 tweet per hashtag", async function () {
         const tweetsPage = await multipleTweetsFetch(getTweetsByHashtag, "reazioneacatena", "", 40);
         expect( tweetsPage.tweets.length ).toBeGreaterThanOrEqual(40);
         for (const tweet of tweetsPage.tweets) {
