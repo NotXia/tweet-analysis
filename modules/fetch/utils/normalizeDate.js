@@ -25,8 +25,8 @@ function _normalizeDate(limit, start_time = '', end_time = '') {
         end_time = new Date(end_time);
         end_time.setUTCHours(23,59,59,0);
         today.setUTCHours(23,59,59,0);
-        if (end_time.getTime() === today.getTime()) { end_time = ''; }   // Se la data di fine è oggi, non serve impostarla
-        else if (end_time < limit || end_time > today) { throw new Error('Data di fine non valida') }   // Se la data di fine è prima del limite massimo di twitter o nel futuro, viene lanciato un errore
+        if ((end_time.getTime() === today.getTime()) || end_time > today) { end_time = ''; }   // Se la data di fine è oggi o nel futuro, non viene impostata (quindi i tweet arriveranno a oggi)
+        else if (end_time < limit) { throw new Error('Data di fine non valida') }   // Se la data di fine è prima del limite massimo di twitter, viene lanciato un errore
     }
     
     if ((start_time != '' && end_time != '') && (end_time < start_time)) { throw new Error('Intervallo temporale non valido')}
