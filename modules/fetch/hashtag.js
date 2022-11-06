@@ -79,8 +79,8 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10) {
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `#${hashtag} -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
-            "max_results": quantity,                                              // Numero massimo Tweet per pagina
+            query: `#${hashtag} -is:reply -is:retweet`,                         // Filtra per hashtag e rimuove i retweet
+            "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
             "place.fields": "country,full_name",                                // Campi della località
@@ -94,7 +94,7 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10) {
         options.params["pagination_token"] = pagination_token;
     }
     
-    let fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
+    const fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
 
     return fetchedTweets;
 }
