@@ -4,7 +4,8 @@ moment().format();
 
 const { getTweetsByHashtag, testing } = require("../../modules/fetch/hashtag.js");
 
-const today = new Date();
+let today = new Date();
+today.setHours(23,59,59,999);
 let limit = new Date();
 limit = new Date(moment(limit).subtract(7, 'days'));
 let future = new Date();

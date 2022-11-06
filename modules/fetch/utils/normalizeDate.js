@@ -3,7 +3,7 @@ module.exports = {
 }
 
 /**
- * Normalizza le date in input, impostandole in formato ISO 8601 e con gli orari della data di inizio e di fine impostati rispettivamente a 00:00:01 e 23:59:59
+ * Normalizza le date in input, impostandole in formato ISO 8601 e con gli orari della data di inizio e di fine impostati rispettivamente a 00:00:00:000 e 23:59:59:999
  * Inoltre, esegue i controlli sulla correttezza dell'intervallo temporale fra le due date
  * @param {string} start_time                           Data di inizio da normalizzare
  * @param {string} end_time                             Data di fine da normalizzare
