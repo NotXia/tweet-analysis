@@ -98,7 +98,7 @@ describe("Test ricerca tweet dato username utente", function () {
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= limit ).toBeTruthy();
-            expect( tweet.time <= '2022-11-05T23:59:59:999Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-05T23:59:59.999Z' ).toBeTruthy();
         }
     });
 
