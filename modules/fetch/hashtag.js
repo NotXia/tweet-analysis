@@ -82,18 +82,20 @@ async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, sta
  */
 async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_time = '', end_time = '') {
     hashtag = _normalizeQuery(hashtag);
-    const date = _normalizeDate(start_time, end_time);
 
-    // Controlla che le date siano nel range limite di twitter (7 giorni)
+    // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
     let today = new Date();
     let aweekago = new Date(moment(today).subtract(7, 'days'));
-    if (date.start_time != "" && moment(date.start_time).isBefore(aweekago)) { date.start_time = ''; }
-    if (date.end_time != "" && moment(date.end_time).isBefore(aweekago)) { throw new Error('Data di fine non valida'); }
+    const date = _normalizeDate(aweekago, start_time, end_time);
+
+    
+    // if (date.start_time != "" && moment(date.start_time).isBefore(aweekago)) { date.start_time = ''; }
+    // if (date.end_time != "" && moment(date.end_time).isBefore(aweekago)) { throw new Error('Data di fine non valida'); }
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `#${hashtag} -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
+            query: `#${hashtag} -is:reply -is:quote -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet

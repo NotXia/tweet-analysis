@@ -9,10 +9,10 @@ module.exports = {
  * @param {string} end_time                             Data di fine da normalizzare
  * @returns {{start_time: string, end_time: string}}    Oggetto contentente le due date normalizzate
  */
-function _normalizeDate(start_time = '', end_time = '') {
+function _normalizeDate(limit, start_time = '', end_time = '') {
 
     let today = new Date();
-    let limit = new Date('2010-11-06T00:00:01Z');
+    
 
     if (start_time != '') {
         start_time = new Date(start_time);

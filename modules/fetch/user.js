@@ -107,8 +107,8 @@ async function _usr_fetch(username) {
  * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
  */
 async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
-        
-    const date = _normalizeDate(start_time, end_time);
+    const limit = new Date('2010-11-06T00:00:01Z');
+    const date = _normalizeDate(limit, start_time, end_time);
 
     let options = {
         
@@ -118,7 +118,7 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
 
         params: {
             'max_results': quantity,
-            'exclude': 'retweets',
+            'exclude': 'retweets,replies',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
             'place.fields': 'country,full_name',
