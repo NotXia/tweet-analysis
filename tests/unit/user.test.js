@@ -82,7 +82,7 @@ describe("Test ricerca tweet dato username utente", function () {
     test("Ricerca tweet per username in intervallo temporale con solo data d'inizio", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time >= '2022-11-01T00:00:00:000Z' ).toBeTruthy();
+            expect( tweet.time >= '2022-11-01T00:00:00.000Z' ).toBeTruthy();
         }
     });
 
