@@ -62,21 +62,22 @@ class SearchTweets extends React.Component {
                         <div className="col-12 order-1 col-md-6 order-md-2 col-lg-8">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
-                                <div className="d-flex justify-content-center w-100 p-2">
-                                    <div className="col-12 col-md-6 col-lg-6 mt-4">
+                                <div className="d-flex justify-content-center w-100 p-2 ">
+                                    <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             <div className="input-group flex-nowrap">
-                                                <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
+                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                            <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
                                             <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
-                                            <div className="collapse mt-1" id="advancedOptions">
+                                            <div className="collapse" id="advancedOptions">
                                                 <div className="d-flex flex-row">
                                                     <div className="col-12 col-md-6 col-lg-4">
-                                                        <div className="col-12 col-md-10 col-lg-7 form-outline">
-                                                            <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" defaultValue={10} min={10} aria-label="SearchAmount" />
+                                                        <div className="col-12 col-md-10 col-lg-7">
                                                             <label className="form-label small text-muted ms-1" for="SearchAmount">Num. ricerche</label>
+                                                            <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" defaultValue={10} min={10} aria-label="SearchAmount" />
                                                         </div>
                                                     </div>
                                                 </div>    
