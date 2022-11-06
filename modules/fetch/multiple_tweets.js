@@ -12,22 +12,25 @@ module.exports = { multipleTweetsFetch: multipleTweetsFetch };
  */
 async function multipleTweetsFetch(fetcher, query, pagination_token="", quantity=10, start_time='', end_time='') {
     let fetchedTweets = [];
+    let remaining = quantity;
 
-    while (quantity > 0) {
+    while (remaining > 0) {
         try {
-            if (quantity < 10) { quantity = 10; }                                                                               // Imposta la quantità a 10, ovvero il minimo per le API di Twitter
-            const tweets = await fetcher(query, pagination_token, quantity < 100 ? quantity : 100, start_time, end_time);       // Viene richiamato il fetcher con query, pagination_token e quantità. La quantità è 100 se rimangono ancora più di 100 tweet da ricercare.
-            fetchedTweets = fetchedTweets.concat(tweets.tweets);                                                                // I tweet fetchati vengono concatenati a quelli precedenti
-            pagination_token = tweets.next_token;                                                                               // Viene aggiornato il pagination_token
-            quantity -= 100;                                                                                                    // Viene ridotta la quantità di 100 a prescindere vista la condizione del while
+            if (remaining < 10) { remaining = 10; }                                                                                // Imposta la quantità a 10, ovvero il minimo per le API di Twitter
+            const tweets = await fetcher(query, pagination_token, remaining < 100 ? remaining : 100, start_time, end_time);        // Viene richiamato il fetcher con query, pagination_token e quantità. La quantità è 100 se rimangono ancora più di 100 tweet da ricercare.
+            fetchedTweets = fetchedTweets.concat(tweets.tweets);                                                                   // I tweet fetchati vengono concatenati a quelli precedenti
+            pagination_token = tweets.next_token;                                                                                  // Viene aggiornato il pagination_token
+            if (pagination_token === "") { break; }                                                                                // Se non c'è una prossima pagina viene concluso il loop
+            remaining -= tweets.tweets.length;                                                                                     // Viene ridotta la quantità della dimensione di tweet restituiti
         } catch (err) {
             pagination_token = "";
             break;
         }
     }
-    
+
     return {
         "tweets": fetchedTweets,
         "next_token": pagination_token
     };
+    
 }
