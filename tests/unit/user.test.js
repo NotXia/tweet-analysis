@@ -113,8 +113,8 @@ describe("Test ricerca tweet dato username utente", function () {
     test("Ricerca tweet per username in intervallo temporale con date nello stesso giorno", async function () {
         const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z', '2022-11-01T17:12:31Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time >= '2022-11-01T00:00:00:000Z' ).toBeTruthy();
-            expect( tweet.time <= '2022-11-01T23:59:59:999Z' ).toBeTruthy();
+            expect( tweet.time >= '2022-11-01T00:00:00.000Z' ).toBeTruthy();
+            expect( tweet.time <= '2022-11-01T23:59:59.999Z' ).toBeTruthy();
         }
     });
 
