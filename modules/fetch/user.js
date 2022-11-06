@@ -24,9 +24,8 @@ module.exports = {
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti)
  *          Token della prossima pagina da visualizzare (se presente, altrimenti stringa vuota)
  */
-async function getTweetsByUser(username, pagination_token = '', quantity=10) {
+async function getTweetsByUser(username, pagination_token ="", quantity=10) {
     if (!username) {throw new Error('Username mancante');}
-    
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste

@@ -25,7 +25,8 @@ class SearchTweets extends React.Component {
         };
 
         this.input = {
-            query: React.createRef()
+            query: React.createRef(),
+            quantity: React.createRef()
         }
     }
 
@@ -48,7 +49,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="list-group ">
+                            <div className="list-group">
                                 {
                                     this.state.tweets.map((tweet) => (
                                         <Tweet key={tweet.id} tweet={tweet} />
@@ -62,13 +63,24 @@ class SearchTweets extends React.Component {
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
                                 <div className="d-flex justify-content-center w-100 p-2">
-                                    <div className="col-12 col-md-6 col-lg-4 mt-4">
+                                    <div className="col-12 col-md-6 col-lg-6 mt-4">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             <div className="input-group flex-nowrap">
                                                 <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                            <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <div className="collapse mt-1" id="advancedOptions">
+                                                <div className="d-flex flex-row">
+                                                    <div className="col-12 col-md-6 col-lg-4">
+                                                        <div className="col-12 col-md-10 col-lg-7 form-outline">
+                                                            <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" defaultValue={10} min={10} aria-label="SearchAmount" />
+                                                            <label className="form-label small text-muted ms-1" for="SearchAmount">Num. ricerche</label>
+                                                        </div>
+                                                    </div>
+                                                </div>    
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -107,11 +119,13 @@ class SearchTweets extends React.Component {
         
         try {
             const query = this.input.query.current.value.trim();
-            let tweets_data = await this.fetchTweets(query);
+            const quantity = this.input.quantity.current.value.trim();
+            let tweets_data = await this.fetchTweets(query, "", quantity);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
                 query: query,
+                quantity: quantity,
                 next_page: tweets_data.next_token,
                 error_message:""
             })
@@ -126,11 +140,12 @@ class SearchTweets extends React.Component {
 
         try {
             const query = this.state.query;
+            const quantity = this.state.quantity;
             
             if(this.state.next_page==="") {
                 return;
             }
-            let tweets_data = await this.fetchTweets(query, this.state.next_page);
+            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
@@ -144,16 +159,16 @@ class SearchTweets extends React.Component {
         }
     }
 
-    async fetchTweets(query, next_token="") {
-        let tweets_data = { tweets: [], next_token: "" };
+    async fetchTweets(query, next_token="", quantity=10) {
+        let tweets_data = { tweets: [], next_token: "", quantity:undefined};
         
         this.setState({ fetching: true }); // Inizio fetching
 
         if (query[0] === "@") { 
-            tweets_data = await userSearchTweet(query, next_token); 
+            tweets_data = await userSearchTweet(query, next_token, quantity); 
         }
         else if (query[0] === "#") { 
-            tweets_data = await hashtagSearchTweet(query, next_token);
+            tweets_data = await hashtagSearchTweet(query, next_token, quantity);
         }
 
         this.setState({ fetching: false }); // Termine fetching
