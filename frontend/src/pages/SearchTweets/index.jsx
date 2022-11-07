@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
-import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
+import { keywordSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
 import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
@@ -188,8 +188,8 @@ class SearchTweets extends React.Component {
             if (query[0] === "@") { 
                 tweets_data = await userSearchTweet(query, next_token, quantity); 
             }
-            else if (query[0] === "#") { 
-                tweets_data = await hashtagSearchTweet(query, next_token, quantity);
+            else if (query !== "") { 
+                tweets_data = await keywordSearchTweet(query, next_token, quantity);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
