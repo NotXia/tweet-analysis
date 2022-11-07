@@ -24,10 +24,13 @@ describe("Test ricerca tweet", function () {
         }
     });
 
-    test("Ricerca 120 tweet per hashtag", async function () {
+    /**
+     * Questo test ricerca un numero esagerato di tweet negli ultimi 7 giorni, che non esistono. Restituisce quindi tutti i tweet negli ultimi 7 giorni
+     */
+    test("Ricerca 99999 tweet per hashtag", async function () {
         const query = "#reazioneacatena";
         const max_results = await getCountRecentHashtagTweets(query);
-        const tweetsPage = await multipleTweetsFetch(getTweetsByHashtag, query, "", 120);
+        const tweetsPage = await multipleTweetsFetch(getTweetsByHashtag, query, "", 99999);
         expect( tweetsPage.tweets.length ).toBeLessThanOrEqual(max_results);
         for (const tweet of tweetsPage.tweets) {
             expect( tweet.name ).toBeDefined();
