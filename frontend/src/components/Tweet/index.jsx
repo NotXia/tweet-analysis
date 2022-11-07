@@ -28,6 +28,10 @@ class Tweet extends React.Component {
         this.carousel_id = `media-carousel-${this.props.tweet.id}`;
     }
 
+    shouldComponentUpdate(next_props, next_state) {
+        return this.props.tweet.id !== next_props.tweet.id; // Aggiorna solo se il tweet cambia
+    }
+
     componentDidMount() {
         // Richiamato quando si cambia slide del carousel
         document.querySelector(`#${this.carousel_id}`).addEventListener("slid.bs.carousel", (e) => {

@@ -10,6 +10,7 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
 
 
 ChartJS.register(
@@ -36,11 +37,14 @@ class TweetsTimeChart extends React.Component {
     
     }
 
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.labels) !== JSON.stringify(next_state.labels) ||
+               JSON.stringify(this.state.data) !== JSON.stringify(next_state.data);
+    }
+
     componentDidUpdate() {
         const graph_data = this.tweetsPerDay();
-
-        if (JSON.stringify(graph_data.labels) === JSON.stringify(this.state.labels) && JSON.stringify(graph_data.data) === JSON.stringify(this.state.data)) 
-            return;
         
         this.setState({
             labels: graph_data.labels,

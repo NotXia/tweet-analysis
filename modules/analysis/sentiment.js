@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { detectLanguage } = require("./language.js");
 const sentimentManager = new (require("node-nlp").SentimentManager)();
 const sentimentMultilang = require("sentiment-multilang");

@@ -1,4 +1,3 @@
-require("dotenv").config();
 const lngDetector = new (require("languagedetect"));
 lngDetector.setLanguageType("iso2");
 
