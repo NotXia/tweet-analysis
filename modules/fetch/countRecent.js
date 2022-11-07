@@ -5,8 +5,8 @@ module.exports = { getCountRecentHashtagTweets: getCountRecentHashtagTweets }
 
 /** 
  * Restituisce il numero totale di tweet di un dato hashtag negli ultimi 7 giorni.
- * @param {string} hashtag      Hashtag da ricercare
- * @returns {number}            Numero di tweet negli ultimi 7 giorni
+ * @param {string} hashtag               Hashtag da ricercare
+ * @returns {Promise<number>}            Numero di tweet negli ultimi 7 giorni
  */
 async function getCountRecentHashtagTweets(hashtag) {
     let options = {
