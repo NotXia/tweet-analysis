@@ -9,7 +9,7 @@ const cors = require("cors");
 
 const analysis_router = require("./routes/analysis.js");
 const user_router = require("./routes/user.js");
-const hashtag_router = require("./routes/hashtag.js");
+const keyword_router = require("./routes/keyword.js");
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +20,7 @@ app.use(cors({ origin: ["http://localhost:3000", "https://tcxia.ddns.net"] }));
 // API
 app.use("/analysis", analysis_router);
 app.use("/tweets", user_router);
-app.use("/tweets", hashtag_router);
+app.use("/tweets", keyword_router);
 
 
 app.use(error_handler); // Gestore errori
