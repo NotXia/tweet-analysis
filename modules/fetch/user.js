@@ -74,7 +74,7 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10, star
 /**
  * Chiamata alle API di Twitter per ottenere i dati di un utente dato il suo username
  * @param {string} username             Username dell'utente
- * @returns {Object}                    Dati vari dell'utente
+ * @returns {Promise<Object>}           Dati vari dell'utente
  */
 async function _usr_fetch(username) {
     //Normalizza lo username inserito
@@ -104,7 +104,7 @@ async function _usr_fetch(username) {
  * @param {number} quantity                       Quantità di tweet da visualizzare
  * @param {number} start_time                     Data minima dei tweet da ottenere (facoltativo)
  * @param {number} end_time                       Data massima dei tweet da ottenere (facoltativo)
- * @returns {Object[]}                            Array di 10 tweet ciascuno con informazioni varie
+ * @returns {Promise<Object[]>}                   Array di 10 tweet ciascuno con informazioni varie
  */
 async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
     const limit = new Date('2010-11-06T00:00:01Z');

@@ -88,10 +88,6 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_ti
     let aweekago = new Date(moment(today).subtract(7, 'days'));
     const date = _normalizeDate(aweekago, start_time, end_time);
 
-    
-    // if (date.start_time != "" && moment(date.start_time).isBefore(aweekago)) { date.start_time = ''; }
-    // if (date.end_time != "" && moment(date.end_time).isBefore(aweekago)) { throw new Error('Data di fine non valida'); }
-
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {

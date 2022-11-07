@@ -5,7 +5,7 @@ async function tweetsByUser(req, res) {
     let tweets_response;
 
     try {
-        tweets_response = await multipleTweetsFetch(getTweetsByUser, req.query.user, req.query.pag_token, req.query.quantity);
+        tweets_response = await multipleTweetsFetch(getTweetsByUser, req.query.user, req.query.pag_token, req.query.quantity, req.query.start_time, req.query.end_time);
     } catch (error) {
         res.sendStatus(500);
         return;
