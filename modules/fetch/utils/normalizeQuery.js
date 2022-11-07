@@ -8,6 +8,7 @@ module.exports = {
  * @returns {string}                Query normalizzata
  */
 function _normalizeQuery(query) {
+    if(query[0] !== '@' && query[0] !== '#') { query = query.trim(); return query; }
     if(query.length == 0) { return ""; }
     
     query = query.replace(/\s/g, '');   // Rimuove tutti gli spazi
