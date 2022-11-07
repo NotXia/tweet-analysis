@@ -7,25 +7,25 @@ const moment = require('moment');
 moment().format();
 
 module.exports = {
-    getTweetsByHashtag: getTweetsByHashtag,
+    getTweetsByKeyword: getTweetsByKeyword,
 
     testing : {
-        normalizeHashtag: _normalizeQuery
+        normalizeKeyword: _normalizeQuery
     }
 };
 
 /**
  * Organizza i tweet interrogati.
- * @param {string} hashtag Hashtag da ricercare
+ * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
  * @param {string} pagination_token Token della prossima pagina
  * @param {number} quantity Numero di tweet da ricercare
  * @param {number} start_time Data minima dei tweet da ottenere
  * @param {number} end_time Data massima dei tweet da ottenere
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
-async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, start_time = '', end_time = '') {
-    if (!hashtag) { throw new Error("Hashtag mancante"); }
-    let fetchedTweets = await _hashtagFetch(hashtag, pagination_token, quantity, start_time, end_time);
+async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+    if (!keyword) { throw new Error("Parola chiave mancante"); }
+    let fetchedTweets = await _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
     if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
@@ -72,16 +72,16 @@ async function getTweetsByHashtag(hashtag, pagination_token="", quantity=10, sta
 }
 
 /**
- * Interroga le API di Twitter per ottenere una lista di tweet dato l'hashtag con i parametri indicati
- * @param {string} hashtag Hashtag da ricercare
+ * Interroga le API di Twitter per ottenere una lista di tweet data una parola chiave con i parametri indicati
+ * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
  * @param {string} pagination_token Token della prossima pagina
  * @param {number} quantity Numero di tweet da ricercare
  * @param {number} start_time Data minima dei tweet da ottenere
  * @param {number} end_time Data massima dei tweet da ottenere
- * @returns Lista di dimensione max_results tweet
+ * @returns Lista di dimensione richiesta tweet se possibile, altrimenti restituisce il massimo numero disponibile.
  */
-async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_time = '', end_time = '') {
-    hashtag = _normalizeQuery(hashtag);
+async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+    keyword = _normalizeQuery(keyword);
 
     // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
     let today = new Date();
@@ -91,7 +91,7 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_ti
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `${hashtag} has:hashtags -is:reply -is:retweet`,             // Filtra per hashtag e rimuove i retweet e le risposte
+            query: `${keyword} -is:reply -is:retweet`,                          // Filtra per parola chiave e rimuove i retweet e le risposte
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
