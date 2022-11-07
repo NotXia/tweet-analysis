@@ -5,6 +5,7 @@ import $ from "jquery";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { sameTweets } from "../../modules/utilities/tweetListComparison";
+import { removeEmojis, removeURLs, removeNewLine, removeMultipleSpaces } from "../../modules/utilities/stringUtils";
 
 
 /**
@@ -109,11 +110,11 @@ class WordCloud extends React.Component {
         if (!sentence) { // Cache miss
             sentence = original_sentence;
 
-            sentence = sentence.replace(/(?:https?|ftp|http):\/\/[\n\S]+/g, " ");       // Rimuove URL
-            sentence = sentence.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2580-\u27BF]|\uD83E[\uDD10-\uDDFF]/g, " ");     // Rimuove emoji
-            sentence = sentence.replace(/(\r\n|\n|\r)/gm, " ");     // Rimuove a capo
+            sentence = removeURLs(sentence);
+            sentence = removeEmojis(sentence);
+            sentence = removeNewLine(sentence);
             sentence = sentence.toUpperCase();
-            sentence = sentence.replace( /\s\s+/g, " ");            // Rimuove spazi multipli
+            sentence = removeMultipleSpaces(sentence);
             sentence = sentence.trim();
     
             if (sentence !== "") { 
