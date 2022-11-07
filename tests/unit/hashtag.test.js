@@ -165,9 +165,7 @@ describe("Test ricerca tweet dato hashtag", function () {
             expect( error ).toBeDefined();
         }
     });
-});
 
-describe("Test ricerca tweet dato hashtag vuoto", function () {
     test("Ricerca tweet con hashtag vuoto", async function () {
         try {
             await getTweetsByKeyword("");
