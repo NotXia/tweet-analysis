@@ -18,8 +18,8 @@ class SearchTweets extends React.Component {
             query: "",          // Ricerca          
             next_page: "",      // Chiave alla prossima pagina di ricerca
             quantity: 0,        // Numero di ricerche da effettuare
-            startDate: "",      // Data di inizio da dove cercare
-            endDate: "",        // Data di fine
+            start_date: "",      // Data di inizio da dove cercare
+            end_date: "",        // Data di fine
 
             fetching: false,    // Indica se attualmente si sta richiedendo dei tweet
 
@@ -32,8 +32,8 @@ class SearchTweets extends React.Component {
         this.input = {          // Dati presi quando si submitta il form
             query: React.createRef(),
             quantity: React.createRef(),
-            startDate: React.createRef(),
-            endDate: React.createRef()
+            start_date: React.createRef(),
+            end_date: React.createRef()
         }
     }
 
@@ -91,16 +91,16 @@ class SearchTweets extends React.Component {
                                                                     defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4 ms-3">
+                                                    <div className="col-12 col-md-6 col-lg-4 ms-lg-3">
                                                         <div className="col-12 col-md-5 col-lg-10">
-                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="StartDate">Data di inizio</label>
-                                                            <input className="form-control" id="startDate" type="date" />
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
+                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" />
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4 ms-3">
+                                                    <div className="col-12 col-md-6 col-lg-4 ms-lg-3">
                                                         <div className="col-12 col-md-5 col-lg-10">
-                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="EndDate" max={this.state.today}>Data di fine</label>
-                                                            <input className="form-control" id="endDate" type="date" />
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
+                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="date" />
                                                         </div>
                                                     </div>
                                                 </div>    
@@ -142,20 +142,27 @@ class SearchTweets extends React.Component {
         </>);
     }
 
+    /**
+     * Funzione asincrona richiamata a submit form
+     */
     async searchTweets(e) {
         e.preventDefault()
         
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
+            const start_date = this.input.start_date.current.value;
+            const end_date = this.input.end_date.current.value;
             this.tweets_buffer = [];
-            let tweets_data = await this.fetchTweets(query, "", quantity);
+            let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
                 query: query,
                 quantity: quantity,
                 next_page: tweets_data.next_token,
+                start_date: start_date,
+                end_date: end_date,
                 error_message:""
             })
         }
@@ -173,11 +180,13 @@ class SearchTweets extends React.Component {
         try {
             const query = this.state.query;
             const quantity = parseInt(this.input.quantity.current.value.trim());
+            const start_date = this.state.start_date;
+            const end_date = this.state.end_date;
             
             if(this.state.next_page==="") {
                 return;
             }
-            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity);
+            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity, start_date, end_date);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
@@ -197,11 +206,17 @@ class SearchTweets extends React.Component {
      * @param {number} quantity             Numero di tweet da ricercare (default 10)
      * @returns {object[]}                  Array dei tweet trovati
      */
-    async fetchTweets(query, next_token="", quantity=10) {
+    async fetchTweets(query, next_token="", quantity=10, start_date="", end_date="") {
         quantity = parseInt(quantity);
 
         let fetched_tweets = [];
-        let tweets_data = { tweets: [], next_token: "", quantity:undefined};
+        let tweets_data = { 
+            tweets: [],
+            next_token: "",
+            quantity:undefined,
+            start_date: "",
+            end_date: ""
+        };
         
         this.setState({ fetching: true }); // Inizio fetching
 
@@ -215,10 +230,10 @@ class SearchTweets extends React.Component {
         // Se il buffer non soddisfa la richiesta
         if (quantity > 0) {
             if (query[0] === "@") { 
-                tweets_data = await userSearchTweet(query, next_token, quantity); 
+                tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
             }
             else if (query[0] === "#") { 
-                tweets_data = await hashtagSearchTweet(query, next_token, quantity);
+                tweets_data = await hashtagSearchTweet(query, next_token, quantity, start_date, end_date);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
