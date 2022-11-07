@@ -4,6 +4,7 @@ import { removeStopwords } from "../../modules/analysis/stopwords";
 import $ from "jquery";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
 
 
 /**
@@ -32,6 +33,11 @@ class WordCloud extends React.Component {
         };
 
         this.no_stopwords_cache = {};
+    }
+
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.words) !== JSON.stringify(next_state.words);
     }
 
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud

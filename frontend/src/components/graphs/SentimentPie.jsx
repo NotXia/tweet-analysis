@@ -2,6 +2,7 @@ import React from "react";
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { sentiment } from "../../modules/analysis/sentiment";
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
@@ -15,6 +16,11 @@ class SentimentPie extends React.Component {
         };
         
         this.sentiment_cache = {};
+    }
+
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.sentimentArray) !== JSON.stringify(next_state.sentimentArray)
     }
 
     //Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori del grafico
