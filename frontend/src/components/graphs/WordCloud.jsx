@@ -4,6 +4,8 @@ import { removeStopwords } from "../../modules/analysis/stopwords";
 import $ from "jquery";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
+import { removeEmojis, removeURLs, removeNewLine, removeMultipleSpaces } from "../../modules/utilities/stringUtils";
 
 
 /**
@@ -34,6 +36,11 @@ class WordCloud extends React.Component {
         this.no_stopwords_cache = {};
     }
 
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.words) !== JSON.stringify(next_state.words);
+    }
+
     // Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori della word cloud
     componentDidUpdate() {
         (async () => {
@@ -49,6 +56,9 @@ class WordCloud extends React.Component {
                 text: word,
                 value: globalWordCount[word]
             }));
+
+            out = out.slice(0, 80); // Limita le parole considerate
+
             if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { 
                 const all_values = Object.values(globalWordCount);
                 const min_count_value = Math.min(...all_values);
@@ -103,11 +113,11 @@ class WordCloud extends React.Component {
         if (!sentence) { // Cache miss
             sentence = original_sentence;
 
-            sentence = sentence.replace(/(?:https?|ftp|http):\/\/[\n\S]+/g, " ");       // Rimuove URL
-            sentence = sentence.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2580-\u27BF]|\uD83E[\uDD10-\uDDFF]/g, " ");     // Rimuove emoji
-            sentence = sentence.replace(/(\r\n|\n|\r)/gm, " ");     // Rimuove a capo
+            sentence = removeURLs(sentence);
+            sentence = removeEmojis(sentence);
+            sentence = removeNewLine(sentence);
             sentence = sentence.toUpperCase();
-            sentence = sentence.replace( /\s\s+/g, " ");            // Rimuove spazi multipli
+            sentence = removeMultipleSpaces(sentence);
             sentence = sentence.trim();
     
             if (sentence !== "") { 
@@ -121,6 +131,8 @@ class WordCloud extends React.Component {
         const words = sentence.split(" ");
     
         for(const word of words) {
+            if (word.length === 1) { continue; } // Rimuove parole di una lettera
+
             if(res[word]) { res[word]++; }
             else { res[word] = 1; }
         }

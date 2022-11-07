@@ -92,7 +92,7 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di inizio prima del limite", async function () {
-        const tweets = await getTweetsByHashtag("#reazioneacatena", '', 20, '2009-11-06T00:00:01Z');
+        const tweets = await getTweetsByHashtag("#reazioneacatena", '', 20, '2022-10-06T00:00:01Z');
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= limit ).toBeTruthy();
@@ -150,7 +150,7 @@ describe("Test ricerca tweet dato hashtag", function () {
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima del limite", async function () {
         try {
-            await getTweetsByHashtag("#reazioneacatena", '', 20, '', '2009-11-06T00:00:01Z');
+            await getTweetsByHashtag("#reazioneacatena", '', 20, '', '2022-10-06T00:00:01Z');
             fail('Eccezione non lanciata');
         } catch (error) {
             expect( error ).toBeDefined();

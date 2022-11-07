@@ -5,7 +5,7 @@ moment().format();
 const { getTweetsByUser, testing } = require("../../modules/fetch/user.js");
 
 let userTest;
-const limit = new Date('2010-11-06T00:00:00.000Z');
+const limit = new Date('2010-11-06T00:00:01Z');
 const today = new Date();
 today.setHours(23,59,59,999);
 let future = new Date();
