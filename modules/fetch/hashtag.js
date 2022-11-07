@@ -95,7 +95,7 @@ async function _hashtagFetch(hashtag, pagination_token="", quantity=10, start_ti
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `#${hashtag} -is:reply -is:retweet`,                         // Filtra per hashtag e rimuove i retweet
+            query: `${hashtag} has:hashtags -is:reply -is:retweet`,             // Filtra per hashtag e rimuove i retweet e le risposte
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet

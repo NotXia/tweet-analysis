@@ -1,3 +1,5 @@
+const { getCountRecentHashtagTweets } = require("../../modules/fetch/countRecent.js");
+
 module.exports = { multipleTweetsFetch: multipleTweetsFetch };
 
 /**
@@ -12,8 +14,13 @@ module.exports = { multipleTweetsFetch: multipleTweetsFetch };
  */
 async function multipleTweetsFetch(fetcher, query, pagination_token="", quantity=10, start_time='', end_time='') {
     let fetchedTweets = [];
+    
+    if (query[0] === '#') { 
+        const max_tweets = await getCountRecentHashtagTweets(query);
+        if (max_tweets < quantity) { quantity = max_tweets; }
+    }
+    
     let remaining = quantity;
-
     while (remaining > 0) {
         try {
             if (remaining < 10) { remaining = 10; }                                                                                // Imposta la quantità a 10, ovvero il minimo per le API di Twitter
