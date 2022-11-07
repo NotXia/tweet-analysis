@@ -1,11 +1,11 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Helmet } from 'react-helmet'
-import Navbar from "../../components/Navbar"
-import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
-import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
-import Tweet from "../../components/Tweet"
+import { Helmet } from 'react-helmet';
+import Navbar from "../../components/Navbar";
+import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js";
+import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js";
+import Tweet from "../../components/Tweet";
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
@@ -14,22 +14,26 @@ class SearchTweets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tweets: [],
-            query: "",
-            page: "",
-            next_page: "",
-            quantity: 0,
+            tweets: [],         // Array dei tweet
+            query: "",          // Ricerca          
+            next_page: "",      // Chiave alla prossima pagina di ricerca
+            quantity: 0,        // Numero di ricerche da effettuare
+            startDate: "",      // Data di inizio da dove cercare
+            endDate: "",        // Data di fine
 
-            fetching: false, // Indica se attualmente si sta richiedendo dei tweet
+            fetching: false,    // Indica se attualmente si sta richiedendo dei tweet
 
+            today: "",          // Data di oggi
             error_message: ""
         };
 
         this.tweets_buffer = [];
 
-        this.input = {
+        this.input = {          // Dati presi quando si submitta il form
             query: React.createRef(),
-            quantity: React.createRef()
+            quantity: React.createRef(),
+            startDate: React.createRef(),
+            endDate: React.createRef()
         }
     }
 
@@ -51,6 +55,7 @@ class SearchTweets extends React.Component {
                     </div>
 
                     <div className="row my-2">
+                        {/* Tweet fetchati */}
                         <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
                             <div className="list-group border border-white rounded-4">
                                 {
@@ -68,20 +73,34 @@ class SearchTweets extends React.Component {
                                 <div className="d-flex justify-content-center w-100 p-2 ">
                                     <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
+                                            {/* Barra primaria - Query */}
                                             <div className="input-group flex-nowrap">
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
+                                            {/* Opzioni avanzate */}
                                             <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className="collapse" id="advancedOptions">
-                                                <div className="d-flex flex-row">
+                                                <div className="d-flex flex-row align-items-center justify-content-between">
                                                     <div className="col-12 col-md-6 col-lg-4">
-                                                        <div className="col-12 col-md-10 col-lg-8">
+                                                        <div className="col-12 col-md-10 col-lg-10">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
                                                             <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
                                                                     defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 col-md-6 col-lg-4 ms-3">
+                                                        <div className="col-12 col-md-5 col-lg-10">
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="StartDate">Data di inizio</label>
+                                                            <input className="form-control" id="startDate" type="date" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 col-md-6 col-lg-4 ms-3">
+                                                        <div className="col-12 col-md-5 col-lg-10">
+                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="EndDate" max={this.state.today}>Data di fine</label>
+                                                            <input className="form-control" id="endDate" type="date" />
                                                         </div>
                                                     </div>
                                                 </div>    
@@ -90,14 +109,15 @@ class SearchTweets extends React.Component {
                                     </div>
                                 </div>
 
-                                {/* Carica tweet */}
+                                {/* Bottone Prossima pagina */}
                                 <div>
                                     <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} >Attualmente mostrati: {this.state.tweets.length} tweet</p>
                                     <div className="d-flex justify-content-center w-100 p-2">
                                         { this.nextPageButton() }
                                     </div>
                                 </div>
-
+                                
+                                {/* Grafici */}
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
                                         <div style={{ height: "30vh", width: "100%" }}>
@@ -144,6 +164,9 @@ class SearchTweets extends React.Component {
         }
     }
 
+    /**
+     * Richiede la prossima pagina della ricerca
+     */
     async fetchNextPage(e) {
         e.preventDefault()
 
@@ -158,7 +181,6 @@ class SearchTweets extends React.Component {
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
-                page: this.state.next_page,
                 next_page: tweets_data.next_token,
                 error_message:""
             })
@@ -168,6 +190,13 @@ class SearchTweets extends React.Component {
         }
     }
 
+    /**
+     * Ricerca i tweet inerenti alla richiesta
+     * @param {string} query                Username o hashtag della ricerca
+     * @param {string} next_token           Token da dove iniziare la ricerca (default "")
+     * @param {number} quantity             Numero di tweet da ricercare (default 10)
+     * @returns {object[]}                  Array dei tweet trovati
+     */
     async fetchTweets(query, next_token="", quantity=10) {
         quantity = parseInt(quantity);
 
