@@ -106,9 +106,17 @@ class TweetsTimeChart extends React.Component {
             count[timestamp]++;
         }
 
-        const days = Object.keys(count);
-        days.sort();
+        let days = Object.keys(count);
+        const start_day = Math.min(...days);
+        const end_day = Math.max(...days);
         
+        // Genera i giorni compresi nell'intervallo
+        days = [];
+        for (let i=moment.unix(start_day); i<=moment.unix(end_day); i=i.add(1, "days")) {
+            const day = i.startOf("day").unix();
+            days.push(day);
+        }
+
         return {
             labels: days.map((day) => moment.unix(day).format("DD-MM-YYYY")),
             data: days.map((day) => count[day])
