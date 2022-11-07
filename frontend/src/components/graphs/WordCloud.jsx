@@ -56,6 +56,9 @@ class WordCloud extends React.Component {
                 text: word,
                 value: globalWordCount[word]
             }));
+
+            out = out.slice(0, 80); // Limita le parole considerate
+
             if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { 
                 const all_values = Object.values(globalWordCount);
                 const min_count_value = Math.min(...all_values);
@@ -128,6 +131,8 @@ class WordCloud extends React.Component {
         const words = sentence.split(" ");
     
         for(const word of words) {
+            if (word.length === 1) { continue; } // Rimuove parole di una lettera
+
             if(res[word]) { res[word]++; }
             else { res[word] = 1; }
         }
