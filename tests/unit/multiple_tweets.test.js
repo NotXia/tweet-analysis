@@ -3,12 +3,12 @@ require("dotenv").config();
 const { getTweetsByKeyword } = require("../../modules/fetch/keyword.js");
 const { getTweetsByUser } = require("../../modules/fetch/user.js");
 const { multipleTweetsFetch } = require("../../modules/fetch/multiple_tweets.js");
-const { getCountRecentHashtagTweets } = require("../../modules/fetch/countRecent.js");
+const { getCountRecentKeywordTweets } = require("../../modules/fetch/countRecent.js");
 
 describe("Test ricerca tweet", function () {
     test("Ricerca 40 tweet per hashtag", async function () {
         const query = "#reazioneacatena";
-        const max_results = await getCountRecentHashtagTweets(query);
+        const max_results = await getCountRecentKeywordTweets(query);
         const tweetsPage = await multipleTweetsFetch(getTweetsByKeyword, query, "", 40);
         expect( tweetsPage.tweets.length ).toBeLessThanOrEqual(max_results);
         for (const tweet of tweetsPage.tweets) {
@@ -29,7 +29,7 @@ describe("Test ricerca tweet", function () {
      */
     test("Ricerca 99999 tweet per hashtag", async function () {
         const query = "#reazioneacatena";
-        const max_results = await getCountRecentHashtagTweets(query);
+        const max_results = await getCountRecentKeywordTweets(query);
         const tweetsPage = await multipleTweetsFetch(getTweetsByKeyword, query, "", 99999);
         expect( tweetsPage.tweets.length ).toBeLessThanOrEqual(max_results);
         for (const tweet of tweetsPage.tweets) {

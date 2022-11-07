@@ -4,7 +4,7 @@ const session = require("supertest-session");
 const moment = require('moment');
 moment().format();
 
-const { getCountRecentHashtagTweets } = require("../../modules/fetch/countRecent.js");
+const { getCountRecentKeywordTweets } = require("../../modules/fetch/countRecent.js");
 
 let curr_session = session(app);
 
@@ -75,7 +75,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
 
     test("Tweet dato hashtag, pagination token e quantità", async function () {
         const query = "#reazioneacatena";
-        const max_results = await getCountRecentHashtagTweets(query);
+        const max_results = await getCountRecentKeywordTweets(query);
         const res = await curr_session.get("/tweets/keyword").query({ keyword: query, pag_token: pagination_token, quantity: 50 }).expect(200);
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets.length ).toBeLessThanOrEqual(max_results);

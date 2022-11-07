@@ -19,8 +19,7 @@ date2.setHours(23,59,59,999);
 
 describe("Test normalizzazione stringa di hashtag", function () {
     test("Normalizzazione testo con spazi", function () {
-        expect( testing.normalizeKeyword("stringa con spazi") ).toEqual("stringaconspazi");
-        expect( testing.normalizeKeyword("    stringa con spazi    ") ).toEqual("stringaconspazi");
+        expect( testing.normalizeKeyword("    stringa con spazi    ") ).toEqual("stringa con spazi");
     });
 });
 
