@@ -100,8 +100,8 @@ describe("Richieste corrette a /tweets/keyword", function () {
     });
 
     test("Tweet dato hashtag con spazi", async function () {
-        const res = await curr_session.get("/tweets/keyword").query({ keyword: " l eredita " }).expect(200);
-        const res2 = await curr_session.get("/tweets/keyword").query({ keyword: "leredita" });
+        const res = await curr_session.get("/tweets/keyword").query({ keyword: " #l eredita " }).expect(200);
+        const res2 = await curr_session.get("/tweets/keyword").query({ keyword: "#leredita" });
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets ).toEqual( res2.body.tweets );
         expect( res.body.next_token ).toBeDefined();
