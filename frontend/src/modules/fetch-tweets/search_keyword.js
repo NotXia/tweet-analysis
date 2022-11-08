@@ -12,7 +12,7 @@ import axios from "axios";
  */
 
 
-export async function hashtagSearchTweet(hashtag, pag_token="", quantity=10, start_time="", end_time="") {
+export async function keywordSearchTweet(keyword, pag_token="", quantity=10, start_time="", end_time="") {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/tweets/keyword`,
         params: {

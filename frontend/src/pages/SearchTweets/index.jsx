@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
-import { keywordSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
+import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js"
 import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";

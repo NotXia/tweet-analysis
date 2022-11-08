@@ -25,7 +25,7 @@ date2.setHours(23,59,59,999);
 
 describe("Richieste corrette a /tweets/keyword", function () {
     test("Tweet data solo parola chiave", async function () {
-        const res = await curr_session.get("/tweets/keyword").query({ keyword: "l'eredita" }).expect(200);
+        const res = await curr_session.get("/tweets/keyword").query({ keyword: "leredita" }).expect(200);
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
         for(const tweet of res.body.tweets) {
@@ -50,7 +50,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
     });
 
     test("Tweet data parola chiave e pagination token", async function () {
-        const res = await curr_session.get("/tweets/keyword").query({ keyword: "l'eredita", pag_token: pagination_token }).expect(200);
+        const res = await curr_session.get("/tweets/keyword").query({ keyword: "leredita", pag_token: pagination_token }).expect(200);
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
         for(const tweet of res.body.tweets) {
