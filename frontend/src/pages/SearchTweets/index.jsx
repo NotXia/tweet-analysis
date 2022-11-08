@@ -273,7 +273,11 @@ class SearchTweets extends React.Component {
         return tweets_data;
     }
     
-
+    /**
+     * Modifica il limite della selezione per la data minima a seconda del tipo di ricerca
+     * Se la tipologia della query attuale è "#" oppure parola chiave, saranno selezionabili solo oggi e i 7 giorni prima di oggi
+     * Altrimenti viene reimpostato il limite normale (2010-11-06)
+     */
     dateRangeModifier(e) {
         e.preventDefault();
         const query = this.input.query.current.value;
