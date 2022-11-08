@@ -18,8 +18,8 @@ const month = (today.getMonth() + 1)<10? '0' + (today.getMonth()+1).toString() :
 const day = today.getDate()<10? '0' + (today.getDate()).toString() : today.getDate();
 const year = today.getFullYear();
 
-const __max_date_limit = year + '-' + month + '-' + day;
-const __min_date_limit = "2010-11-06";
+const __max_date_limit = year + '-' + month + '-' + day + "T23:59";
+const __min_date_limit = "2010-11-06T00:00";
 
 
 class SearchTweets extends React.Component {
@@ -108,14 +108,14 @@ class SearchTweets extends React.Component {
                                                     <div className="col-12 col-md-6 col-lg-4">
                                                         <div className="col-12 col-md-5 col-lg-11">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" 
+                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="datetime-local" 
                                                                     min={__min_date_limit} max={this.state.current_max_date} onChange={(e) => { this.setState({ current_min_date: e.target.value }) }} />
                                                         </div>
                                                     </div>
                                                     <div className="col-12 col-md-6 col-lg-4 ms-1">
                                                         <div className="col-12 col-md-5 col-lg-11">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
-                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
+                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="datetime-local" 
                                                                     min={this.state.current_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ current_max_date: e.target.value }) }} />
                                                         </div>
                                                     </div>
@@ -162,8 +162,9 @@ class SearchTweets extends React.Component {
      * Funzione asincrona richiamata a submit form
      */
     async searchTweets(e) {
-        e.preventDefault()
-        
+        e.preventDefault();
+        console.log(this.input.start_date.current.value);
+        console.log(this.input.end_date.current.value);
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
