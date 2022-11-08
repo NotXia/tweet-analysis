@@ -14,29 +14,29 @@ import WordCloud from "../../components/graphs/WordCloud";
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
  */
 const today = new Date();
-const month = (today.getMonth() + 1)<10? '0' + (today.getMonth()+1).toString() : today.getMonth()+1;
-const day = today.getDate()<10? '0' + (today.getDate()).toString() : today.getDate();
-const year = today.getFullYear();
+const date = (today.toISOString()).split("T");
 
-const __max_date_limit = year + '-' + month + '-' + day + "T23:59";
-const __min_date_limit = "2010-11-06T00:00";
+const __max_date_limit = date[0];
+const __min_date_limit = "2010-11-06";
 
 
 class SearchTweets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tweets: [],         // Array dei tweet
-            query: "",          // Ricerca          
-            next_page: "",      // Chiave alla prossima pagina di ricerca
-            quantity: 0,        // Numero di ricerche da effettuare
-            start_date: "",     // Data di inizio da dove cercare
-            end_date: "",       // Data di fine
+            tweets: [],                             // Array dei tweet
+            query: "",                              // Ricerca          
+            next_page: "",                          // Chiave alla prossima pagina di ricerca
+            quantity: 0,                            // Numero di ricerche da effettuare
+            start_date: "",                         // Data di inizio da dove cercare
+            end_date: "",                           // Data di fine
 
-            fetching: false,    // Indica se attualmente si sta richiedendo dei tweet
+            fetching: false,                        // Indica se attualmente si sta richiedendo dei tweet
 
-            current_min_date: __min_date_limit,
-            current_max_date: __max_date_limit,
+            date_week_limited: false,
+            limited_min_date: __min_date_limit,     // Limite minimo imposto per tipo di ricerca
+            select_min_date: __min_date_limit,      // Limite minimo attuale della data (a init: "2010-11-06")
+            select_max_date: __max_date_limit,      // Limite massimo attuale della data (a init: data di oggi)
             error_message: ""
         };
 
@@ -88,36 +88,34 @@ class SearchTweets extends React.Component {
                                     <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             {/* Barra primaria - Query */}
-                                            <div className="input-group flex-nowrap">
-                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" />
+                                            <div className="input-group flex">
+                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username"
+                                                        onChange={ (e) => this.dateRangeModifier(e) } />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
-                                            <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                            <p className="ms-1" style={{ fontSize: "0.9rem", color: "grey" }}>Ricerca per hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
                                             {/* Opzioni avanzate */}
-                                            <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <p className="button ms-1 small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className="collapse" id="advancedOptions">
-                                                <div className="d-flex flex-row justify-content-between">
-                                                    <div className="col-12 col-md-6 col-lg-4">
-                                                        <div className="col-12 col-md-10 col-lg-10">
-                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
-                                                            <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
-                                                                    defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
-                                                        </div>
+                                                <div className="row justify-content-between align-items-center">
+                                                    {/* Numero di ricerche */}
+                                                    <div className="col-12 col-md-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
+                                                                defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4">
-                                                        <div className="col-12 col-md-5 col-lg-11">
-                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="datetime-local" 
-                                                                    min={__min_date_limit} max={this.state.current_max_date} onChange={(e) => { this.setState({ current_min_date: e.target.value }) }} />
-                                                        </div>
+                                                    {/* Data di inizio */}
+                                                    <div className="col-12 col-md-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
+                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" 
+                                                                min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: e.target.value }) }} />
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4 ms-1">
-                                                        <div className="col-12 col-md-5 col-lg-11">
-                                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
-                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="datetime-local" 
-                                                                    min={this.state.current_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ current_max_date: e.target.value }) }} />
-                                                        </div>
+                                                    {/* Data di fine */}
+                                                    <div className="col-12 col-md-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
+                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
+                                                                min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: e.target.value }) }} />
                                                     </div>
                                                 </div>    
                                             </div>
@@ -159,12 +157,11 @@ class SearchTweets extends React.Component {
     }
 
     /**
-     * Funzione asincrona richiamata a submit form
+     * Funzione richiamata al submit del form
      */
     async searchTweets(e) {
         e.preventDefault();
-        console.log(this.input.start_date.current.value);
-        console.log(this.input.end_date.current.value);
+        
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
@@ -221,6 +218,8 @@ class SearchTweets extends React.Component {
      * @param {string} query                Username o hashtag della ricerca
      * @param {string} next_token           Token da dove iniziare la ricerca (default "")
      * @param {number} quantity             Numero di tweet da ricercare (default 10)
+     * @param {string} start_date           Data inizio di ricerca
+     * @param {string} end_date             Data finale di ricerca
      * @returns {object[]}                  Array dei tweet trovati
      */
     async fetchTweets(query, next_token="", quantity=10, start_date="", end_date="") {
@@ -272,6 +271,36 @@ class SearchTweets extends React.Component {
         tweets_data.tweets = fetched_tweets;
         return tweets_data;
     }
+    
+    /**
+     * Modifica il limite della selezione per la data minima a seconda del tipo di ricerca
+     * Se la tipologia della query attuale è "#" oppure parola chiave, saranno selezionabili solo oggi e i 7 giorni prima di oggi
+     * Altrimenti viene reimpostato il limite normale (2010-11-06)
+     */
+    dateRangeModifier(e) {
+        e.preventDefault();
+        const query = this.input.query.current.value;
+        var aweekago = new Date();
+        
+        if (query[0] !== "@" && this.state.date_week_limited === false) {
+            
+            aweekago.setDate(aweekago.getDate()-7);
+            const newLimit = ((aweekago.toISOString()).split("T"))[0];
+            this.setState({
+                date_week_limited: true,
+                limited_min_date: newLimit,
+                select_min_date: newLimit,
+                select_max_date: __max_date_limit
+            });
+        }
+        else if(query[0] === "@" && this.state.date_week_limited === true) {
+            this.setState({
+                date_week_limited: false,
+                limited_min_date: __min_date_limit
+            });
+        }
+    }
+    
 
     nextPageButton() {
         return (
