@@ -3,11 +3,11 @@ const date_validator = require("./validators/date.js");
 const moment = require('moment');
 moment().format();
 
-const tweetsByHashtag = [
+const tweetsByKeyword = [
     function (req, _, next) {       //Validazione dell'input
         let errors = {};
 
-        if (!req.query.hashtag)     { errors.hashtag = "Hashtag mancante"; }
+        if (!req.query.keyword)     { errors.keyword = "Parola chiave mancante"; }
         if (!req.query.pag_token)   { req.query.pag_token = ""; }
         if (!req.query.quantity)    { req.query.quantity = 10; }
         if (!req.query.start_time)  { req.query.start_time = ''; }
@@ -31,5 +31,5 @@ const tweetsByHashtag = [
 ];
 
 module.exports = {
-    tweetsByHashtagValidation: tweetsByHashtag
+    tweetsByKeywordValidation: tweetsByKeyword
 };

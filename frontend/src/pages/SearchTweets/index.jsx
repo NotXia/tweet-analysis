@@ -1,11 +1,11 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Helmet } from 'react-helmet';
-import Navbar from "../../components/Navbar";
-import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js";
-import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js";
-import Tweet from "../../components/Tweet";
+import { Helmet } from 'react-helmet'
+import Navbar from "../../components/Navbar"
+import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
+import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js"
+import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
@@ -248,8 +248,8 @@ class SearchTweets extends React.Component {
             if (query[0] === "@") { 
                 tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
             }
-            else if (query[0] === "#") { 
-                tweets_data = await hashtagSearchTweet(query, next_token, quantity, start_date, end_date);
+            else if (query !== "") { 
+                tweets_data = await keywordSearchTweet(query, next_token, quantity);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
