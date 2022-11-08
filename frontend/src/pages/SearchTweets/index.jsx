@@ -161,7 +161,6 @@ class SearchTweets extends React.Component {
      */
     async searchTweets(e) {
         e.preventDefault();
-        console.log(today)
         
         try {
             const query = this.input.query.current.value.trim();
