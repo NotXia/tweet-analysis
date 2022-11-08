@@ -10,6 +10,18 @@ import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
 
+/**
+ * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
+ */
+const today = new Date();
+const month = (today.getMonth() + 1)<10? '0' + (today.getMonth()+1).toString() : today.getMonth()+1;
+const day = today.getDate()<10? '0' + (today.getDate()).toString() : today.getDate();
+const year = today.getFullYear();
+
+const __max_date_limit = year + '-' + month + '-' + day;
+const __min_date_limit = "2010-11-06";
+
+
 class SearchTweets extends React.Component {
     constructor(props) {
         super(props);
@@ -18,12 +30,13 @@ class SearchTweets extends React.Component {
             query: "",          // Ricerca          
             next_page: "",      // Chiave alla prossima pagina di ricerca
             quantity: 0,        // Numero di ricerche da effettuare
-            start_date: "",      // Data di inizio da dove cercare
-            end_date: "",        // Data di fine
+            start_date: "",     // Data di inizio da dove cercare
+            end_date: "",       // Data di fine
 
             fetching: false,    // Indica se attualmente si sta richiedendo dei tweet
 
-            today: "",          // Data di oggi
+            current_min_date: __min_date_limit,
+            current_max_date: __max_date_limit,
             error_message: ""
         };
 
@@ -39,6 +52,7 @@ class SearchTweets extends React.Component {
 
     render() {
         return (<>
+            
             <Helmet>
                 <title>Ricerca tweet</title>
             </Helmet>
@@ -83,7 +97,7 @@ class SearchTweets extends React.Component {
                                             {/* Opzioni avanzate */}
                                             <p className="button ms-1 text-muted small" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className="collapse" id="advancedOptions">
-                                                <div className="d-flex flex-row align-items-center justify-content-between">
+                                                <div className="d-flex flex-row justify-content-between">
                                                     <div className="col-12 col-md-6 col-lg-4">
                                                         <div className="col-12 col-md-10 col-lg-10">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
@@ -91,16 +105,18 @@ class SearchTweets extends React.Component {
                                                                     defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4 ms-lg-3">
-                                                        <div className="col-12 col-md-5 col-lg-10">
+                                                    <div className="col-12 col-md-6 col-lg-4">
+                                                        <div className="col-12 col-md-5 col-lg-11">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" />
+                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" 
+                                                                    min={__min_date_limit} max={this.state.current_max_date} onChange={(e) => { this.setState({ current_min_date: e.target.value }) }} />
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-md-6 col-lg-4 ms-lg-3">
-                                                        <div className="col-12 col-md-5 col-lg-10">
+                                                    <div className="col-12 col-md-6 col-lg-4 ms-1">
+                                                        <div className="col-12 col-md-5 col-lg-11">
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
-                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="date" />
+                                                            <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
+                                                                    min={this.state.current_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ current_max_date: e.target.value }) }} />
                                                         </div>
                                                     </div>
                                                 </div>    

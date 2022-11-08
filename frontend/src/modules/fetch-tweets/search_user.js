@@ -3,7 +3,7 @@ import axios from "axios";
 
 /**
  * Ritorna il risultato della ricerca eseguita
- * @param {String} user                 Utente a cui prendere i tweet
+ * @param {string} user                 Utente a cui prendere i tweet
  * @param {string} pag_token            Token della pagina dei tweet (default "")
  * @param {number} quantity             Numero di tweet da ricercare (default 10)
  * @param {string} start_time           Data di inizio della ricerca
