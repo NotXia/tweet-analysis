@@ -284,14 +284,13 @@ class SearchTweets extends React.Component {
         
         if (query[0] !== "@" && this.state.date_week_limited === false) {
             aweekago.setDate(aweekago.getDate()-7);
-            const newLimit = ((aweekago.toISOString()).split("T"))[0]
-            
+            const newLimit = ((aweekago.toISOString()).split("T"))[0];
             this.setState({
                 date_week_limited: true,
                 limited_min_date: newLimit
             });
         }
-        else {
+        else if(query[0] === "@" && this.state.date_week_limited === true) {
             this.setState({
                 date_week_limited: false,
                 limited_min_date: __min_date_limit
