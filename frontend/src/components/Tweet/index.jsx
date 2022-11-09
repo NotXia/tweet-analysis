@@ -30,7 +30,7 @@ class Tweet extends React.Component {
 
     shouldComponentUpdate(next_props, next_state) {
         return this.props.tweet.id !== next_props.tweet.id ||                               // Aggiorna se il contenuto del tweet cambia
-               this.state.carousel_media_index !== next_state.carousel_media_index;    // Aggiorna se cambia l'indice del carousel
+               this.state.carousel_media_index !== next_state.carousel_media_index;         // Aggiorna se cambia l'indice del carousel
     }
 
     componentDidMount() {
