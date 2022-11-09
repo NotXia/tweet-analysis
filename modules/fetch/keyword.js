@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
 const { _mediaHandler } = require("./utils/mediaHandler");
+const { _placeHandler } = require("./utils/placeHandler");
 const { _normalizeDate } = require("./utils/normalizeDate");
 const { _normalizeQuery } = require("./utils/normalizeQuery");
 const moment = require('moment');
@@ -45,7 +46,7 @@ async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, sta
         let searchedPlace = undefined;
         if (tweetData.geo) {
             let tweetPlaces = fetchedTweets.data.includes.places;
-            searchedPlace = tweetPlaces.find(place => place.id === tweetData.geo.place_id);
+            searchedPlace = _placeHandler(tweetPlaces, tweetData);
         }
 
         // Gestione allegati
@@ -95,7 +96,7 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
-            "place.fields": "country,full_name",                                // Campi della località
+            "place.fields": "country,full_name,geo",                            // Campi della località
             "media.fields": "url,variants",                                     // Campi degli allegati
             "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
         },
