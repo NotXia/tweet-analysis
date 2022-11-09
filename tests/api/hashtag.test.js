@@ -44,6 +44,13 @@ describe("Richieste corrette a /tweets/keyword", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
         pagination_token = res.body.next_token;
@@ -69,6 +76,13 @@ describe("Richieste corrette a /tweets/keyword", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
@@ -95,6 +109,13 @@ describe("Richieste corrette a /tweets/keyword", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });

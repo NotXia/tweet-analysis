@@ -45,6 +45,13 @@ describe("Test ricerca tweet dato hashtag", function () {
             expect( tweet.comments ).toBeDefined();
             expect( tweet.retweets ).toBeDefined();
             expect( tweet.media ).toBeDefined();
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
     });
 
@@ -62,6 +69,13 @@ describe("Test ricerca tweet dato hashtag", function () {
             expect( tweet.comments ).toBeDefined();
             expect( tweet.retweets ).toBeDefined();
             expect( tweet.media ).toBeDefined();
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
     });
 
