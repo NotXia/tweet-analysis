@@ -82,7 +82,12 @@ class SentimentPie extends React.Component {
                     tweetSentiment = "neutral";
                 }
                 else {
-                    tweetSentiment = (await sentiment(tmp_tweet)).sentiment;
+                    try {
+                        tweetSentiment = (await sentiment(tmp_tweet)).sentiment;
+                    }
+                    catch (err) {
+                        tweetSentiment = "unknown";
+                    }
                 }
 
                 this.sentiment_cache[tweet.text] = tweetSentiment
