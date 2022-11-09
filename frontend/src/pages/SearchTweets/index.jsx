@@ -280,7 +280,7 @@ class SearchTweets extends React.Component {
     dateRangeModifier(e) {
         e.preventDefault();
         const query = this.input.query.current.value;
-        var aweekago = new Date();
+        let aweekago = new Date();
         
         if (query[0] !== "@" && this.state.date_week_limited === false) {
             
