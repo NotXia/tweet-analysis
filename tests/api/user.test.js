@@ -36,6 +36,13 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
         pagination_token = res.body.next_token;
@@ -62,6 +69,13 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
@@ -87,12 +101,19 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
 
     test("Tweet dato username con spazi", async function () {
-        const res = await curr_session.get("/tweets/user").query({ user: "  wwe    " }).expect(200);
+        const res = await curr_session.get("/tweets/user").query({ user: "  sweteam12    " }).expect(200);
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
         for(const tweet of res.body.tweets) {
@@ -100,7 +121,7 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.id ).toBeDefined();
             expect( tweet.name ).toBeDefined();
             expect( tweet.username ).toBeDefined();
-            expect( tweet.username.toLowerCase() ).toEqual("wwe");
+            expect( tweet.username.toLowerCase() ).toEqual("sweteam12");
             expect( tweet.pfp ).toBeDefined();
             expect( tweet.text ).toBeDefined();
             expect( tweet.time ).toBeDefined();
@@ -112,6 +133,13 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
@@ -137,6 +165,13 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
@@ -162,6 +197,13 @@ describe("Richieste corrette a /tweets/user", function () {
             expect( tweet.retweets ).not.toBeNaN();
             expect( tweet.media ).toBeDefined();
             expect(Array.isArray(tweet.media)).toBe(true);
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
         expect( res.body.next_token ).toBeDefined();
     });
