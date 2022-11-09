@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require('axios');
 const { _mediaHandler } = require("./utils/mediaHandler");
+const { _placeHandler } = require("./utils/placeHandler");
 const { _normalizeDate } = require("./utils/normalizeDate");
 const { _normalizeQuery } = require("./utils/normalizeQuery");
 
@@ -21,7 +22,7 @@ module.exports = {
  * @param {number} start_time                   Data minima dei tweet da ottenere (facoltativo)
  * @param {number} end_time                     Data massima dei tweet da ottenere (facoltativo)
  * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: {country: string, full_name: string, id: string}, media: [{url: string, type: string}]}], next_token: string}
+ *          location: {id: string, full_name: string, country: string, coords: {long: number, lat: number}}, media: [{url: string, type: string}]}], next_token: string}
  *          Array di tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
@@ -45,9 +46,9 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10, star
     //Inserisce i vari dati nell'array tweets, quello che verrà restituito dal modulo
     for(const tweet of resTwts.data) {
         
-        //Controlla se il tweet ha la geolocalizzazione, se si, registra il nome del luogo nella variabile place
+        //Controlla se il tweet ha la geolocalizzazione, se si, registra le informazioni del luogo nella variabile place
         let place = undefined;
-        if (tweet.geo) { place = resTwts.includes.places.find(plc => plc.id === tweet.geo.place_id); }
+        if (tweet.geo) { place = _placeHandler(resTwts.includes.places, tweet); }
 
         //Controlla se il tweet ha dei media, se si, registra i link dei media nell'array media
         let media = [];
@@ -121,7 +122,7 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
             'exclude': 'retweets,replies',
             'tweet.fields': 'created_at,text,public_metrics',
             'expansions': 'geo.place_id,attachments.media_keys',
-            'place.fields': 'country,full_name',
+            'place.fields': 'country,full_name,geo',
             'media.fields': 'url,variants'
         },
 
