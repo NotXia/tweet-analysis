@@ -168,7 +168,7 @@ class SearchTweets extends React.Component {
             const start_date = this.input.start_date.current.value;
             const end_date = this.input.end_date.current.value;
             this.tweets_buffer = [];
-            let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
+            let tweets_data = this.fetchTweets(query, "", quantity, start_date, end_date);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
@@ -200,7 +200,7 @@ class SearchTweets extends React.Component {
             if(this.state.next_page==="") {
                 return;
             }
-            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity, start_date, end_date);
+            let tweets_data = this.fetchTweets(query, this.state.next_page, quantity, start_date, end_date);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
@@ -249,7 +249,7 @@ class SearchTweets extends React.Component {
                 tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
             }
             else if (query !== "") { 
-                tweets_data = await keywordSearchTweet(query, next_token, quantity);
+                tweets_data = await keywordSearchTweet(query, next_token, quantity, start_date, end_date);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
@@ -280,7 +280,7 @@ class SearchTweets extends React.Component {
     dateRangeModifier(e) {
         e.preventDefault();
         const query = this.input.query.current.value;
-        var aweekago = new Date();
+        let aweekago = new Date();
         
         if (query[0] !== "@" && this.state.date_week_limited === false) {
             
