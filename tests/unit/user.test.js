@@ -41,7 +41,7 @@ describe("Test ricerca tweet dato username utente", function () {
     });
 
     test("Ricerca tweet per username utente senza pagination token", async function () {
-        const tweets = await getTweetsByUser(userTest.username);
+        const tweets = await getTweetsByUser('sweteam12');
         for (const tweet of tweets.tweets) {
             expect( tweet.name ).toBeDefined();
             expect( tweet.username ).toBeDefined();
@@ -52,6 +52,13 @@ describe("Test ricerca tweet dato username utente", function () {
             expect( tweet.comments ).toBeDefined();
             expect( tweet.retweets ).toBeDefined();
             expect( tweet.media ).toBeDefined();
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
     });
 
@@ -69,6 +76,13 @@ describe("Test ricerca tweet dato username utente", function () {
             expect( tweet.comments ).toBeDefined();
             expect( tweet.retweets ).toBeDefined();
             expect( tweet.media ).toBeDefined();
+            if (tweet.location) {
+                expect( tweet.location.id ).toBeDefined();
+                expect( tweet.location.full_name ).toBeDefined();
+                expect( tweet.location.country ).toBeDefined();
+                expect( tweet.location.coords.long ).toBeDefined();
+                expect( tweet.location.coords.lat ).toBeDefined();
+            }
         }
     });
 
