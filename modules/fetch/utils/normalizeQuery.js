@@ -12,11 +12,11 @@ function _normalizeQuery(query) {
     
     query = query.trim();
 
-    if(query[0] !== '@' && query[0] !== '#') { return query; }
+    if(query[0] !== '@' && query[0] !== '#') { return query; }  // Ricerca per parola/frase chiave
     
     query = query.replace(/\s/g, '');   // Rimuove tutti gli spazi
     if(query[0] == '@') {
-        query = query.slice(1);         // Se la stringa inizia con @ o con #, viene rimosso
+        query = query.slice(1);         // Se la stringa inizia con @ viene rimosso perché la query richiede solo lo username
     }
 
     return query;
