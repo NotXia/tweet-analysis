@@ -167,8 +167,12 @@ class SearchTweets extends React.Component {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
             const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
-            const end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
+            let end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
             this.tweets_buffer = [];
+
+            // Se la data di fine supera la data odierna, viene impostata la data odierna (10 secondi sottratti per necessità delle API di Twitter)
+            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().format(); } 
+
             let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
             this.setState({ 
