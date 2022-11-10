@@ -9,6 +9,7 @@ import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
+import moment from "moment";
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -165,8 +166,8 @@ class SearchTweets extends React.Component {
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
-            const start_date = this.input.start_date.current.value;
-            const end_date = this.input.end_date.current.value;
+            const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
+            const end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
             this.tweets_buffer = [];
             let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
