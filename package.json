@@ -35,6 +35,7 @@
     "http-errors": "^2.0.0",
     "jquery": "^3.6.1",
     "languagedetect": "^2.0.0",
+    "leaflet.markercluster": "^1.5.3",
     "modules": "file:modules",
     "moment": "^2.29.4",
     "node-nlp": "^4.24.0",
