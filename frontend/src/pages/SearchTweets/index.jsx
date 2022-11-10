@@ -250,7 +250,7 @@ class SearchTweets extends React.Component {
                 tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
             }
             else if (query !== "") { 
-                tweets_data = await keywordSearchTweet(query, next_token, quantity);
+                tweets_data = await keywordSearchTweet(query, next_token, quantity, start_date, end_date);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
