@@ -10,8 +10,9 @@ module.exports = {
  * @returns {{start_time: string, end_time: string}}    Oggetto contentente le due date normalizzate
  */
 function _normalizeDate(limit, start_time = '', end_time = '') {
-
     let today = new Date();
+
+    if ((start_time && end_time) && start_time === end_time) { throw new Error("L'intervallo temporale coincide"); }
 
     if (start_time != '') {
         start_time = new Date(start_time);
