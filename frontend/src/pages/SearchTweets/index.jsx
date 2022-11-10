@@ -9,6 +9,7 @@ import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
+import GeolocationMap from "../../components/maps/GeolocationMap";
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -54,8 +55,6 @@ class SearchTweets extends React.Component {
         return (<>
             
             <Helmet>
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
-                <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
                 <title>Ricerca tweet</title>
             </Helmet>
             
@@ -134,12 +133,14 @@ class SearchTweets extends React.Component {
                                 </div>
                                 
                                 {/* Grafici */}
-                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : "mt-3 p-2 border border-light rounded-4"}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
                                         <div style={{ height: "30vh", width: "50%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
-                                        <div id="map" style={{height: "30vh", width: "50%"}}></div>
+                                        <div id="map" style={{height: "30vh", width: "50%"}}>
+                                            <GeolocationMap />
+                                        </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
                                         <div style={{ height: "30vh", width: "30%" }}>
