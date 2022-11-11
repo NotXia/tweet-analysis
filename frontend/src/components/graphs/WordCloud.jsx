@@ -120,8 +120,14 @@ class WordCloud extends React.Component {
             sentence = removeMultipleSpaces(sentence);
             sentence = sentence.trim();
     
-            if (sentence !== "") { 
-                sentence = await removeStopwords(sentence);
+            if (sentence !== "") {
+                try {
+                    sentence = await removeStopwords(sentence);
+                }
+                catch (err) {
+                    sentence = "";
+                }
+                
                 this.no_stopwords_cache[original_sentence] = sentence;
             }
         }
