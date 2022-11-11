@@ -121,21 +121,23 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con date nello stesso giorno", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, date1, date1);
-        let date1_end = new Date();
-        date1_end = new Date(moment(date1_end).subtract(5, 'days'));
-        date1_end.setHours(23,59,59,999);
-        for (const tweet of tweets.tweets) {
-            const time = new Date(tweet.time);
-            expect( time >= date1 ).toBeTruthy();
-            expect( time <= date1_end ).toBeTruthy();
+        try {
+            await getTweetsByKeyword("#reazioneacatena", '', 20, date1, date1);
+            fail("Eccezione non lanciata - Estremi intervallo coincidenti")
+        }
+        catch (err) {
+            expect(err).toBeDefined();
         }
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di inizio e data di fine a oggi", async function () {
-        const tweets = await getTweetsByKeyword("#wwe", '', 20, today, today);
-        const today_start = new Date();
+        let today_start = new Date();
         today_start.setHours(0,0,0,0);
+        let today_end = new Date();
+        today_end.setHours(23,59,59,999);
+
+        const tweets = await getTweetsByKeyword("#wwe", '', 20, today_start, today_end);
+
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
             expect( time >= today_start ).toBeTruthy();

@@ -9,6 +9,7 @@ import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
+import moment from "moment";
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -165,9 +166,13 @@ class SearchTweets extends React.Component {
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
-            const start_date = this.input.start_date.current.value;
-            const end_date = this.input.end_date.current.value;
+            const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
+            let end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
             this.tweets_buffer = [];
+
+            // Se la data di fine supera la data odierna, viene impostata la data odierna (10 secondi sottratti per necessità delle API di Twitter)
+            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().format(); } 
+
             let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
             this.setState({ 
@@ -249,7 +254,7 @@ class SearchTweets extends React.Component {
                 tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
             }
             else if (query !== "") { 
-                tweets_data = await keywordSearchTweet(query, next_token, quantity);
+                tweets_data = await keywordSearchTweet(query, next_token, quantity, start_date, end_date);
             }
 
             if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
