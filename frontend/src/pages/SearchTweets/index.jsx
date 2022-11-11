@@ -1,6 +1,7 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "leaflet/dist/leaflet.css";
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
@@ -118,7 +119,8 @@ class SearchTweets extends React.Component {
                                                         <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
                                                                 min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: e.target.value }) }} />
                                                     </div>
-                                                </div>    
+                                                </div>
+                                                <p className="small text-muted m-0 ms-1 mt-2" style={{ fontSize: "0.7rem" }}>Cambiando il numero di ricerche cambia il numero di tweet fetchati per la prossima pagina</p>    
                                             </div>
                                         </form>
                                     </div>
@@ -135,11 +137,11 @@ class SearchTweets extends React.Component {
                                 {/* Grafici */}
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : "mt-3 p-2 border border-light rounded-4"}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div style={{ height: "30vh", width: "50%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
-                                        <div id="map" style={{height: "30vh", width: "50%"}}>
-                                            <GeolocationMap />
+                                        <div className="px-2" style={{height: "30vh", width: "50%"}}>
+                                            <GeolocationMap tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
