@@ -94,6 +94,7 @@ async function _getStream(reconnect_attemps=0) {
         return res.data;
     }
     catch (err) {
+        await new Promise(r => setTimeout(r, 2**reconnect_attemps * 2000)); // Delay con incremento quadratico sul numero di tentativi di riconnessione
         return _getStream(reconnect_attemps++);
     }
 }
