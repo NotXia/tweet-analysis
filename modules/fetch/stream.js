@@ -18,7 +18,7 @@ module.exports = {
 const MAX_CONNECTION_RETRY = 5;
 
 let tweet_stream = null;                        // Connessione attualmente attiva
-const abort_controller = new AbortController(); // Serve per interrompere la connessione
+let abort_controller = new AbortController(); // Serve per interrompere la connessione
 
 
 /**
@@ -104,6 +104,7 @@ async function _getStream(reconnect_attemps=0) {
         return res.data;
     }
     catch (err) {
+        console.log(err)
         await new Promise(r => setTimeout(r, 2**reconnect_attemps * 2000)); // Delay con incremento quadratico sul numero di tentativi di riconnessione
         return _getStream(reconnect_attemps+1);
     }
@@ -115,6 +116,8 @@ async function _getStream(reconnect_attemps=0) {
  */
 function closeStream() {
     abort_controller.abort();
+
+    abort_controller = new AbortController();
     tweet_stream = null;
 }
 
