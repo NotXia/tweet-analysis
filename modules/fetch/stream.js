@@ -27,15 +27,17 @@ const abort_controller = new AbortController(); // Serve per interrompere la con
  * @param {onTweet} onTweet                 Funzione richiamata alla ricezione di un nuovo tweet (tweet, rules_id):void
  * @param {onDisconnect} onDisconnect       Funzione richiamata alla chiusura della connessione ():void
  */
-async function connectToStream(onTweet, onDisconnect) {
+async function openStream(onTweet, onDisconnect) {
     if (tweet_stream) { return; } // Già connesso allo stream
 
     tweet_stream = await _getStream();
 
+    // Ricezione dati
     tweet_stream.on("data", data => {
-        if (data.toString() === "\r\n") { return; } // Segnale keep alive (da ignorare)
+        data = data.toString(); // Conversione da Buffer a stringa
+        if (data === "\r\n") { return; } // Segnale keep alive (da ignorare)
 
-        const stream_tweet = JSON.parse(data.toString())
+        const stream_tweet = JSON.parse(data)
         const tweet_data = stream_tweet.data; // Dati del tweet
         const applied_rules_id = stream_tweet.matching_rules.map(rule => rule.id); // Dati delle rules applicate
 
@@ -56,16 +58,13 @@ async function connectToStream(onTweet, onDisconnect) {
         onTweet(tweet, applied_rules_id);
     });
 
+    // Connessione in errore (lo stream è infinito, quindi non esiste un modo "soft" di chiudere la connessione)
     tweet_stream.on("error", (err) => {
         tweet_stream = null;
 
         if (err.code === "ERR_CANCELED") { return onDisconnect(); }
-        connectToStream(onTweet, onDisconnect).catch(() => { onDisconnect(); });
+        openStream(onTweet, onDisconnect).catch(() => { onDisconnect(); });
     });
-
-    console.log("A")
-    await new Promise(r => setTimeout(r, 30000));
-    abort_controller.abort()
 }
 
 /**
@@ -98,6 +97,14 @@ async function _getStream(reconnect_attemps=0) {
         return _getStream(reconnect_attemps++);
     }
 }
+
+/**
+ * Chiude la connessione allo stream (Interrompe la ricezione di TUTTI i tweet per tutte le regole)
+ */
+function closeStream() {
+    abort_controller.abort();
+}
+
 
 
 /**
