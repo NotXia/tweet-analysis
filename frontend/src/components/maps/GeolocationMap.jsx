@@ -4,24 +4,29 @@ import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import moment from "moment"
 
-L.Icon.Default.mergeOptions({
+
+L.Icon.Default.mergeOptions({   //Imposta l'immagine dei marker
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const __map_settings = {
-    map: {
+const __map_settings = {    //Impostazioni generali della mappa
+    map: {          
         zoom: 12,
         width: "100%",
         height: "30vh"
     },
-    tileLayer: {
+    tileLayer: {    //Credits
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         attribution: "&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
     }
 }
 
+/**
+ * Componente che crea una mappa con markers dei tweet geolocalizzati
+ * Utilizzo: <GeolocationMap tweets={tweets} /> dove tweets indica l'array di oggetti contenente i tweet.
+ */
 class GeolocationMap extends React.Component {
     constructor(props) {
         super(props);
@@ -31,6 +36,10 @@ class GeolocationMap extends React.Component {
         }
     }
 
+    /**
+     * Imposta la mappa
+     * @returns La mappa impostata se sono presenti tweet geolocalizzati 
+     */
     mapBuilder() {
         const tweets = this.props.tweets;
         let markers = this.markerFetcher(tweets);
@@ -50,6 +59,11 @@ class GeolocationMap extends React.Component {
 
     }
 
+    /**
+     * Prende le coordinate di tutti i tweet geolocalizzati
+     * @param {<Object[]>} tweets: array dei tweets 
+     * @returns Array JSX dei marker ricavati se presenti
+     */
     markerFetcher(tweets) {
         let markers = [];
         let count = 0;
