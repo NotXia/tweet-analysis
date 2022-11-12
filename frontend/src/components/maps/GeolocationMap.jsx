@@ -11,29 +11,65 @@ L.Icon.Default.mergeOptions({   //Imposta l'immagine dei marker
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const __map_settings = {    //Impostazioni generali della mappa
-    map: {          
-        zoom: 12,
-        width: "100%",
-        height: "96.7vh"
-    },
-    tileLayer: {    //Credits
-        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        attribution: "&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
-    }
+const tileLayer = {    //Credits
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: "&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
 }
 
 /**
- * Componente che crea una mappa con markers dei tweet geolocalizzati
- * Utilizzo: <GeolocationMap tweets={tweets} /> dove tweets indica l'array di oggetti contenente i tweet.
+ * Componente che crea una mappa con markers dei tweet geolocalizzati.
+ * Utilizzo: <GeolocationMap tweets={tweets} zoom? width? height? />
+ * - @param Tweets     indica l'array di oggetti contenente i tweet.
+ * - @param zoom       (non obbligatorio) indica il livello di zoom iniziale
+ * - @param width      (non obbligatorio) indica la larghezza della mappa
+ * - @param height     (non obbligatorio) indica l'altezza della mappa
  */
 class GeolocationMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             geo_isPresent: false,
-            center_coords: latLng
+            center_coords: latLng,
+            
+            map_settings: {     //Impostazioni generali della mappa         
+                zoom: 0,
+                width: "",
+                height: ""
+            },
+
+            markers: [{
+                id: "",
+                lat: 0,
+                long: 0,
+                text: ""
+            }]
         }
+    }
+
+    componentDidMount() {       //Alla chiamata del componente viene impostata la dimensione della mappa
+        this.setState({
+            map_settings: {
+                zoom: this.props.zoom? this.props.zoom : 14,
+                width: this.props.width? this.props.width : "100%",
+                height: this.props.height? this.props.height : "96.7vh"
+            }
+        })
+    }
+
+    render() {
+        return (
+            <div id="map" className={this.state.geo_isPresent? "" : "text-center"}>
+                {
+                    !this.state.geo_isPresent &&
+                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ zIndex: "1000", backgroundColor: "#a1a1a1A0", pointerEvents: "none"  }}>
+                        <p className="mt-3">Non è presente alcuna geolocalizzazione</p>
+                    </div>
+                }
+                {
+                    this.mapBuilder()
+                }
+            </div>
+        );
     }
 
     /**
@@ -44,19 +80,16 @@ class GeolocationMap extends React.Component {
         const tweets = this.props.tweets;
         let markers = this.markerFetcher(tweets);
 
-        if(!this.state.geo_isPresent) {
-            return <p className="mt-3">Non è presente alcuna geolocalizzazione</p>
+        if(this.state.geo_isPresent){
+            return (
+                <MapContainer center={this.state.center_coords} zoom={this.state.map_settings.zoom} style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} worldCopyJump={"true"}>
+                    <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
+                        <MarkerClusterGroup>
+                            {markers}
+                        </MarkerClusterGroup>
+                </MapContainer>
+            );
         }
-
-        return (
-            <MapContainer center={this.state.center_coords} zoom={__map_settings.map.zoom} style={{width: __map_settings.map.width, height: __map_settings.map.height}} worldCopyJump={"true"}>
-                <TileLayer url={__map_settings.tileLayer.url} attribution={__map_settings.tileLayer.attribution} />
-                    <MarkerClusterGroup>
-                        {markers}
-                    </MarkerClusterGroup>
-            </MapContainer>
-        );
-
     }
 
     /**
@@ -78,7 +111,7 @@ class GeolocationMap extends React.Component {
                 if (!this.state.geo_isPresent) this.setState({geo_isPresent: true, center_coords: (new L.latLng(lat, long))});
 
                 markers.push(
-                    <Marker key={tweet.key} position={[lat, long]}>
+                    <Marker key={tweet.id} position={[lat, long]}>
                         <Tooltip direction="top" offset={[-15,-15]}>
                             <div className="justify-content-between" style={{width:"10vw", height:"5vh"}}>
                                 <div className="text-center">
@@ -96,15 +129,6 @@ class GeolocationMap extends React.Component {
         return markers;
     }
     
-    render() {
-        return (
-            <div id="map" className={this.state.geo_isPresent? "" : "text-center"}>
-                {
-                    this.mapBuilder()
-                }
-            </div>
-        );
-    }
 }
 
 export default GeolocationMap;
