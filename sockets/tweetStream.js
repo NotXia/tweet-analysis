@@ -1,8 +1,10 @@
 const TweetStream = require("../modules/fetch/stream.js");
 const ExceededStreamRulesCap = require("../modules/fetch/errors/ExceededStreamRulesCap.js");
+const StreamUnavailable = require("../modules/fetch/errors/StreamUnavailable");
 
 
-const EMPTY_RULE_TIMEOUT = 10000; // Tempo dopo il quale una regola viene cancellata
+const EMPTY_RULE_TIMEOUT = 10000;   // Tempo dopo il quale una regola viene cancellata
+const CLOSE_STREAM_TIMEOUT = 30000  // Tempo dopo il quale viene chiusa la connessione allo stream
 
 module.exports = {
     initTweetStreamSocket: init
@@ -30,7 +32,8 @@ function init(socket) {
             }
             catch (err) {
                 if (err instanceof ExceededStreamRulesCap) { return response({ error: "Limite di connessioni raggiunto" }) }
-                return response({ error: "Non è possibile stabilire la connessione" })
+                if (err instanceof StreamUnavailable) { return response({ error: "Non è stato possibile stabilire una connessione" }) }
+                return response({ error: "Si è verificato un errore" })
             }
         });
 
@@ -69,11 +72,14 @@ function _forwardTweetToClient(tweet, rules_id) {
 /* Gestisce la disconnessione di un client */
 function _disconnectClient(disconnected_socket) {
     const to_update_rule_id = _rule_id_by_socket_id[disconnected_socket.id];
+    
     _sockets_by_rule_id[to_update_rule_id] = _sockets_by_rule_id[to_update_rule_id].filter((socket) => socket.id != disconnected_socket.id);
+    if (_sockets_by_rule_id[to_update_rule_id].length === 0) { delete _sockets_by_rule_id[to_update_rule_id]; }
 
     delete _rule_id_by_socket_id[disconnected_socket.id];
 
     _handleRuleTimeout(to_update_rule_id);
+    _handleStreamTimeout();
 }
 
 /* Gestisce la disconnessione di tutti i client */
@@ -89,7 +95,6 @@ let _delete_request_by_rule_id = {};    // Mappa rule_id alla richiesta di elimi
 /* Gestisce l'avvio della cancellazione di una regola (se necessario) */
 function _handleRuleTimeout(rule_id) {
     if (_getSocketsForRule(rule_id).length === 0) {
-        console.log("Timing out " + rule_id)
         _abortRuleTimeout(rule_id);
 
         _delete_request_by_rule_id[rule_id] = setTimeout(async () => {
@@ -102,5 +107,26 @@ function _handleRuleTimeout(rule_id) {
 function _abortRuleTimeout(rule_id) {
     if (_delete_request_by_rule_id[rule_id]) { 
         clearTimeout(_delete_request_by_rule_id[rule_id]); 
+    }
+}
+
+
+let _close_stream_request = null;
+
+/* Avvia la richiesta di chiusura dello stream */
+function _handleStreamTimeout() {
+    if (Object.keys(_sockets_by_rule_id).length === 0) { // Nessuna connessione attiva
+        _abortStreamTimeout();
+
+        _close_stream_request = setTimeout(() => {
+            TweetStream.closeStream();
+        }, CLOSE_STREAM_TIMEOUT);
+    }
+}
+
+/* Annulla la richiesta di chiusura dello stream */
+function _abortStreamTimeout() {
+    if (_close_stream_request) { 
+        clearTimeout(_close_stream_request); 
     }
 }
