@@ -15,7 +15,7 @@ const __map_settings = {    //Impostazioni generali della mappa
     map: {          
         zoom: 12,
         width: "100%",
-        height: "30vh"
+        height: "96.7vh"
     },
     tileLayer: {    //Credits
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -45,7 +45,7 @@ class GeolocationMap extends React.Component {
         let markers = this.markerFetcher(tweets);
 
         if(!this.state.geo_isPresent) {
-            return <p>Non è presente alcuna geolocalizzazione</p>
+            return <p className="mt-3">Non è presente alcuna geolocalizzazione</p>
         }
 
         return (
@@ -76,11 +76,11 @@ class GeolocationMap extends React.Component {
                 let long =  tweet.location.coords.long;
 
                 if (!this.state.geo_isPresent) this.setState({geo_isPresent: true, center_coords: (new L.latLng(lat, long))});
-                
+
                 markers.push(
                     <Marker key={tweet.key} position={[lat, long]}>
                         <Tooltip direction="top" offset={[-15,-15]}>
-                            <div className="justify-content-between " style={{width:"10vw", height:"5vh"}}>
+                            <div className="justify-content-between" style={{width:"10vw", height:"5vh"}}>
                                 <div className="text-center">
                                     <p className="m-0 p-1 text-muted">@{tweet.username} </p>
                                     <p className="m-0 p-1 text-muted">il {moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>

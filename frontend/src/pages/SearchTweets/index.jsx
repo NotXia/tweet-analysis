@@ -74,18 +74,18 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         {/* Tweet fetchati */}
-                        <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="col-12 col-lg-11 list-group border border-white rounded-4">
-                                {
-                                    this.state.tweets.map((tweet) => (
-                                        <Tweet key={tweet.id} tweet={tweet} />
-                                    ))
-                                }
-                                { this.nextPageButton() }
+                        <div className="col-12 order-2 col-md-6 order-md-1 col-lg-3">
+                            <div className="list-group border border-white rounded-4">
+                            {
+                                this.state.tweets.map((tweet) => (
+                                    <Tweet key={tweet.id} tweet={tweet} />
+                                ))
+                            }
+                            { this.nextPageButton() }
                             </div>
                         </div>
 
-                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-8">
+                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-6">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
                                 <div className="d-flex justify-content-center w-100 p-2 ">
@@ -139,11 +139,8 @@ class SearchTweets extends React.Component {
                                 {/* Grafici */}
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : "mt-3 p-2 border border-light rounded-4"}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div className="px-2" style={{ height: "30vh", width: "50%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "100%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
-                                        </div>
-                                        <div className="px-2" style={{height: "30vh", width: "50%"}}>
-                                            <GeolocationMap tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
@@ -154,6 +151,13 @@ class SearchTweets extends React.Component {
                                             <WordCloud tweets={this.state.tweets} />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
+                            <div className="sticky-top mt-10 p-2">
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : "border border-grey align-items-stretch"}`} style={{height: "97vh"}}>
+                                    <GeolocationMap tweets={this.state.tweets}></GeolocationMap>
                                 </div>
                             </div>
                         </div>
