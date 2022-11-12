@@ -115,6 +115,7 @@ async function _getStream(reconnect_attemps=0) {
  */
 function closeStream() {
     abort_controller.abort();
+    tweet_stream = null;
 }
 
 
