@@ -46,6 +46,7 @@ async function openStream(onTweet, onDisconnect) {
         data = data.toString(); // Conversione da Buffer a stringa
         if (data === "\r\n") { return; } // Segnale keep alive (da ignorare)
 
+        
         const stream_tweet = JSON.parse(data)
         const tweet_data = stream_tweet.data; // Dati del tweet
         const applied_rules_id = stream_tweet.matching_rules.map(rule => rule.id); // Dati delle rules applicate
@@ -60,7 +61,7 @@ async function openStream(onTweet, onDisconnect) {
             "likes": tweet_data.public_metrics["like_count"],
             "comments": tweet_data.public_metrics["reply_count"],
             "retweets": tweet_data.public_metrics["retweet_count"],
-            "location": tweet_data.geo ? _placeHandler(stream_tweet.includes.places, tweet_data) : undefined,
+            "location": Object.keys(tweet_data.geo).length !== 0 ? _placeHandler(stream_tweet.includes.places, tweet_data) : undefined,
             "media": tweet_data.attachments ? _mediaHandler(stream_tweet.includes.media, tweet_data) : undefined
         };
 
