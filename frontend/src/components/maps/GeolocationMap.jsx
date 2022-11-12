@@ -49,11 +49,11 @@ class GeolocationMap extends React.Component {
         }
 
         return (
-            <MapContainer center={this.state.center_coords} zoom={__map_settings.map.zoom} style={{width: __map_settings.map.width, height: __map_settings.map.height}}>
+            <MapContainer center={this.state.center_coords} zoom={__map_settings.map.zoom} style={{width: __map_settings.map.width, height: __map_settings.map.height}} worldCopyJump={"true"}>
                 <TileLayer url={__map_settings.tileLayer.url} attribution={__map_settings.tileLayer.attribution} />
-                <MarkerClusterGroup>
-                    {markers}
-                </MarkerClusterGroup>
+                    <MarkerClusterGroup>
+                        {markers}
+                    </MarkerClusterGroup>
             </MapContainer>
         );
 
@@ -67,29 +67,32 @@ class GeolocationMap extends React.Component {
     markerFetcher(tweets) {
         let markers = [];
         let count = 0;
+
+        //Fetching dei tweet geolocalizzati e creazione markers
         for(const tweet of tweets) {
             if(tweet.location) {
                 count++;
-                let newMarker = {
-                    latLng: new L.latLng(tweet.location.coords.lat, tweet.location.coords.long),
-                    key: tweet.id,
-                    text:   <div className="justify-content-between " style={{width:"10vw", height:"5vh"}}>
+                let lat = tweet.location.coords.lat;
+                let long =  tweet.location.coords.long;
+
+                if (!this.state.geo_isPresent) this.setState({geo_isPresent: true, center_coords: (new L.latLng(lat, long))});
+                
+                markers.push(
+                    <Marker key={tweet.key} position={[lat, long]}>
+                        <Tooltip direction="top" offset={[-15,-15]}>
+                            <div className="justify-content-between " style={{width:"10vw", height:"5vh"}}>
                                 <div className="text-center">
                                     <p className="m-0 p-1 text-muted">@{tweet.username} </p>
                                     <p className="m-0 p-1 text-muted">il {moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>
                                 </div>
                             </div>
-                };
-                if (!this.state.geo_isPresent) this.setState({geo_isPresent: true, center_coords: newMarker.latLng});
-                markers.push(
-                            <Marker key={newMarker.key} position={newMarker.latLng}>
-                                <Tooltip direction="top" offset={[-15,-15]}>{newMarker.text}</Tooltip>
-                            </Marker>
-                            );
+                        </Tooltip>
+                    </Marker>
+                );
             }
         }
-
         if(count===0 && this.state.geo_isPresent) {this.setState({geo_isPresent:false})}
+
         return markers;
     }
     
