@@ -28,7 +28,8 @@ function init(socket) {
             try {
                 const rule_id = await TweetStream.addRule(data.username, data.keyword);
                 _addConnection(socket, rule_id);
-                TweetStream.openStream(_forwardTweetToClient, _disconnectAllClients);
+                await TweetStream.openStream(_forwardTweetToClient, _disconnectAllClients);
+                return response({ status: "success" });
             }
             catch (err) {
                 if (err instanceof ExceededStreamRulesCap) { return response({ error: "Limite di connessioni raggiunto" }) }
