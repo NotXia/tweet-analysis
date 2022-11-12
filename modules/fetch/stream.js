@@ -40,7 +40,6 @@ async function openStream(onTweet, onDisconnect) {
     if (tweet_stream) { return; } // Già connesso allo stream
 
     tweet_stream = await _getStream();
-    console.log("Connected")
 
     // Ricezione dati
     tweet_stream.on("data", data => {
@@ -105,7 +104,6 @@ async function _getStream(reconnect_attemps=0) {
         return res.data;
     }
     catch (err) {
-        console.log("Retry", reconnect_attemps)
         await new Promise(r => setTimeout(r, 2**reconnect_attemps * 2000)); // Delay con incremento quadratico sul numero di tentativi di riconnessione
         return _getStream(reconnect_attemps+1);
     }
