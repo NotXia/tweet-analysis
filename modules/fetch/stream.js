@@ -1,20 +1,29 @@
 require("dotenv").config();
 const axios = require("axios");
 const ExceededStreamRulesCap = require("./errors/ExceededStreamRulesCap.js");
-const { _normalizeQuery: normalizeQuery } = require("./utils/normalizeQuery.js")
+const { _normalizeQuery: normalizeQuery } = require("./utils/normalizeQuery.js");
 
 
-async function connectToStream() {
+async function _connectToStream(rule_id, onTweet, onDisconnect, reconnect_attemps=0) {
     const res = await axios({
         method: "GET", url: "https://api.twitter.com/2/tweets/search/stream",
         headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+        params: {
+            "tweet.fields": "created_at,text,public_metrics",
+            "expansions": "geo.place_id,attachments.media_keys",
+            "place.fields": "country,full_name,geo",
+            "media.fields": "url,variants"
+        },
         responseType: "stream"
     });
 
     const stream = res.data;
 
     stream.on("data", data => {
-        console.log(data.toString());
+        if (data.toString() === "\r\n") { return; } // Segnale keep alive
+
+        const tweet_data = JSON.parse(data.toString())
+        console.log(tweet_data);
     });
 
     stream.on("end", () => {
@@ -29,14 +38,14 @@ async function connectToStream() {
  * @param {string} keyword      Parola chiave da filtrare
  * @throws {ExceededStreamRulesCap}     Se non è possibile inserire la regola a causa del limit cap di Twitter
  */
-async function addRule(username="", keyword="") {
+async function _addRule(username="", keyword="") {
     if (!username && !keyword) { throw new Error("Parametri mancanti"); }
 
     const rule = _createRuleString(username, keyword);
 
     try {
         // Creazione della regola
-        const res = await axios({
+        await axios({
             method: "POST", url: "https://api.twitter.com/2/tweets/search/stream/rules",
             headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
             data: {
