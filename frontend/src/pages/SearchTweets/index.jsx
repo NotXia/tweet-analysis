@@ -2,6 +2,7 @@ import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "leaflet/dist/leaflet.css";
+import 'react-leaflet-markercluster/dist/styles.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
@@ -145,10 +146,10 @@ class SearchTweets extends React.Component {
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
-                                        <div style={{ height: "30vh", width: "30%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
-                                        <div className="d-flex justify-content-center" style={{ height: "30vh", width: "50%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <WordCloud tweets={this.state.tweets} />
                                         </div>
                                     </div>
