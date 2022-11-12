@@ -123,7 +123,7 @@ function closeStream() {
  * @param {string} username     Nome utente da filtrare
  * @param {string} keyword      Parola chiave da filtrare
  * @throws {ExceededStreamRulesCap}     Se non è possibile inserire la regola a causa del limit cap di Twitter
- * @returns {string} Id della regola creata
+ * @returns {Promise<string>} Id della regola creata
  */
 async function addRule(username="", keyword="") {
     if (!username && !keyword) { throw new Error("Parametri mancanti"); }
