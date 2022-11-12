@@ -7,10 +7,19 @@ const { _placeHandler } = require("./utils/placeHandler.js");
 const { _mediaHandler } = require("./utils/mediaHandler.js");
 
 
+module.exports = {
+    openStream: openStream,
+    closeStream: closeStream,
+    addRule: addRule,
+    deleteRule: deleteRuleById
+}
+
+
 const MAX_CONNECTION_RETRY = 3;
 
 let tweet_stream = null;                        // Connessione attualmente attiva
 const abort_controller = new AbortController(); // Serve per interrompere la connessione
+
 
 /**
  * Funzione richiamata alla ricezione di un nuovo tweet
@@ -98,6 +107,7 @@ async function _getStream(reconnect_attemps=0) {
         return _getStream(reconnect_attemps++);
     }
 }
+
 
 /**
  * Chiude la connessione allo stream (Interrompe la ricezione di TUTTI i tweet per tutte le regole)
