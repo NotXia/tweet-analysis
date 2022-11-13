@@ -149,7 +149,7 @@ class SearchTweets extends React.Component {
                                 </div>
                                 
                                 {/* Grafici */}
-                                <div className={`${this.state.tweets.length === 0 ? "d-none" : "mt-3 p-2 border border-light rounded-4"}`}>
+                                <div className={`${this.state.tweets.length === 0 ? "invisible" : "mt-3 p-2 border border-light rounded-4"}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
                                         <div className="px-2" style={{ height: "30vh", width: "100%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
@@ -372,9 +372,11 @@ class SearchTweets extends React.Component {
 
         if (!query_string || query_string === "") { return this.setState({ stream_state: "off" }); }
 
+        // Composizione query
         if (query_string[0] === "@") { query.username = query_string; }
         else { query.keyword = query_string; }
 
+        // Inizializzazione funzioni per gestire gli eventi
         const onTweet = (tweet) => {
             let tweets = this.state.tweets.slice();
             tweets.unshift(tweet);
@@ -386,7 +388,8 @@ class SearchTweets extends React.Component {
             this.setState({ error_message: "Si è verificato un errore durante la connessione" });
             this.disconnectStream(); 
         };
-
+        
+        // Connessione allo stream
         this.stream_socket = connectToStream(query, onTweet, onConnect, onDisconnect, onError);
     }
 
