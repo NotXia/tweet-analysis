@@ -22,19 +22,9 @@ let abort_controller = new AbortController();   // Serve per interrompere la con
 
 
 /**
- * Funzione richiamata alla ricezione di un nuovo tweet
- * @callback onTweet
- * @param {Object} tweet        Dati del tweet
- * @param {string[]} rules_id   Lista degli id delle regole soddisfatte
- */
-/**
- * Funzione richiamata alla disconnessione della connessione
- * @callback onDisconnect
- */
-/**
  * Si connette allo stream dei tweet in tempo reale
- * @param {onTweet} onTweet                 Funzione richiamata alla ricezione di un nuovo tweet (tweet, rules_id):void
- * @param {onDisconnect} onDisconnect       Funzione richiamata alla chiusura della connessione ():void
+ * @param {(tweet:Object)=>void} onTweet                 Funzione richiamata alla ricezione di un nuovo tweet (tweet, rules_id):void
+ * @param {()=>void} onDisconnect       Funzione richiamata alla chiusura della connessione ():void
  */
 async function openStream(onTweet, onDisconnect) {
     if (tweet_stream) { return; } // Già connesso allo stream
