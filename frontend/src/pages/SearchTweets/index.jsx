@@ -184,6 +184,8 @@ class SearchTweets extends React.Component {
         e.preventDefault();
         
         try {
+            this.disconnectStream(); // Disconnette l'eventuale stream attualmente in corso
+
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
             const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
@@ -362,7 +364,7 @@ class SearchTweets extends React.Component {
     }
 
     connectStream() {
-        const query_string = this.input.query.current.value
+        const query_string = this.state.query !== "" ? this.state.query : this.input.query.current.value;
         let query = {};
 
         if (query_string[0] === "@") { query.username = query_string; }
