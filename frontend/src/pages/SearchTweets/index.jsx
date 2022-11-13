@@ -370,6 +370,8 @@ class SearchTweets extends React.Component {
         const query_string = this.state.query !== "" ? this.state.query : this.input.query.current.value;
         let query = {};
 
+        if (!query_string || query_string === "") { return this.setState({ stream_state: "off" }); }
+
         if (query_string[0] === "@") { query.username = query_string; }
         else { query.keyword = query_string; }
 
