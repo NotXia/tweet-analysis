@@ -11,6 +11,7 @@ import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
 import GeolocationMap from "../../components/maps/GeolocationMap";
 import moment from "moment";
+import { connectToStream } from "../../modules/fetch-tweets/stream"
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -35,6 +36,8 @@ class SearchTweets extends React.Component {
 
             fetching: false,                        // Indica se attualmente si sta richiedendo dei tweet
 
+            stream_state: "off",                       // Indica lo stato dello stream di tweet ["off", "loading", "live"]
+
             date_week_limited: false,
             limited_min_date: __min_date_limit,     // Limite minimo imposto per tipo di ricerca
             select_min_date: __min_date_limit,      // Limite minimo attuale della data (a init: "2010-11-06")
@@ -43,6 +46,7 @@ class SearchTweets extends React.Component {
         };
 
         this.tweets_buffer = [];
+        this.stream_socket = null;
 
         this.input = {          // Dati presi quando si submitta il form
             query: React.createRef(),
@@ -126,11 +130,18 @@ class SearchTweets extends React.Component {
                                     </div>
                                 </div>
 
-                                {/* Bottone Prossima pagina */}
                                 <div>
                                     <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} ><mark>Attualmente mostrati: <strong>{this.state.tweets.length}</strong> tweet</mark></p>
+                                    
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        { this.nextPageButton() }
+                                        {/* Bottone Prossima pagina */}
+                                        <div className="mx-2">
+                                            { this.nextPageButton() }
+                                        </div>
+
+                                        <div className="mx-2">
+                                            <button className="btn btn-outline-primary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"}>Live</button>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -337,6 +348,47 @@ class SearchTweets extends React.Component {
             </button>
         )
     }
+
+
+    handleTweetStream() {
+        this.setState({ stream_state: "loading" });
+
+        if (this.state.stream_state === "off") {
+            this.connectStream();
+        }
+        else {
+            this.disconnectStream();
+        }
+    }
+
+    connectStream() {
+        const query_string = this.input.query.current.value
+        let query = {};
+
+        if (query_string[0] === "@") { query.username = query_string; }
+        else { query.keyword = query_string; }
+
+        const onTweet = (tweet) => {
+            let tweets = this.state.tweets.slice();
+            tweets.unshift(tweet);
+            this.setState({ tweets: tweets });
+        };
+        const onConnect = () => { this.setState({ stream_state: "on" }) };
+        const onDisconnect = () => { this.disconnectStream() };
+        const onError = () => {
+            this.setState({ error_message: "Si è verificato un errore durante connessione" });
+            this.disconnectStream(); 
+        };
+
+        this.stream_socket = connectToStream(query, onTweet, onConnect, onDisconnect, onError);
+    }
+
+    disconnectStream() {
+        this.stream_socket?.disconnect();
+        this.stream_socket = null;
+        this.setState({ stream_state: "off" });
+    }
+    
 }
 
 export default SearchTweets;
