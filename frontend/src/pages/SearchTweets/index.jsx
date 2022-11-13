@@ -37,7 +37,7 @@ class SearchTweets extends React.Component {
 
             fetching: false,                        // Indica se attualmente si sta richiedendo dei tweet
 
-            stream_state: "off",                       // Indica lo stato dello stream di tweet ["off", "loading", "live"]
+            stream_state: "off",                    // Indica lo stato dello stream di tweet ["off", "loading", "live"]
 
             date_week_limited: false,
             limited_min_date: __min_date_limit,     // Limite minimo imposto per tipo di ricerca
@@ -376,6 +376,7 @@ class SearchTweets extends React.Component {
         }
     }
 
+    /* Gestisce la connessione allo stream di tweet */
     connectStream() {
         const query_string = this.input.query.current.value;
         let query = {};
@@ -412,6 +413,7 @@ class SearchTweets extends React.Component {
         this.stream_socket = connectToStream(query, onTweet, onConnect, onDisconnect, onError);
     }
 
+    /* Gestisce la disconnessione dallo stream di tweet */
     disconnectStream() {
         this.stream_socket?.disconnect();
         this.stream_socket = null;
