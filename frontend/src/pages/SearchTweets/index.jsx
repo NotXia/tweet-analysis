@@ -74,7 +74,7 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         {/* Tweet fetchati */}
-                        <div className="col-12 order-2 col-md-6 order-md-1 col-lg-3">
+                        <div className="col-12 order-3 col-md-6 order-md-1 col-lg-3">
                             <div className="list-group border border-white rounded-4">
                             {
                                 this.state.tweets.map((tweet) => (
@@ -88,7 +88,7 @@ class SearchTweets extends React.Component {
                         <div className="col-12 order-1 col-md-6 order-md-2 col-lg-6">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
-                                <div className="d-flex justify-content-center w-100 p-2 ">
+                                <div className="d-flex justify-content-center w-100 p-2">
                                     <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             {/* Barra primaria - Query */}
@@ -106,19 +106,19 @@ class SearchTweets extends React.Component {
                                                     {/* Numero di ricerche */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
-                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }}
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" 
+                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: e.target.value }) }} />
                                                     </div>
                                                     {/* Data di fine */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
-                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
+                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: e.target.value }) }} />
                                                     </div>
                                                 </div>
@@ -155,7 +155,7 @@ class SearchTweets extends React.Component {
                             </div>
                         </div>
                         <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
-                            <div className="sticky-top mt-10 p-2">
+                            <div className="sticky-top">
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : "border border-grey align-items-stretch"}`} style={{height: "97vh"}}>
                                     <GeolocationMap tweets={this.state.tweets}></GeolocationMap>
                                 </div>

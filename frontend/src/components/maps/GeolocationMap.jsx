@@ -1,7 +1,8 @@
 import React from "react";
-import L, { latLng } from "leaflet";
+import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
 import moment from "moment"
 
 
@@ -29,7 +30,10 @@ class GeolocationMap extends React.Component {
         super(props);
         this.state = {
             geo_isPresent: false,
-            center_coords: latLng,
+            center_coords: {
+                lat: 0,
+                long: 0
+            },
             
             map_settings: {     //Impostazioni generali della mappa         
                 zoom: 0,
@@ -37,23 +41,47 @@ class GeolocationMap extends React.Component {
                 height: ""
             },
 
-            markers: [{
+            markers: [{         //Array dei markers attuali
                 id: "",
                 lat: 0,
                 long: 0,
-                text: ""
+                user: "",
+                time: ""
             }]
         }
     }
 
-    componentDidMount() {       //Alla chiamata del componente viene impostata la dimensione della mappa
+    componentDidMount() {
         this.setState({
             map_settings: {
-                zoom: this.props.zoom? this.props.zoom : 14,
+                zoom: this.props.zoom? this.props.zoom : 11,
                 width: this.props.width? this.props.width : "100%",
                 height: this.props.height? this.props.height : "96.7vh"
             }
         })
+    }
+
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+            JSON.stringify(this.state.markers) !== JSON.stringify(next_state.markers);
+    }
+
+    componentDidUpdate() {
+        let markers = this.markerBuilder();
+        this.setState({
+            geo_isPresent: (markers[0]? true : false),
+            markers: markers
+        });
+
+        // TO-DO Funzione per il centramento automatico
+        if(markers[0]) {
+            this.setState({
+                center_coords: {
+                    lat: markers[0].lat,
+                    long: markers[0].long
+                }
+            })
+        }
     }
 
     render() {
@@ -66,69 +94,70 @@ class GeolocationMap extends React.Component {
                     </div>
                 }
                 {
-                    this.mapBuilder()
+                    this.state.geo_isPresent ?
+                    <MapContainer 
+                        center={[this.state.center_coords.lat, this.state.center_coords.long]} 
+                        zoom={this.state.map_settings.zoom} 
+                        style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} 
+                        worldCopyJump={"true"}>
+                        <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
+                            <MarkerClusterGroup>
+                                { this.state.markers.map((marker) => this.markerFetcher(marker)) }
+                            </MarkerClusterGroup>
+                    </MapContainer>
+                    :
+                    ""
                 }
             </div>
         );
     }
 
     /**
-     * Imposta la mappa
-     * @returns La mappa impostata se sono presenti tweet geolocalizzati 
+     * Prende le coordinate di tutti i tweet geolocalizzati
+     * @returns Array dei marker ricavati se presenti
      */
-    mapBuilder() {
+    markerBuilder() {
         const tweets = this.props.tweets;
-        let markers = this.markerFetcher(tweets);
+        let marker = [{
+            id: "",
+            lat: 0,
+            long: 0,
+            user: "",
+            time: ""
+        }]
 
-        if(this.state.geo_isPresent){
-            return (
-                <MapContainer center={this.state.center_coords} zoom={this.state.map_settings.zoom} style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} worldCopyJump={"true"}>
-                    <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
-                        <MarkerClusterGroup>
-                            {markers}
-                        </MarkerClusterGroup>
-                </MapContainer>
-            );
-        }
+        for(const tweet of tweets) {
+            if(tweet.location) {
+                marker.push({
+                    id: tweet.id,
+                    lat: tweet.location.coords.lat,
+                    long: tweet.location.coords.long,
+                    user: tweet.username,
+                    time: tweet.time
+                })
+            }
+        };
+        marker.shift(); //Rimozione del primo elemento nullo
+        return marker;
     }
 
     /**
-     * Prende le coordinate di tutti i tweet geolocalizzati
-     * @param {<Object[]>} tweets: array dei tweets 
-     * @returns Array JSX dei marker ricavati se presenti
+     * Ritorna una versione JSX del marker richiesto
      */
-    markerFetcher(tweets) {
-        let markers = [];
-        let count = 0;
-
-        //Fetching dei tweet geolocalizzati e creazione markers
-        for(const tweet of tweets) {
-            if(tweet.location) {
-                count++;
-                let lat = tweet.location.coords.lat;
-                let long =  tweet.location.coords.long;
-
-                if (!this.state.geo_isPresent) this.setState({geo_isPresent: true, center_coords: (new L.latLng(lat, long))});
-
-                markers.push(
-                    <Marker key={tweet.id} position={[lat, long]}>
-                        <Tooltip direction="top" offset={[-15,-15]}>
-                            <div className="justify-content-between" style={{width:"10vw", height:"5vh"}}>
-                                <div className="text-center">
-                                    <p className="m-0 p-1 text-muted">@{tweet.username} </p>
-                                    <p className="m-0 p-1 text-muted">il {moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>
-                                </div>
-                            </div>
-                        </Tooltip>
-                    </Marker>
-                );
-            }
-        }
-        if(count===0 && this.state.geo_isPresent) {this.setState({geo_isPresent:false})}
-
-        return markers;
+    markerFetcher(marker) { 
+        return (
+            <Marker key={marker.id} position={[marker.lat, marker.long]}>
+                <Tooltip direction="top" offset={[-15,-15]}>
+                    <div className="justify-content-between" style={{width:"9vw", height:"5vh"}}>
+                        <div className="text-center">
+                            <p className="m-0 p-1 text-muted">@{marker.user} </p>
+                            <p className="m-0 p-1 text-muted">il {moment(marker.time).format("DD-MM-YYYY HH:mm")}</p>
+                        </div>
+                    </div>
+                </Tooltip>
+            </Marker>
+        ); 
     }
-    
 }
 
 export default GeolocationMap;
