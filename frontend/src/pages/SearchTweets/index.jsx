@@ -9,6 +9,7 @@ import Tweet from "../../components/Tweet"
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
+import GeolocationMap from "../../components/maps/GeolocationMap";
 import moment from "moment";
 
 /**
@@ -71,22 +72,22 @@ class SearchTweets extends React.Component {
 
                     <div className="row my-2">
                         {/* Tweet fetchati */}
-                        <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="col-12 col-lg-11 list-group border border-white rounded-4">
-                                {
-                                    this.state.tweets.map((tweet) => (
-                                        <Tweet key={tweet.id} tweet={tweet} />
-                                    ))
-                                }
-                                { this.nextPageButton() }
+                        <div className="col-12 order-3 col-md-6 order-md-1 col-lg-3">
+                            <div className="list-group border border-white rounded-4">
+                            {
+                                this.state.tweets.map((tweet) => (
+                                    <Tweet key={tweet.id} tweet={tweet} />
+                                ))
+                            }
+                            { this.nextPageButton() }
                             </div>
                         </div>
 
-                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-8">
+                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-6">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
-                                <div className="d-flex justify-content-center w-100 p-2 ">
-                                    <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
+                                <div className="d-flex justify-content-center w-100 p-2">
+                                    <div className="col-12 col-md-10 col-lg-8 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             {/* Barra primaria - Query */}
                                             <div className="input-group flex">
@@ -103,22 +104,23 @@ class SearchTweets extends React.Component {
                                                     {/* Numero di ricerche */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
-                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" 
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }}
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" 
+                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: e.target.value }) }} />
                                                     </div>
                                                     {/* Data di fine */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
-                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" 
+                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: e.target.value }) }} />
                                                     </div>
-                                                </div>    
+                                                </div>
+                                                <p className="small text-muted m-0 ms-1 mt-2" style={{ fontSize: "0.7rem" }}>Cambiando il numero di ricerche cambia il numero di tweet fetchati per la prossima pagina</p>    
                                             </div>
                                         </form>
                                     </div>
@@ -133,20 +135,27 @@ class SearchTweets extends React.Component {
                                 </div>
                                 
                                 {/* Grafici */}
-                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : "mt-3 p-2 border border-light rounded-4"}`}>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div style={{ height: "30vh", width: "50%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "100%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
-                                        <div style={{ height: "30vh", width: "30%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
-                                        <div className="d-flex justify-content-center" style={{ height: "30vh", width: "50%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <WordCloud tweets={this.state.tweets} />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
+                            <div className="sticky-top">
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`} style={{height: "97vh"}}>
+                                    <GeolocationMap tweets={this.state.tweets}></GeolocationMap>
                                 </div>
                             </div>
                         </div>
