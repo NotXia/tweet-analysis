@@ -93,6 +93,7 @@ class SearchTweets extends React.Component {
                                 {/* Barra di ricerca */}
                                 <div className="d-flex justify-content-center w-100 p-2">
                                     <div className="col-12 col-md-10 col-lg-8 mt-4 border border-grey rounded-4 p-3">
+                                        {/* Stato della live */}
                                         <div className={`text-center mb-1 ${this.state.stream_state === "on" ? "d-block" : "d-none"}`}>
                                             <div className={`${live_dot_css["live-dot"]} me-2`}></div><span className="fw-semibold">Live</span>
                                         </div>
@@ -101,6 +102,7 @@ class SearchTweets extends React.Component {
                                             <div className="input-group flex">
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username"
                                                         onChange={ (e) => this.dateRangeModifier(e) } />
+                                                {/* Bottone per avviare stream di tweet */}
                                                 <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
                                                     {
                                                         (() => {
@@ -114,6 +116,7 @@ class SearchTweets extends React.Component {
                                                         })()
                                                     }
                                                 </button>
+                                                {/* Bottone per la ricerca */}
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
@@ -150,8 +153,8 @@ class SearchTweets extends React.Component {
                                 <div>
                                     <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} ><mark>Attualmente mostrati: <strong>{this.state.tweets.length}</strong> tweet</mark></p>
                                     
+                                    {/* Bottone Prossima pagina */}
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        {/* Bottone Prossima pagina */}
                                         <div className="mx-2">
                                             { this.nextPageButton() }
                                         </div>
