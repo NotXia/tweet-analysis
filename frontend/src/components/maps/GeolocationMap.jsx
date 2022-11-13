@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({   //Imposta l'immagine dei marker
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const tileLayer = {    //Credits
+const tileLayer = {             //Credits
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution: "&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
 }
@@ -20,7 +20,7 @@ const tileLayer = {    //Credits
 /**
  * Componente che crea una mappa con markers dei tweet geolocalizzati.
  * Utilizzo: <GeolocationMap tweets={tweets} zoom? width? height? />
- * - @param Tweets     indica l'array di oggetti contenente i tweet.
+ * - @param tweets     indica l'array di oggetti contenente i tweet.
  * - @param zoom       (non obbligatorio) indica il livello di zoom iniziale
  * - @param width      (non obbligatorio) indica la larghezza della mappa
  * - @param height     (non obbligatorio) indica l'altezza della mappa
@@ -51,10 +51,11 @@ class GeolocationMap extends React.Component {
         }
     }
 
+    //Alla chiamata del componente viene impostata la dimensione della mappa
     componentDidMount() {
-        this.setState({
+        this.setState({     
             map_settings: {
-                zoom: this.props.zoom? this.props.zoom : 11,
+                zoom: this.props.zoom? this.props.zoom : 10,
                 width: this.props.width? this.props.width : "100%",
                 height: this.props.height? this.props.height : "96.7vh"
             }
@@ -66,6 +67,7 @@ class GeolocationMap extends React.Component {
             JSON.stringify(this.state.markers) !== JSON.stringify(next_state.markers);
     }
 
+    //Quando riceve nuovi tweets ne ricava i markers e aggiorna l'array dei markers corrente
     componentDidUpdate() {
         let markers = this.markerBuilder();
         this.setState({
@@ -73,7 +75,7 @@ class GeolocationMap extends React.Component {
             markers: markers
         });
 
-        // TO-DO Funzione per il centramento automatico
+        // Se presenti, imposta il primo marker come centro della visuale
         if(markers[0]) {
             this.setState({
                 center_coords: {
@@ -96,7 +98,8 @@ class GeolocationMap extends React.Component {
                             center={[this.state.center_coords.lat, this.state.center_coords.long]} 
                             zoom={this.state.map_settings.zoom} 
                             style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} 
-                            worldCopyJump={"true"}>
+                            worldCopyJump={"true"}
+                        >
                             <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
                                 <MarkerClusterGroup>
                                     { this.state.markers.map((marker) => this.markerFetcher(marker)) }
