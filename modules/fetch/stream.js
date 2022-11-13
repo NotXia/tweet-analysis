@@ -15,7 +15,7 @@ module.exports = {
 }
 
 
-const MAX_CONNECTION_RETRY = 5;
+const MAX_RECONNECT_ATTEMPTS = 5;
 
 let tweet_stream = null;                        // Connessione attualmente attiva
 let abort_controller = new AbortController();   // Serve per interrompere la connessione
@@ -23,8 +23,9 @@ let abort_controller = new AbortController();   // Serve per interrompere la con
 
 /**
  * Si connette allo stream dei tweet in tempo reale
- * @param {(tweet:Object)=>void} onTweet                 Funzione richiamata alla ricezione di un nuovo tweet (tweet, rules_id):void
- * @param {()=>void} onDisconnect       Funzione richiamata alla chiusura della connessione ():void
+ * @param {(tweet:Object, rule_id:string)=>void} onTweet        Funzione richiamata alla ricezione di un nuovo tweet
+ * @param {()=>void} onDisconnect                               Funzione richiamata alla chiusura della connessione
+ * @throws {StreamUnavailable} Se non è stato possibile collegarsi allo stream
  */
 async function openStream(onTweet, onDisconnect) {
     if (tweet_stream) { return; } // Già connesso allo stream
@@ -37,11 +38,10 @@ async function openStream(onTweet, onDisconnect) {
         if (data === "\r\n") { return; } // Segnale keep alive (da ignorare)
         
         let stream_tweet = "";
-        try {
-            stream_tweet = JSON.parse(data)
-        }
+        // Può capitare di ricevere dati troncati (vengono scartati)
+        try { stream_tweet = JSON.parse(data) }
         catch (err) { return; }
-        
+
         const tweet_data = stream_tweet.data; // Dati del tweet
         const applied_rules_id = stream_tweet.matching_rules.map(rule => rule.id); // Dati delle rules applicate
 
@@ -67,17 +67,20 @@ async function openStream(onTweet, onDisconnect) {
         tweet_stream = null;
 
         if (err.code === "ERR_CANCELED") { return onDisconnect(); }         // Disconnessione manuale
-        openStream(onTweet, onDisconnect).catch(() => { onDisconnect(); }); // Tentativo di riconnessione
+        openStream(onTweet, onDisconnect).catch(() => { // Tentativo di riconnessione
+            onDisconnect(); // Riconnessione fallita
+        }); 
     });
 }
 
 /**
  * Crea una connessione allo stream per i tweet in tempo reale
  * @param {number} reconnect_attemps    Numero di tentativi di riconnessione effettuati
+ * @throws {StreamUnavailable} Se non è stato possibile collegarsi allo stream
  * @returns {Promise<Object>} Connessione allo stream
  */
 async function _getStream(reconnect_attemps=0) {
-    if (reconnect_attemps >= MAX_CONNECTION_RETRY) { throw new StreamUnavailable(); }
+    if (reconnect_attemps >= MAX_RECONNECT_ATTEMPTS) { throw new StreamUnavailable(); }
 
     try {
         const res = await axios({
@@ -113,6 +116,7 @@ function closeStream() {
     abort_controller = new AbortController();
     tweet_stream = null;
 
+    // Pulizia regole ancora attive
     _getRules().then((rules) => {
         rules?.forEach((rule) => deleteRuleById(rule.id));
     }).catch ((err) => { console.error("Non è stato possibile ripulire le regole"); });
@@ -174,6 +178,10 @@ async function deleteRuleById(rule_id) {
 }
 
 
+/**
+ * Restituisce le regola attualmente attive
+ * @returns {Object[]} Lista delle regole
+ */
 async function _getRules() {
     const res = await axios({
         method: "GET", url: "https://api.twitter.com/2/tweets/search/stream/rules",
