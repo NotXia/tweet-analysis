@@ -18,7 +18,7 @@ module.exports = {
 const MAX_CONNECTION_RETRY = 5;
 
 let tweet_stream = null;                        // Connessione attualmente attiva
-let abort_controller = new AbortController(); // Serve per interrompere la connessione
+let abort_controller = new AbortController();   // Serve per interrompere la connessione
 
 
 /**
@@ -72,8 +72,8 @@ async function openStream(onTweet, onDisconnect) {
     tweet_stream.on("error", (err) => {
         tweet_stream = null;
 
-        if (err.code === "ERR_CANCELED") { return onDisconnect(); }
-        openStream(onTweet, onDisconnect).catch(() => { onDisconnect(); });
+        if (err.code === "ERR_CANCELED") { return onDisconnect(); }         // Disconnessione manuale
+        openStream(onTweet, onDisconnect).catch(() => { onDisconnect(); }); // Tentativo di riconnessione
     });
 }
 
@@ -104,7 +104,6 @@ async function _getStream(reconnect_attemps=0) {
         return res.data;
     }
     catch (err) {
-        console.log(err)
         await new Promise(r => setTimeout(r, 2**reconnect_attemps * 2000)); // Delay con incremento quadratico sul numero di tentativi di riconnessione
         return _getStream(reconnect_attemps+1);
     }
@@ -146,7 +145,7 @@ async function addRule(username="", keyword="") {
         });
 
         if (res.data.data) { // Regola creata correttamente
-            return res.data.data.id; 
+            return res.data.data[0].id; 
         } 
         else if (res.data.errors && res.data.errors[0].title === "DuplicateRule") { // Regola già esistente
             return res.data.errors[0].id;
