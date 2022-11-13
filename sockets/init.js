@@ -1,4 +1,4 @@
-const { initTweetStreamSocket } = require("./tweetStream.js")
+const { initTweetStreamSocket } = require("./routes/tweetStream.js")
 
 module.exports = {
     initSocket: initSocket 
