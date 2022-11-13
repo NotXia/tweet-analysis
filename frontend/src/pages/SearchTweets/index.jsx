@@ -154,9 +154,7 @@ class SearchTweets extends React.Component {
                                 <div>
                                     <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} ><mark>Attualmente mostrati: <strong>{this.state.tweets.length}</strong> tweet</mark></p>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div className="mx-2">
-                                            { this.nextPageButton() }
-                                        </div>
+                                        { this.nextPageButton() }
                                     </div>
                                 </div>
                                 
