@@ -88,25 +88,25 @@ class GeolocationMap extends React.Component {
         return (
             <div id="map" className={this.state.geo_isPresent? "" : "text-center"}>
                 {
-                    !this.state.geo_isPresent &&
-                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ zIndex: "1000", backgroundColor: "#a1a1a1A0", pointerEvents: "none"  }}>
+                    this.state.geo_isPresent ?
+                    <div>
+                        <p className="m-0 mt-2 text-center mark"><b>{this.state.markers.length}</b> {this.state.markers.length > 1? "markers presenti" : "marker presente"}</p>
+                        <MapContainer 
+                            className="rounded-4 border border-grey"
+                            center={[this.state.center_coords.lat, this.state.center_coords.long]} 
+                            zoom={this.state.map_settings.zoom} 
+                            style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} 
+                            worldCopyJump={"true"}>
+                            <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
+                                <MarkerClusterGroup>
+                                    { this.state.markers.map((marker) => this.markerFetcher(marker)) }
+                                </MarkerClusterGroup>
+                        </MapContainer>
+                    </div>
+                    :
+                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center rounded-4 border border-dark" style={{ zIndex: "1000", backgroundColor: "#DDDDDDDD", pointerEvents: "none"  }}>
                         <p className="mt-3">Non è presente alcuna geolocalizzazione</p>
                     </div>
-                }
-                {
-                    this.state.geo_isPresent ?
-                    <MapContainer 
-                        center={[this.state.center_coords.lat, this.state.center_coords.long]} 
-                        zoom={this.state.map_settings.zoom} 
-                        style={{width: this.state.map_settings.width, height: this.state.map_settings.height}} 
-                        worldCopyJump={"true"}>
-                        <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
-                            <MarkerClusterGroup>
-                                { this.state.markers.map((marker) => this.markerFetcher(marker)) }
-                            </MarkerClusterGroup>
-                    </MapContainer>
-                    :
-                    ""
                 }
             </div>
         );

@@ -89,7 +89,7 @@ class SearchTweets extends React.Component {
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
                                 <div className="d-flex justify-content-center w-100 p-2">
-                                    <div className="col-12 col-md-6 col-lg-6 mt-4 border border-grey rounded-4 p-3">
+                                    <div className="col-12 col-md-10 col-lg-8 mt-4 border border-grey rounded-4 p-3">
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             {/* Barra primaria - Query */}
                                             <div className="input-group flex">
@@ -156,7 +156,7 @@ class SearchTweets extends React.Component {
                         </div>
                         <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
                             <div className="sticky-top">
-                                <div className={`${this.state.tweets.length === 0 ? "d-none" : "border border-grey align-items-stretch"}`} style={{height: "97vh"}}>
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`} style={{height: "97vh"}}>
                                     <GeolocationMap tweets={this.state.tweets}></GeolocationMap>
                                 </div>
                             </div>
