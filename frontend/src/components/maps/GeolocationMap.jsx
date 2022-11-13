@@ -143,7 +143,7 @@ class GeolocationMap extends React.Component {
             }
         };
         marker.shift(); //Rimozione del primo elemento nullo
-        return marker;
+        return marker
     }
 
     /**
