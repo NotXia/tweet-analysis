@@ -35,9 +35,13 @@ async function openStream(onTweet, onDisconnect) {
     tweet_stream.on("data", data => {
         data = data.toString(); // Conversione da Buffer a stringa
         if (data === "\r\n") { return; } // Segnale keep alive (da ignorare)
-
         
-        const stream_tweet = JSON.parse(data)
+        let stream_tweet = "";
+        try {
+            stream_tweet = JSON.parse(data)
+        }
+        catch (err) { return; }
+        
         const tweet_data = stream_tweet.data; // Dati del tweet
         const applied_rules_id = stream_tweet.matching_rules.map(rule => rule.id); // Dati delle rules applicate
 
