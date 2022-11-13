@@ -4,11 +4,10 @@ const app = express();
 const server = require("http").createServer(app);
 const socketIO = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "http://localhost:3000", // Per l'ambiente di test React
         methods: ["GET", "POST"]
     }
 })
-app.set("socketio", socketIO);
 app.disable("x-powered-by");
 const path = require("path");
 const cookieParser = require("cookie-parser");
