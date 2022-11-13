@@ -193,7 +193,6 @@ class SearchTweets extends React.Component {
                 end_date: end_date,
                 error_message:""
             })
-            console.log(this.state.tweets)
         }
         catch (err) {
             this.setState({ error_message: "Si è verificato un errore durante la ricerca" });
