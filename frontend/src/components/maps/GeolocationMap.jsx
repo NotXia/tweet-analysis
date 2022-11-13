@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { sameTweets } from "../../modules/utilities/tweetListComparison";
 import moment from "moment"
+import "leaflet/dist/leaflet.css";
+import 'react-leaflet-markercluster/dist/styles.min.css';
 
 
 L.Icon.Default.mergeOptions({   //Imposta l'immagine dei marker
@@ -71,7 +73,7 @@ class GeolocationMap extends React.Component {
     componentDidUpdate() {
         let markers = this.markerBuilder();
         this.setState({
-            geo_isPresent: (markers[0]? true : false),
+            geo_isPresent: (markers.length > 0 ? true : false),
             markers: markers
         });
 

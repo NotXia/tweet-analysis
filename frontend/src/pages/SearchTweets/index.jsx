@@ -1,8 +1,6 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "leaflet/dist/leaflet.css";
-import 'react-leaflet-markercluster/dist/styles.min.css';
 import { Helmet } from 'react-helmet'
 import Navbar from "../../components/Navbar"
 import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
