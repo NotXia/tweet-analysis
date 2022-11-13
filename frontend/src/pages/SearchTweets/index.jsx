@@ -102,7 +102,17 @@ class SearchTweets extends React.Component {
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username"
                                                         onChange={ (e) => this.dateRangeModifier(e) } />
                                                 <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
-                                                    { this.state.stream_state === "on" ? "Ferma" : "Live" }
+                                                    {
+                                                        (() => {
+                                                            switch (this.state.stream_state) {
+                                                                case "on": return "Ferma";
+                                                                case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
+                                                                case "off": 
+                                                                default:
+                                                                    return "Live";
+                                                            }
+                                                        })()
+                                                    }
                                                 </button>
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
