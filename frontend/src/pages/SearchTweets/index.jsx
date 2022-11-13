@@ -297,7 +297,7 @@ class SearchTweets extends React.Component {
         const query = this.input.query.current.value;
         let aweekago = new Date();
 
-        if (query[0] !== "@" && query !== "" && this.state.date_week_limited === false) {
+        if ((query[0] !== "@" && query !== "") && this.state.date_week_limited === false) {
             
             aweekago.setDate(aweekago.getDate()-7);
             const newLimit = ((aweekago.toISOString()).split("T"))[0];
@@ -308,7 +308,7 @@ class SearchTweets extends React.Component {
                 select_max_date: __max_date_limit
             });
         }
-        else if(query[0] === "@" || query === "" && this.state.date_week_limited === true) {
+        else if((query[0] === "@" || query === "") && this.state.date_week_limited === true) {
             this.setState({
                 date_week_limited: false,
                 limited_min_date: __min_date_limit,
