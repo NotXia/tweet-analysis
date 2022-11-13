@@ -58,7 +58,7 @@ class Tweet extends React.Component {
                     </div>
                     <p className="small">{moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>
                 </div>
-                <p className="m-0 mt-2" style={{fontSize: "0.95rem"}}>{he.decode(tweet.text)}</p>
+                <p className="m-0 mt-2" style={{fontSize: "0.95rem", overflowWrap: "break-word"}}>{he.decode(tweet.text)}</p>
                 <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-inner">
                         {
