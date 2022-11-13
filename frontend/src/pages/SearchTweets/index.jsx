@@ -1,11 +1,11 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Helmet } from 'react-helmet'
-import Navbar from "../../components/Navbar"
-import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
-import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js"
-import Tweet from "../../components/Tweet"
+import { Helmet } from 'react-helmet';
+import Navbar from "../../components/Navbar";
+import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js";
+import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js";
+import Tweet from "../../components/Tweet";
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
@@ -92,7 +92,7 @@ class SearchTweets extends React.Component {
                                             {/* Barra primaria - Query */}
                                             <div className="input-group flex">
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username"
-                                                        onChange={ (e) => this.dateRangeModifier(e) } />
+                                                        onChange={ (e) => this.dateRangeModifier(e) } required />
                                                 <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
@@ -110,14 +110,14 @@ class SearchTweets extends React.Component {
                                                     {/* Data di inizio */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
-                                                        <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
-                                                                min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: e.target.value }) }} />
+                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
+                                                                min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: (e.target.value!==""? e.target.value : this.state.limited_min_date) })}}/>
                                                     </div>
                                                     {/* Data di fine */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
                                                         <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
-                                                                min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: e.target.value }) }} />
+                                                                min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }}/>
                                                     </div>
                                                 </div>
                                                 <p className="small text-muted m-0 ms-1 mt-2" style={{ fontSize: "0.7rem" }}>Cambiando il numero di ricerche cambia il numero di tweet fetchati per la prossima pagina</p>    
@@ -171,7 +171,7 @@ class SearchTweets extends React.Component {
      */
     async searchTweets(e) {
         e.preventDefault();
-        
+    
         try {
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
@@ -295,8 +295,8 @@ class SearchTweets extends React.Component {
         e.preventDefault();
         const query = this.input.query.current.value;
         let aweekago = new Date();
-        
-        if (query[0] !== "@" && this.state.date_week_limited === false) {
+
+        if ((query[0] !== "@" && query !== "") && this.state.date_week_limited === false) {
             
             aweekago.setDate(aweekago.getDate()-7);
             const newLimit = ((aweekago.toISOString()).split("T"))[0];
@@ -307,14 +307,15 @@ class SearchTweets extends React.Component {
                 select_max_date: __max_date_limit
             });
         }
-        else if(query[0] === "@" && this.state.date_week_limited === true) {
+        else if((query[0] === "@" || query === "") && this.state.date_week_limited === true) {
             this.setState({
                 date_week_limited: false,
-                limited_min_date: __min_date_limit
+                limited_min_date: __min_date_limit,
+                select_min_date: __min_date_limit
             });
         }
     }
-    
+
 
     nextPageButton() {
         return (
