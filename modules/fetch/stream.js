@@ -118,6 +118,10 @@ function closeStream() {
 
     abort_controller = new AbortController();
     tweet_stream = null;
+
+    _getRules().then((rules) => {
+        rules?.forEach((rule) => deleteRuleById(rule.id));
+    }).catch ((err) => { console.error("Non è stato possibile ripulire le regole"); });
 }
 
 
@@ -173,6 +177,16 @@ async function deleteRuleById(rule_id) {
             delete: { ids: [rule_id] }
         }
     });
+}
+
+
+async function _getRules() {
+    const res = await axios({
+        method: "GET", url: "https://api.twitter.com/2/tweets/search/stream/rules",
+        headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+    });
+
+    return res.data.data;
 }
 
 
