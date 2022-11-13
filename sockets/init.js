@@ -5,7 +5,7 @@ module.exports = {
 }
 
 function initSocket(socketIO) {
-    socketIO.on("connection", (socket) => {
-        initTweetStreamSocket(socket);
-    });
+    const tweet_stream_ns = socketIO.of("/tweets/stream");
+
+    initTweetStreamSocket(tweet_stream_ns);
 }

@@ -11,56 +11,67 @@ module.exports = {
 }
 
 
-function init(socket) {
-    try {
-        /**
-         * Inizializzazione della connessione per ricevere tweet in tempo reale
+let socketIO_namespace = null;
+
+
+function init(socket_namespace) {
+    socketIO_namespace = socket_namespace;
+
+    socket_namespace.on("connection", (socket) => {
+        console.log(`⚡: ${socket.id} user just connected!`);
+
+        try {
+            /**
+             * Inizializzazione della connessione per ricevere tweet in tempo reale
+             * 
          * 
-         * Formato richiesta
-         * {
-         *      username:string     Username da cui ricevere
-         *      keyword:string      Keyword da cui ricevere
-         * }
-         */
-        socket.on("tweet.stream.init", async (data, response) => {
-            if (!data || (!data.username && !data.keyword)) { return response({ status: "error", error: "Parametri mancanti" }); }
+             * 
+             * Formato richiesta
+             * {
+             *      username:string     Username da cui ricevere
+             *      keyword:string      Keyword da cui ricevere
+             * }
+             */
+            socket.on("tweet.stream.init", async (data, response) => {
+                if (!data || (!data.username && !data.keyword)) { return response({ status: "error", error: "Parametri mancanti" }); }
+    
+                try {
+                    const rule_id = await TweetStream.addRule(data.username, data.keyword);
+                    _abortStreamTimeout();
+                    _abortRuleTimeout(rule_id);
+                    _addConnection(socket, rule_id);
+                    await TweetStream.openStream(_forwardTweetToClient, _disconnectAllClients);
 
-            try {
-                const rule_id = await TweetStream.addRule(data.username, data.keyword);
-                _abortStreamTimeout();
-                _abortRuleTimeout(rule_id);
-                _addConnection(socket, rule_id);
-                await TweetStream.openStream(_forwardTweetToClient, _disconnectAllClients);
+                    console.log(socket.id, rule_id)
 
-                return response({ status: "success" });
-            }
-            catch (err) {
-                if (err instanceof ExceededStreamRulesCap) { return response({ status: "error", error: "Limite di connessioni raggiunto" }) }
-                if (err instanceof StreamUnavailable) { return response({ status: "error", error: "Non è stato possibile stabilire una connessione" }) }
-                return response({ status: "error", error: "Si è verificato un errore" })
-            }
-        });
-
-        socket.on("disconnect", () => {
-            _disconnectClient(socket);
-        })
-    }
-    catch (err) {
-        console.error(err)
-    }
+                    return response({ status: "success" });
+                }
+                catch (err) {
+                    console.log(err)
+                    if (err instanceof ExceededStreamRulesCap) { return response({ status: "error", error: "Limite di connessioni raggiunto" }) }
+                    if (err instanceof StreamUnavailable) { return response({ status: "error", error: "Non è stato possibile stabilire una connessione" }) }
+                    return response({ status: "error", error: "Si è verificato un errore" })
+                }
+            });
+    
+            socket.on("disconnect", () => {
+                _disconnectClient(socket);
+                console.log('🔥: A user disconnected');
+            });
+        }
+        catch (err) {
+            console.error(err)
+        }
+    });
 }
 
 
-let _sockets_by_rule_id = {};       // Mappa rule_id alla lista dei socket associati
 let _rule_id_by_socket_id = {};     // Mappa socket_id al rule_id associato
 
-function _getSocketsForRule(rule_id) { return _sockets_by_rule_id[rule_id] ?? []; }
 
 /* Gestisce la registrazione di una nuova connessione */
 function _addConnection(socket, rule_id) {
-    // Associazione rule_id -> socket
-    if (!(rule_id in _sockets_by_rule_id)) { _sockets_by_rule_id[rule_id] = []; }
-    _sockets_by_rule_id[rule_id].push(socket);
+    socket.join(`${rule_id}`);
 
     // Associazione socket_id -> rule_id
     _rule_id_by_socket_id[socket.id] = rule_id;
@@ -68,22 +79,17 @@ function _addConnection(socket, rule_id) {
 
 /* Inoltra i tweet ai client interessati */
 function _forwardTweetToClient(tweet, applied_rules_id) {
+    console.log(tweet);
     for (const rule_id of applied_rules_id) {
-        _getSocketsForRule(rule_id).forEach((socket) => {
-            socket.emit("tweet.stream.new", tweet);
-        })
+        socketIO_namespace.to(`${rule_id}`).emit("tweet.stream.new", tweet);
     }
 }
 
 /* Gestisce la disconnessione di un client */
 function _disconnectClient(disconnected_socket) {
+    console.log(`Disconnection ${disconnected_socket.id}`);
     const to_update_rule_id = _rule_id_by_socket_id[disconnected_socket.id];
     
-    if (to_update_rule_id && _sockets_by_rule_id[to_update_rule_id]) {
-        // Rimuove l'associazione rule_id -> socket
-        _sockets_by_rule_id[to_update_rule_id] = _sockets_by_rule_id[to_update_rule_id].filter((socket) => socket.id != disconnected_socket.id);
-        if (_sockets_by_rule_id[to_update_rule_id].length === 0) { delete _sockets_by_rule_id[to_update_rule_id]; }
-    }
     // Rimuove l'associazione socket_id -> rule_id
     delete _rule_id_by_socket_id[disconnected_socket.id];
 
@@ -92,23 +98,31 @@ function _disconnectClient(disconnected_socket) {
 }
 
 /* Gestisce la disconnessione di tutti i client */
-function _disconnectAllClients() {
-    for (const sockets of Object.values(_sockets_by_rule_id)) {
-        sockets.forEach((socket) => _disconnectClient(socket));
-    }
+async function _disconnectAllClients() {
+    console.log(`Disconnection all`);
+    const sockets = await socketIO_namespace.fetchSockets();
+
+    sockets.forEach((socket) => {
+        _disconnectClient(socket);
+        socket.disconnect();
+    })
 }
 
 
 let _delete_request_by_rule_id = {};    // Mappa rule_id alla richiesta di eliminazione della regola
 
 /* Gestisce l'avvio della cancellazione di una regola (se necessario) */
-function _handleRuleTimeout(rule_id) {
-    if (_getSocketsForRule(rule_id).length === 0) {
+async function _handleRuleTimeout(rule_id) {
+    const sockets = await socketIO_namespace.in(rule_id).fetchSockets();
+
+    if (sockets.length === 0) {
         _abortRuleTimeout(rule_id); // Annulla la richiesta precedente
+        console.log(`Start del rule ${rule_id}`);
 
         _delete_request_by_rule_id[rule_id] = setTimeout(async () => {
             await TweetStream.deleteRule(rule_id).catch((err) => { console.error(`Non è stato possibile eliminare la rule ${rule_id}`); });
             delete _delete_request_by_rule_id[rule_id];
+            console.log(`Rule del ${rule_id}`);
         }, EMPTY_RULE_TIMEOUT);
     }
 }
@@ -117,6 +131,8 @@ function _handleRuleTimeout(rule_id) {
 function _abortRuleTimeout(rule_id) {
     if (_delete_request_by_rule_id[rule_id]) { 
         clearTimeout(_delete_request_by_rule_id[rule_id]);
+        delete _delete_request_by_rule_id[rule_id];
+        console.log(`Abort del rule ${rule_id}`);
     }
 }
 
@@ -124,16 +140,19 @@ function _abortRuleTimeout(rule_id) {
 let _close_stream_request = null; // Richiesta di chiusura dello stream
 
 /* Avvia la richiesta di chiusura dello stream */
-function _handleStreamTimeout() {
-    if (Object.keys(_sockets_by_rule_id).length === 0) { // Nessuna connessione attiva
+async function _handleStreamTimeout() {
+    const sockets = await socketIO_namespace.fetchSockets();
+
+    if (sockets.length === 0) { // Nessuna connessione attiva
         _abortStreamTimeout(); // Annulla la richiesta precedente
+        console.log(`Start stop stream`);
 
         _close_stream_request = setTimeout(() => {
             TweetStream.closeStream();
             _close_stream_request = null;
 
-            _sockets_by_rule_id = {}
             _rule_id_by_socket_id = {}
+            console.log(`Stream stopped`);
         }, CLOSE_STREAM_TIMEOUT);
     }
 }
@@ -142,5 +161,7 @@ function _handleStreamTimeout() {
 function _abortStreamTimeout() {
     if (_close_stream_request) { 
         clearTimeout(_close_stream_request); 
+        _close_stream_request = null;
+        console.log(`Abort stream stopped`);
     }
 }
