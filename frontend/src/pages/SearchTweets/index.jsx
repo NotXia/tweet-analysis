@@ -155,7 +155,12 @@ class SearchTweets extends React.Component {
                         <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
                             <div className="sticky-top">
                                 <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`} style={{height: "97vh"}}>
-                                    <GeolocationMap tweets={this.state.tweets}></GeolocationMap>
+                                    {
+                                        (this.state.query && this.state.query[0] !== "@") ?
+                                            <GeolocationMap tweets={this.state.tweets} cluster={true} connect={false} /> // Mappa per keyword
+                                        :
+                                            <GeolocationMap tweets={this.state.tweets} cluster={false} connect={true} /> // Mappa per utenti
+                                    }
                                 </div>
                             </div>
                         </div>
