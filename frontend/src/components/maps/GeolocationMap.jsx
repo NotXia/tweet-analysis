@@ -154,9 +154,9 @@ class GeolocationMap extends React.Component {
                     time: tweet.time
                 })
             }
-        };
+        }
         marker.shift(); //Rimozione del primo elemento nullo
-        return marker
+        return marker;
     }
 
     /**
