@@ -28,7 +28,7 @@ const tileLayer = {             //Credits
  * - @param width      (non obbligatorio) indica la larghezza della mappa
  * - @param height     (non obbligatorio) indica l'altezza della mappa
  * - @param connect    (default: false)   se si vuole connettere i punti con una freccia
- * - @param cluster    (default: false)    se si vuole visualizzare i marker come cluster
+ * - @param cluster    (default: false)   se si vuole visualizzare i marker come cluster
  */
 class GeolocationMap extends React.Component {
     constructor(props) {
