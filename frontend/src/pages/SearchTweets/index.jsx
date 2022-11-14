@@ -117,12 +117,12 @@ class SearchTweets extends React.Component {
                                                     }
                                                 </button>
                                                 {/* Bottone per la ricerca */}
-                                                <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
+                                                <button className="btn btn-outline-secondary" disabled={this.state.stream_state === "on"} type="submit" id="button-addon1">Cerca</button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
                                             {/* Opzioni avanzate */}
-                                            <p className="button m-0 ms-1 mb-2 small text-decoration-underline" data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className="collapse" id="advancedOptions">
                                                 <div className="row justify-content-between align-items-center">
                                                     {/* Numero di ricerche */}
@@ -132,13 +132,13 @@ class SearchTweets extends React.Component {
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
-                                                    <div className={`col-12 col-lg-4 ${this.state.stream_state === "on" ? "d-none" : ""}`}>
+                                                    <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
                                                             <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: (e.target.value!==""? e.target.value : this.state.limited_min_date) })}}/>
                                                     </div>
                                                     {/* Data di fine */}
-                                                    <div className={`col-12 col-lg-4 ${this.state.stream_state === "on" ? "d-none" : ""}`}>
+                                                    <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
                                                         <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }}/>
@@ -345,7 +345,7 @@ class SearchTweets extends React.Component {
 
     nextPageButton() {
         return (
-            <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
+            <button className={(this.state.next_page==="" || this.state.stream_state === "on") ? "d-none" : "btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
             {
                 (() => {
                     if (this.state.fetching) {
