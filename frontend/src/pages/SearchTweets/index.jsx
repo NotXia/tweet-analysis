@@ -123,7 +123,7 @@ class SearchTweets extends React.Component {
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
                                             {/* Opzioni avanzate */}
                                             <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
-                                            <div className="collapse" id="advancedOptions">
+                                            <div className={`collapse ${this.state.stream_state === "on" ? "d-none" : ""}`} id="advancedOptions">
                                                 <div className="row justify-content-between align-items-center">
                                                     {/* Numero di ricerche */}
                                                     <div className="col-12 col-lg-4">
