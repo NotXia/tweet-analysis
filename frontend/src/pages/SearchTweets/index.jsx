@@ -273,7 +273,7 @@ class SearchTweets extends React.Component {
                 fetched_tweets = fetched_tweets.concat(tweets_data.tweets.slice(0, quantity));
             }
             else { // I tweet sono nella quantità esatta
-                fetched_tweets = tweets_data.tweets;
+                fetched_tweets = fetched_tweets.concat(tweets_data.tweets);
             }
         }
         else {
