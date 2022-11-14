@@ -37,6 +37,7 @@
     "jquery": "^3.6.1",
     "languagedetect": "^2.0.0",
     "leaflet": "^1.9.2",
+    "leaflet-arrowheads": "^1.4.0",
     "leaflet.markercluster": "^1.5.3",
     "modules": "file:modules",
     "moment": "^2.29.4",
