@@ -1,6 +1,7 @@
 import React from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
+import ArrowPolyline from "./utils/ArrowPolyline";
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { sameTweets } from "../../modules/utilities/tweetListComparison";
 import moment from "moment"
@@ -26,6 +27,8 @@ const tileLayer = {             //Credits
  * - @param zoom       (non obbligatorio) indica il livello di zoom iniziale
  * - @param width      (non obbligatorio) indica la larghezza della mappa
  * - @param height     (non obbligatorio) indica l'altezza della mappa
+ * - @param connect    (default: false)   se si vuole connettere i punti con una freccia
+ * - @param cluster    (default: false)    se si vuole visualizzare i marker come cluster
  */
 class GeolocationMap extends React.Component {
     constructor(props) {
@@ -103,9 +106,19 @@ class GeolocationMap extends React.Component {
                             worldCopyJump={"true"}
                         >
                             <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
-                                <MarkerClusterGroup>
-                                    { this.state.markers.map((marker) => this.markerFetcher(marker)) }
-                                </MarkerClusterGroup>
+                                {
+                                    this.props.cluster ? 
+                                        <MarkerClusterGroup>
+                                            { this.state.markers.map((marker) => this.markerFetcher(marker)) }
+                                        </MarkerClusterGroup>
+                                    :
+                                        <div>
+                                            { this.state.markers.map((marker) => this.markerFetcher(marker)) }
+                                        </div>
+                                }
+                                {
+                                    this.props.connect ? this.renderLines() : ""
+                                }
                         </MapContainer>
                     </div>
                     :
@@ -153,15 +166,37 @@ class GeolocationMap extends React.Component {
         return (
             <Marker key={marker.id} position={[marker.lat, marker.long]}>
                 <Tooltip direction="top" offset={[-15,-15]}>
-                    <div className="justify-content-between" style={{width:"9vw", height:"5vh"}}>
-                        <div className="text-center">
-                            <p className="m-0 p-1 text-muted">@{marker.user} </p>
-                            <p className="m-0 p-1 text-muted">il {moment(marker.time).format("DD-MM-YYYY HH:mm")}</p>
+                    <div className="d-flex justify-content-between align-items-center" style={{width:"9rem", height:"4rem"}}>
+                        <div className="text-center w-100">
+                            <p className="mb-1 text-muted">@{marker.user} </p>
+                            <p className="m-0 text-muted">il {moment(marker.time).format("DD-MM-YYYY HH:mm")}</p>
                         </div>
                     </div>
                 </Tooltip>
             </Marker>
         ); 
+    }
+
+    /**
+     * Renderizza una linea che collega le coordinate dei tweet (in ordine di apparizione)
+     */
+    renderLines() {
+        let lines = [];
+        const tweets_with_geo = this.props.tweets.filter((tweet) => tweet.location);
+
+        for (let i=0; i<tweets_with_geo.length-1; i++) {
+            const start_tweet = tweets_with_geo[i];
+            const end_tweet = tweets_with_geo[i+1];
+
+            lines.push(
+                <ArrowPolyline positions={[ 
+                    [start_tweet.location.coords.lat, start_tweet.location.coords.long], 
+                    [end_tweet.location.coords.lat, end_tweet.location.coords.long] 
+                ]} color="#0d338c" />
+            )
+        }
+
+        return lines;
     }
 }
 
