@@ -192,7 +192,7 @@ class GeolocationMap extends React.Component {
                 <ArrowPolyline positions={[ 
                     [start_tweet.location.coords.lat, start_tweet.location.coords.long], 
                     [end_tweet.location.coords.lat, end_tweet.location.coords.long] 
-                ]} color="#0d338c" />
+                ]} color="#0d338c50" hoverColor="#0d338c" />
             )
         }
 
