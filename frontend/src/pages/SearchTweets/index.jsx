@@ -132,13 +132,13 @@ class SearchTweets extends React.Component {
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
-                                                    <div className="col-12 col-lg-4">
+                                                    <div className={`col-12 col-lg-4 ${this.state.stream_state === "on" ? "d-none" : ""}`}>
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
                                                             <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: (e.target.value!==""? e.target.value : this.state.limited_min_date) })}}/>
                                                     </div>
                                                     {/* Data di fine */}
-                                                    <div className="col-12 col-lg-4">
+                                                    <div className={`col-12 col-lg-4 ${this.state.stream_state === "on" ? "d-none" : ""}`}>
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
                                                         <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
                                                                 min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }}/>
