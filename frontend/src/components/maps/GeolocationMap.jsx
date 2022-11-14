@@ -184,9 +184,9 @@ class GeolocationMap extends React.Component {
         let lines = [];
         const tweets_with_geo = this.props.tweets.filter((tweet) => tweet.location);
 
-        for (let i=0; i<tweets_with_geo.length-1; i++) {
+        for (let i=tweets_with_geo.length-1; i>=1; i--) {
             const start_tweet = tweets_with_geo[i];
-            const end_tweet = tweets_with_geo[i+1];
+            const end_tweet = tweets_with_geo[i-1];
 
             lines.push(
                 <ArrowPolyline positions={[ 
