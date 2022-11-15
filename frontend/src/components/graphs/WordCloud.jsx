@@ -20,6 +20,8 @@ function _offsetIntervalTo(value, source_range, target_range) {
     const [a, b] = source_range;
     const [c, d] = target_range;
 
+    if (a === b) { return d; }
+
     return c + ((d-c)/(b-a)) * (value-a);
 }
 
