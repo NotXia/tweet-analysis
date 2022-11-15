@@ -390,13 +390,11 @@ class SearchTweets extends React.Component {
         if (!query_string || query_string === "") { return this.setState({ stream_state: "off" }); }
 
         // Resetta la pagina se la query è cambiata
-        if (query_string !== this.state.query) {
-            this.setState({ 
-                tweets: [], 
-                query: query_string,
-                next_page: ""
-            }); 
-        } 
+        this.setState({ 
+            tweets: [], 
+            query: query_string,
+            next_page: ""
+        }); 
 
         // Composizione query
         if (query_string[0] === "@") { query.username = query_string; }
