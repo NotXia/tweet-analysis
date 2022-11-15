@@ -2,7 +2,7 @@ import Home from "./index";
 
 let routes = [
     {
-        path: "/search",
+        path: "/",
         element: <Home />,
     }
 ]
