@@ -122,7 +122,7 @@ class SearchTweets extends React.Component {
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
                                             {/* Opzioni avanzate */}
-                                            <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} style={{ cursor: "pointer" }} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className={`collapse ${this.state.stream_state === "on" ? "d-none" : ""}`} id="advancedOptions">
                                                 <div className="row justify-content-between align-items-center">
                                                     {/* Numero di ricerche */}
