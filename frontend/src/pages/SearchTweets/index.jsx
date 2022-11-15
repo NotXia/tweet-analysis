@@ -107,11 +107,11 @@ class SearchTweets extends React.Component {
                                                     {
                                                         (() => {
                                                             switch (this.state.stream_state) {
-                                                                case "on": return "Ferma";
+                                                                case "on": return (<span>Ferma</span>);
                                                                 case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
                                                                 case "off": 
                                                                 default:
-                                                                    return "Live";
+                                                                    return (<span>Live</span>);
                                                             }
                                                         })()
                                                     }
