@@ -98,21 +98,21 @@ class Tweet extends React.Component {
                 </div>
                 <div className="d-flex w-100 justify-content-between mt-1">
                     <div className="d-flex align-items-center">
-                        <img className="mx-2" src="/icons/Tweet/comment.png" alt="" style={{ width:"1.2em", height:"1.2em" }} />
+                        <img className="mx-2" src={`${process.env.PUBLIC_URL}/icons/Tweet/comment.png`} alt="" style={{ width:"1.2em", height:"1.2em" }} />
                         <p className="mt-3 small text-muted">{tweet.comments}</p>
                     </div>
                     <div className="d-flex align-items-center">
-                        <img className="mx-2" src="/icons/Tweet/retweet.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
+                        <img className="mx-2" src={`${process.env.PUBLIC_URL}/icons/Tweet/retweet.png`} alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
                         <p className="mt-3 small text-muted">{tweet.retweets}</p>
                     </div>
                     <div className="d-flex align-items-center ">
-                        <img className="mx-2" src="/icons/Tweet/like.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
+                        <img className="mx-2" src={`${process.env.PUBLIC_URL}/icons/Tweet/like.png`} alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
                         <p className="mt-3 small text-muted">{tweet.likes}</p> 
                     </div>
                 </div>
                 <div className={tweet.location ? "" : "d-none"}>
                     <div className="d-flex mt-2">
-                        <img className="mt-1 mx-2" src="/icons/Tweet/earth.png" alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
+                        <img className="mt-1 mx-2" src={`${process.env.PUBLIC_URL}/icons/Tweet/earth.png`} alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
                         {
                             (() => {
                                 if(tweet.location?.full_name) {
