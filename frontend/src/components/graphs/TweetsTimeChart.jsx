@@ -10,6 +10,7 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
 
 
 ChartJS.register(
@@ -36,11 +37,14 @@ class TweetsTimeChart extends React.Component {
     
     }
 
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.labels) !== JSON.stringify(next_state.labels) ||
+               JSON.stringify(this.state.data) !== JSON.stringify(next_state.data);
+    }
+
     componentDidUpdate() {
         const graph_data = this.tweetsPerDay();
-
-        if (JSON.stringify(graph_data.labels) === JSON.stringify(this.state.labels) && JSON.stringify(graph_data.data) === JSON.stringify(this.state.data)) 
-            return;
         
         this.setState({
             labels: graph_data.labels,
@@ -102,9 +106,17 @@ class TweetsTimeChart extends React.Component {
             count[timestamp]++;
         }
 
-        const days = Object.keys(count);
-        days.sort();
+        let days = Object.keys(count);
+        const start_day = Math.min(...days);
+        const end_day = Math.max(...days);
         
+        // Genera i giorni compresi nell'intervallo
+        days = [];
+        for (let i=moment.unix(start_day); i<=moment.unix(end_day); i=i.add(1, "days")) {
+            const day = i.startOf("day").unix();
+            days.push(day);
+        }
+
         return {
             labels: days.map((day) => moment.unix(day).format("DD-MM-YYYY")),
             data: days.map((day) => count[day])

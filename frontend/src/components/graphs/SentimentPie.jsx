@@ -2,6 +2,8 @@ import React from "react";
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { sentiment } from "../../modules/analysis/sentiment";
+import { sameTweets } from "../../modules/utilities/tweetListComparison";
+import { removeURLs } from "../../modules/utilities/stringUtils";
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
@@ -13,7 +15,13 @@ class SentimentPie extends React.Component {
         this.state = {
             sentimentArray: [0, 0, 0]
         };
-    
+        
+        this.sentiment_cache = {};
+    }
+
+    shouldComponentUpdate(next_props, next_state) {
+        return !sameTweets(this.props.tweets, next_props.tweets) ||
+               JSON.stringify(this.state.sentimentArray) !== JSON.stringify(next_state.sentimentArray)
     }
 
     //Ogni volta che la pagina si aggiorna (vengono caricati dei tweet), aggiorna i valori del grafico
@@ -63,7 +71,28 @@ class SentimentPie extends React.Component {
     async getSentimentCount() {
         let sentimentArray = [0, 0, 0];
         for (const tweet of this.props.tweets) {
-            let tweetSentiment = (await sentiment(tweet.text)).sentiment;
+            let tmp_tweet = tweet.text;
+            
+            let tweetSentiment = this.sentiment_cache[tweet.text]; // Estrazione sentimento dai dati in cache
+            if (!tweetSentiment) { // Cache miss
+                tmp_tweet = removeURLs(tweet.text);
+                tmp_tweet = tmp_tweet.trim();
+                
+                if (!tmp_tweet) {
+                    tweetSentiment = "neutral";
+                }
+                else {
+                    try {
+                        tweetSentiment = (await sentiment(tmp_tweet)).sentiment;
+                    }
+                    catch (err) {
+                        tweetSentiment = "unknown";
+                    }
+                }
+
+                this.sentiment_cache[tweet.text] = tweetSentiment
+            }
+
             switch (tweetSentiment) {
                 case 'positive': sentimentArray[0]++; break;
                 case 'neutral': sentimentArray[1]++; break;

@@ -1,23 +1,32 @@
 require("dotenv").config();
 const axios = require('axios');
+const { _mediaHandler } = require("./utils/mediaHandler");
+const { _placeHandler } = require("./utils/placeHandler");
+const { _normalizeDate } = require("./utils/normalizeDate");
+const { _normalizeQuery } = require("./utils/normalizeQuery");
+const moment = require('moment');
+moment().format();
 
 module.exports = {
-    getTweetsByHashtag: getTweetsByHashtag,
+    getTweetsByKeyword: getTweetsByKeyword,
 
     testing : {
-        normalizeHashtag: _normalizeHashtag
+        normalizeKeyword: _normalizeQuery
     }
 };
 
 /**
  * Organizza i tweet interrogati.
- * @param {string} hashtag Hashtag da ricercare
+ * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
  * @param {string} pagination_token Token della prossima pagina
+ * @param {number} quantity Numero di tweet da ricercare
+ * @param {number} start_time Data minima dei tweet da ottenere
+ * @param {number} end_time Data massima dei tweet da ottenere
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
-async function getTweetsByHashtag(hashtag, pagination_token="") {
-    if (!hashtag) { throw new Error("Hashtag mancante"); }
-    let fetchedTweets = await _hashtagFetch(hashtag, pagination_token);
+async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+    if (!keyword) { throw new Error("Parola chiave mancante"); }
+    let fetchedTweets = await _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
     if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
@@ -37,7 +46,7 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
         let searchedPlace = undefined;
         if (tweetData.geo) {
             let tweetPlaces = fetchedTweets.data.includes.places;
-            searchedPlace = tweetPlaces.find(place => place.id === tweetData.geo.place_id);
+            searchedPlace = _placeHandler(tweetPlaces, tweetData);
         }
 
         // Gestione allegati
@@ -64,22 +73,30 @@ async function getTweetsByHashtag(hashtag, pagination_token="") {
 }
 
 /**
- * Interroga le API di Twitter per ottenere una lista di tweet dato l'hashtag con i parametri indicati
- * @param {string} hashtag Hashtag da ricercare
+ * Interroga le API di Twitter per ottenere una lista di tweet data una parola chiave con i parametri indicati
+ * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
  * @param {string} pagination_token Token della prossima pagina
- * @returns Lista di dimensione max_results tweet
+ * @param {number} quantity Numero di tweet da ricercare
+ * @param {number} start_time Data minima dei tweet da ottenere
+ * @param {number} end_time Data massima dei tweet da ottenere
+ * @returns Lista di dimensione richiesta tweet se possibile, altrimenti restituisce il massimo numero disponibile.
  */
-async function _hashtagFetch(hashtag, pagination_token="") {
-    hashtag = _normalizeHashtag(hashtag);
+async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+    keyword = _normalizeQuery(keyword);
+
+    // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
+    let today = new Date();
+    let aweekago = new Date(moment(today).subtract(7, 'days'));
+    const date = _normalizeDate(aweekago, start_time, end_time);
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `#${hashtag} -is:retweet`,                                   // Filtra per hashtag e rimuove i retweet
-            "max_results": 10,                                                  // Numero massimo Tweet per pagina
+            query: `${keyword} -is:reply -is:retweet`,                          // Filtra per parola chiave e rimuove i retweet e le risposte
+            "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
-            "place.fields": "country,full_name",                                // Campi della località
+            "place.fields": "country,full_name,geo",                            // Campi della località
             "media.fields": "url,variants",                                     // Campi degli allegati
             "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
         },
@@ -89,52 +106,14 @@ async function _hashtagFetch(hashtag, pagination_token="") {
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
     }
+    if (date.start_time != "") {
+        options.params["start_time"] = date.start_time;
+    }
+    if (date.end_time != "") {
+        options.params["end_time"] = date.end_time;
+    }
     
-    let fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
+    const fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
 
     return fetchedTweets;
-}
-
-/**
- * Normalizza l'hashtag in input, rimuovendo il carattere # da inizio stringa (se presente) ed eventuali spazi
- * @param {string} hashtag Hashtag da normalizzare
- * @returns L'hashtag normalizzato
- */
-function _normalizeHashtag(hashtag) {
-    if(hashtag.length == 0) { return ""; }
-    
-    hashtag = hashtag.replace(/\s/g, '');   // Rimuove tutti gli spazi
-    if(hashtag[0] == '#') {
-        hashtag = hashtag.slice(1);         // Se la stringa inizia con #, viene rimosso
-    }
-
-    return hashtag;
-}
-
-function _mediaHandler(tweetAttachments, tweetData) {
-    let mediaArray = [];
-    if (!tweetAttachments || !tweetData.attachments || !("media_keys" in tweetData.attachments)) { return []; }
-
-    for (const media_key of tweetData.attachments.media_keys) {             // Itera per tutti gli attachment del tweet i-esimo
-        const media = tweetAttachments.find(media => media.media_key === media_key)
-
-        if (!media) { continue; }
-
-        let media_url;
-        switch (media.type) {
-            case "animated_gif":
-            case "video":
-                media_url = media.variants.find(video => video.url.includes(".mp4")).url;
-                if (!media_url) { media_url = media.variants[0].url; }
-                break;
-            case "photo":
-                media_url = media.url;
-                break;
-            default:
-                break;
-        }
-
-        if (media_url) { mediaArray.push({url: media_url, type: media.type}); }
-    }
-    return mediaArray;
 }
