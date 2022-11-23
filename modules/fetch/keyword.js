@@ -101,7 +101,6 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
             "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
         },
 
-        validateStatus: () => true
     };
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
