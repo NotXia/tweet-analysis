@@ -147,7 +147,36 @@ function _generateNumber(from, to) {
     return Math.floor(Math.random() * to) + from;
 }
 
+function countTweets() {
+    let num1 = _generateNumber(0, 50);
+    let num2 = _generateNumber(0, 50);
+    let num3 = _generateNumber(0, 50);
+    return {
+        "data": [
+            {
+              "end": "2022-10-25T01:00:00.000Z",
+              "start": "2022-10-25T00:00:00.000Z",
+              "tweet_count": num1
+            },
+            {
+                "end": "2022-10-25T03:00:00.000Z",
+                "start": "2022-10-25T02:00:00.000Z",
+                "tweet_count": num2
+            },
+            {
+                "end": "2022-10-25T01:05:00.000Z",
+                "start": "2022-10-25T00:04:00.000Z",
+                "tweet_count": num3
+            }
+        ],
+        "meta": {
+            "total_tweet_count": num1+num2+num3
+        }
+    }
+}
+
 module.exports = {
     generateParams: generateParams,
-    generateTweets: generateTweets
+    generateTweets: generateTweets,
+    countTweets: countTweets
 }
