@@ -85,9 +85,8 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
     keyword = _normalizeQuery(keyword);
 
     // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
-    let today = new Date();
-    let aweekago = new Date(moment(today).subtract(7, 'years'));
-    const date = _normalizeDate(aweekago, start_time, end_time);
+    let limit = new Date("2006-03-26T00:00:00Z");
+    const date = _normalizeDate(limit, start_time, end_time);
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
@@ -105,17 +104,14 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
     }
-    // if (date.start_time != "") {
-    //     options.params["start_time"] = date.start_time;
-    // }
-    // if (date.end_time != "") {
-    //     options.params["end_time"] = date.end_time;
-    // }
+    if (date.start_time != "") {
+        options.params["start_time"] = date.start_time;
+    }
+    if (date.end_time != "") {
+        options.params["end_time"] = date.end_time;
+    }
     
     const fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/all`, options);
-
-    console.log(date, fetchedTweets.data)
-
 
     return fetchedTweets;
 }

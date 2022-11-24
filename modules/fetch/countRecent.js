@@ -17,7 +17,7 @@ async function getCountRecentKeywordTweets(keyword) {
     
         validateStatus: () => true
     };
-    const countTweets = await axios.get(`https://api.twitter.com/2/tweets/counts/recent`, options);        // Restituisco il numero di tweet pubblicati negli ultimi 7 giorni
+    const countTweets = await axios.get(`https://api.twitter.com/2/tweets/counts/all`, options);        // Restituisco il numero di tweet pubblicati negli ultimi 7 giorni
     
     return countTweets.data.meta.total_tweet_count;
 }
