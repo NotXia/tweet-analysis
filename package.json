@@ -41,6 +41,7 @@
     "leaflet.markercluster": "^1.5.3",
     "modules": "file:modules",
     "moment": "^2.29.4",
+    "mongoose": "^6.7.3",
     "node-nlp": "^4.24.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",

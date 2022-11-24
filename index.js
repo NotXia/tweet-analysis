@@ -13,6 +13,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
 const cors = require("cors");
+const mongoose = require("mongoose");
 
 const analysis_router = require("./routes/analysis.js");
 const user_router = require("./routes/user.js");
@@ -43,6 +44,8 @@ initSocket(socketIO);
 
 
 if (!process.env.NODE_ENV.includes("testing")) {
+    mongoose.connect(process.env.MONGO_URL);
+
     server.listen(process.env.PORT, function () {
         console.log(`Server started at http://localhost:${process.env.PORT}`);
     });
