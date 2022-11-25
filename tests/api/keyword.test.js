@@ -33,7 +33,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
             .reply(200, generateTweets(10) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: "leredita" }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -68,7 +68,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
             .reply(200, generateTweets(10) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: "leredita", pag_token: pagination_token }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -112,10 +112,10 @@ describe("Richieste corrette a /tweets/keyword", function () {
         
         nock("https://api.twitter.com")
             .get('/2/tweets/search/all').query(generateParams(query, pagination_token, 50))
-            .reply(200, generateTweets(10) );
+            .reply(200, generateTweets(50) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: query, pag_token: pagination_token, quantity: 50 }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(max_results);
+        expect( res.body.tweets.length ).toEqual(max_results);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -149,7 +149,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
             .reply(200, generateTweets(10) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: "reazione a catena" }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -184,7 +184,7 @@ describe("Richieste corrette a /tweets/keyword", function () {
             .reply(200, generateTweets(10) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: "reazione a catena", pag_token: pagination_token }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -228,10 +228,10 @@ describe("Richieste corrette a /tweets/keyword", function () {
         
         nock("https://api.twitter.com")
             .get('/2/tweets/search/all').query(generateParams(query, pagination_token, 50))
-            .reply(200, generateTweets(10) );
+            .reply(200, generateTweets(40) );
         const res = await curr_session.get("/tweets/keyword").query({ keyword: query, pag_token: pagination_token, quantity: 50 }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(max_results);
+        expect( res.body.tweets.length ).toEqual(max_results);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();

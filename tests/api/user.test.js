@@ -33,7 +33,7 @@ describe("Richieste corrette a /tweets/user", function () {
 
         const res = await curr_session.get("/tweets/user").query({ user: "elonmusk" }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -71,7 +71,7 @@ describe("Richieste corrette a /tweets/user", function () {
 
         const res = await curr_session.get("/tweets/user").query({ user: "elonmusk", pag_token: pagination_token }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -145,7 +145,7 @@ describe("Richieste corrette a /tweets/user", function () {
 
         const res = await curr_session.get("/tweets/user").query({ user: "  sweteam12    " }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -182,7 +182,7 @@ describe("Richieste corrette a /tweets/user", function () {
 
         const res = await curr_session.get("/tweets/user").query({ user: "@elonmusk" }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
@@ -212,14 +212,14 @@ describe("Richieste corrette a /tweets/user", function () {
     });
 
     test("Tweet dato username con @, spazi, e casing diverso", async function () {
-        nockTwitterUsersByUsername("elonmusk");
+        nockTwitterUsersByUsername("elONmUsK");
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams("from:elonmusk"))
+            .get('/2/tweets/search/all').query(generateParams("from:elONmUsK"))
             .reply(200, generateTweets(10) );
 
         const res = await curr_session.get("/tweets/user").query({ user: " @ elONmUsK    " }).expect(200);
         expect( res.body.tweets ).toBeDefined();
-        expect( res.body.tweets.length ).toBeLessThanOrEqual(10);
+        expect( res.body.tweets.length ).toEqual(10);
         for(const tweet of res.body.tweets) {
             expect( tweet ).toBeDefined();
             expect( tweet.id ).toBeDefined();
