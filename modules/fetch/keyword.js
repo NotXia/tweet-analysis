@@ -115,7 +115,7 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
     try {
         fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/all`, options);
     } catch (err) {
-        if (err.response.data.status === 429) {
+        if (err.response?.data?.status === 429) {
             await new Promise(r => setTimeout(r, 1000));
             return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
         }
