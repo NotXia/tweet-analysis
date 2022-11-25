@@ -1,5 +1,8 @@
 require("dotenv").config();
 const moment = require('moment');
+const { generateParams, generateTweets } = require("../utils/tweet.js");
+import nock from "nock";
+
 moment().format();
 
 const { getTweetsByKeyword, testing } = require("../../modules/fetch/keyword.js");
@@ -24,16 +27,10 @@ describe("Test normalizzazione stringa di hashtag", function () {
 });
 
 describe("Test ricerca tweet dato hashtag", function () {
-    test("Ricerca tweet per hashtag senza pagination token - hashtag senza tweet", async function () {
-        try {
-            await getTweetsByKeyword("#asdijaosjasdac31284fh92381dsa");
-            fail("Eccezione non lanciata");
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
     test("Ricerca tweet per hashtag senza pagination token", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena"))
+            .reply(200, generateTweets(10) );
         const tweets = await getTweetsByKeyword("#reazioneacatena");
         for (const tweet of tweets.tweets) {
             expect( tweet.name ).toBeDefined();
@@ -56,8 +53,15 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag con pagination token", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena"))
+            .reply(200, generateTweets(10) );
         const tweetsPage1 = await getTweetsByKeyword("#reazioneacatena");
         expect( tweetsPage1.next_token ).toBeDefined();
+
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", tweetsPage1.next_token))
+            .reply(200, generateTweets(10) );
         const tweetsPage2 = await getTweetsByKeyword("#reazioneacatena", tweetsPage1.next_token);
         for (const tweet of tweetsPage2.tweets) {
             expect( tweet.name ).toBeDefined();
@@ -80,6 +84,9 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con date valide", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date1.toISOString(), date2.toISOString()))
+            .reply(200, generateTweets(20, false, date1.toISOString(), date2.toISOString()) );
         const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, date1, date2);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -89,6 +96,9 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con solo data d'inizio", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date1.toISOString()))
+            .reply(200, generateTweets(20, false, date1.toISOString(), new Date()) );
         const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, date1);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -97,6 +107,9 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con solo data di fine", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, "", date2.toISOString()))
+            .reply(200, generateTweets(20, false, "1970-01-01T00:00:01Z", date2.toISOString()) );
         const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, '', date2);
         for (const tweet of tweets.tweets) {
             const time = new Date(tweet.time);
@@ -104,24 +117,11 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio prima del limite", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, '2022-10-06T00:00:01Z');
-        for (const tweet of tweets.tweets) {
-            const time = new Date(tweet.time);
-            expect( time >= limit ).toBeTruthy();
-        }
-    });
-
-    test("Ricerca tweet per hashtag in intervallo temporale con data di fine nel futuro", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 20, '', future);
-        for (const tweet of tweets.tweets) {
-            const time = new Date(tweet.time);
-            expect( time <= today ).toBeTruthy();
-        }
-    });
-
     test("Ricerca tweet per hashtag in intervallo temporale con date nello stesso giorno", async function () {
         try {
+            nock("https://api.twitter.com")
+                .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date1.toISOString(), date1.toISOString()))
+                .reply(200, generateTweets(20, false, date1.toISOString(), date1.toISOString()) );
             await getTweetsByKeyword("#reazioneacatena", '', 20, date1, date1);
             fail("Eccezione non lanciata - Estremi intervallo coincidenti")
         }
@@ -130,23 +130,11 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio e data di fine a oggi", async function () {
-        let today_start = new Date();
-        today_start.setHours(0,0,0,0);
-        let today_end = new Date();
-        today_end.setHours(23,59,59,999);
-
-        const tweets = await getTweetsByKeyword("#wwe", '', 20, today_start, today_end);
-
-        for (const tweet of tweets.tweets) {
-            const time = new Date(tweet.time);
-            expect( time >= today_start ).toBeTruthy();
-            expect( time <= today ).toBeTruthy();
-        }
-    });
-
     test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima di data d'inizio", async function () {
         try {
+            nock("https://api.twitter.com")
+                .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date2.toISOString(), date1.toISOString()))
+                .reply(400);
             await getTweetsByKeyword("#reazioneacatena", '', 20, date2, date1);
             fail('Eccezione non lanciata');
         } catch (error) {
@@ -154,25 +142,10 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per hashtag in intervallo temporale con data di inizio nel futuro", async function () {
-        try {
-            await getTweetsByKeyword("#reazioneacatena", '', 20, future);
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
-    test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima del limite", async function () {
-        try {
-            await getTweetsByKeyword("#reazioneacatena", '', 20, '', '2022-10-06T00:00:01Z');
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
     test("Ricerca tweet per hashtag con pagination token sbagliato", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "dsifj"))
+            .reply(500);
         try {
             await getTweetsByKeyword("#reazioneacatena", "dsifj");
             fail("Eccezione non lanciata");
@@ -182,6 +155,9 @@ describe("Test ricerca tweet dato hashtag", function () {
     });
 
     test("Ricerca tweet con hashtag vuoto", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams(""))
+            .reply(500);
         try {
             await getTweetsByKeyword("");
             fail("Eccezione non lanciata");
