@@ -33,7 +33,7 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10, star
 
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
-    if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
+    if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'username esiste
     const resTwts = await _twt_fetch(username, pagination_token, quantity, start_time, end_time);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 

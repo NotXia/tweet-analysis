@@ -112,7 +112,7 @@ describe("Test ricerca tweet data parola chiave", function () {
     });
 
 
-    test("Ricerca tweet per parola chiave in intervallo temporale con date nello stesso giorno", async function () {
+    test("Ricerca tweet per parola chiave in intervallo temporale con date coincidenti", async function () {
         try {
             nock("https://api.twitter.com")
                 .get('/2/tweets/search/all').query(generateParams("l'eredita", "", 20, date1.toISOString(), date1.toISOString()))
