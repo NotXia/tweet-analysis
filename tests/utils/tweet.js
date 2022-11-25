@@ -1,4 +1,5 @@
-import nock from "nock";
+const nock = require('nock');
+const moment = require('moment');
 
 function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '') {
     let params = {
@@ -24,7 +25,12 @@ function generateParams(query, pagination_token="", quantity=10, start_time = ''
     return params;
 }
 
-function generateTweets(quantity, isLast=false) {
+function generateTweets(quantity, isLast=false, begin_date, end_date) {
+    let timeStep = 0;
+    let startTime = begin_date ? moment(begin_date).unix() : 1669394652
+    if (begin_date && end_date) { timeStep = Math.floor(( moment(end_date).unix() - moment(begin_date).unix() ) / quantity ); }
+
+
     let out = {
         "data": [ ],
         "includes": {
@@ -41,29 +47,31 @@ function generateTweets(quantity, isLast=false) {
     }
 
     for (let i = 0; i < quantity; i++) {
-        const tweet = _generateTweet();
+        const tweet = _generateTweet(moment.unix(startTime).toISOString());
         out.data.push(tweet.tweet);
         out.includes.users.push(tweet.user);
         out.includes.media = out.includes.media.concat(tweet.media);
         out.includes.places.push(tweet.places);
+        startTime += timeStep;
     }
 
     return out;
 }
 
-function _generateTweet() {
+function _generateTweet(creation_date="2010-11-06T00:00:01Z") {
     let tweetId = _generateTweetId();
     let authorId = _generateTweetId();
-    let mediaId = _generateMediaId();
+    let mediaId1 = _generateMediaId();
+    let mediaId2 = _generateMediaId();
     let placeId = _generatePlaceId();
     return {
         tweet: {
             "id": tweetId,
             "attachments": {
-              "media_keys": [ mediaId ]
+              "media_keys": [ mediaId1, mediaId2 ]
             },
             "author_id": authorId,
-            "created_at": "2022-10-30T22:52:52.000Z",
+            "created_at": creation_date,
             "edit_history_tweet_ids": [ tweetId ],
             "geo": {
               "place_id": placeId
@@ -84,7 +92,12 @@ function _generateTweet() {
         },
         media: [
             {
-                "media_key": mediaId,
+                "media_key": mediaId1,
+                "type": "photo",
+                "url": "https://pbs.twimg.com/media/FgWiyoiXgAcrMkY.png"
+            },
+            {
+                "media_key": mediaId2,
                 "type": "photo",
                 "url": "https://pbs.twimg.com/media/FgWiyoiXgAcrMkY.png"
             }
