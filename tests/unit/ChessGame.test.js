@@ -19,6 +19,21 @@ describe("Test gestore partita scacchi", function () {
         expect( chess.move("e1", "e3") ).toBeFalsy();
     });
 
+    test("Rilevazione turni", function () {
+        const chess = new ChessGame();
+
+        expect( chess.getTurn() ).toEqual("w");
+        chess.move("f2", "f3");
+        expect( chess.getTurn() ).toEqual("b");
+        chess.move("c7", "c5");
+        expect( chess.getTurn() ).toEqual("w");
+        chess.move("e1", "e3"); // Mossa invalida
+        expect( chess.getTurn() ).toEqual("w");
+        chess.move("e2", "e3");
+        expect( chess.getTurn() ).toEqual("b");
+        chess.move("e7", "e5");
+    });
+
     test("Rilevazione scacco matto", function () {
         const chess = new ChessGame();
 

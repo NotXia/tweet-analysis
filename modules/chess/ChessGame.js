@@ -43,4 +43,12 @@ module.exports = class ChessGame {
 
         throw new Error("Stato indefinito");
     }
+
+    /**
+     * Restituisce il giocatore che deve fare la mossa
+     * @returns {string} Il colore che deve giocare [w, b]
+     */
+    getTurn() {
+        return this.game.turn();
+    }
 }
