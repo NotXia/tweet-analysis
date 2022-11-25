@@ -84,7 +84,7 @@ async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, sta
 async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
     keyword = _normalizeQuery(keyword);
 
-    // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
+    // Controlla che le date siano nel range limite di twitter
     let limit = new Date("2006-03-26T00:00:00Z");
     const date = _normalizeDate(limit, start_time, end_time);
 
