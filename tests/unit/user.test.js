@@ -190,7 +190,7 @@ describe("Test ricerca tweet dato username utente", function () {
             nockTwitterUsersByUsername(userTest.username);
             nock("https://api.twitter.com")
                 .get('/2/tweets/search/all').query(generateParams(`from:${userTest.username}`, "", 20, date1.toISOString(), date1.toISOString()))
-                .reply(200, generateTweets(20, false, date1.toISOString(), date1.toISOString()) );
+                .reply(400);
             await getTweetsByUser(userTest.username, '', 20, date1, date1);
         }
         catch (err) {

@@ -117,11 +117,11 @@ describe("Test ricerca tweet dato hashtag", function () {
         }
     });
 
-    test("Ricerca tweet per hashtag in intervallo temporale con date nello stesso giorno", async function () {
+    test("Ricerca tweet per hashtag in intervallo temporale con date coincidenti", async function () {
         try {
             nock("https://api.twitter.com")
                 .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date1.toISOString(), date1.toISOString()))
-                .reply(200, generateTweets(20, false, date1.toISOString(), date1.toISOString()) );
+                .reply(400);
             await getTweetsByKeyword("#reazioneacatena", '', 20, date1, date1);
             fail("Eccezione non lanciata - Estremi intervallo coincidenti")
         }
