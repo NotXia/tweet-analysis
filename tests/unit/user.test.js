@@ -23,8 +23,8 @@ date2.setHours(23,59,59,999);
 
 describe("Test ricerca nome utente", function () {
     test("Controllo esistenza utente", async function () {
-        nockTwitterUsersByUsername("wwe");
-        const user = await testing.usr_fetch("wwe");
+        nockTwitterUsersByUsername("sweteam12");
+        const user = await testing.usr_fetch("sweteam12");
         expect( user.name ).toBeDefined();
         expect( user.username ).toBeDefined();
         expect( user.profile_image_url ).toBeDefined();
