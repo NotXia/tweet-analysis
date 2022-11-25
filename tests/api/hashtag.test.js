@@ -287,7 +287,6 @@ describe("Richieste errate a /tweets/keyword", function () {
                 .get('/2/tweets/search/all').query(generateParams("#reazioneacatena", "", 20, date1.toISOString(), date1.toISOString()))
                 .reply(400);
         const res = await curr_session.get("/tweets/keyword").query({ keyword: "#reazioneacatena", pag_token: '', quantity: 20, start_time: date1, end_time: date1 }).expect(200);
-        console.log(res.body);
         expect( res.body.tweets ).toBeDefined();
         expect( res.body.tweets.length ).toEqual(0);
         expect( res.body.next_token ).toEqual("");
