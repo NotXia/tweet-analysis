@@ -2,7 +2,7 @@ require("dotenv").config();
 const app = require("../../index.js");
 const session = require("supertest-session");
 const moment = require('moment');
-const { generateParams, generateTweets, nockTwitterUsersByUsername } = require("../utils/tweet.js");
+const { generateParams, generateTweets } = require("../utils/tweet.js");
 import nock from "nock";
 
 moment().format();
