@@ -1,3 +1,5 @@
+import nock from "nock";
+
 function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '') {
     let params = {
         query: `${query} -is:reply -is:retweet`,                            // Filtra per parola chiave e rimuove i retweet e le risposte
@@ -22,7 +24,7 @@ function generateParams(query, pagination_token="", quantity=10, start_time = ''
     return params;
 }
 
-function generateTweets(quantity) {
+function generateTweets(quantity, isLast=false) {
     let out = {
         "data": [ ],
         "includes": {
@@ -34,7 +36,7 @@ function generateTweets(quantity) {
           "newest_id": "0000000000000000000",
           "oldest_id": "0000000000000000000",
           "result_count": quantity,
-          "next_token": _generateNextToken()
+          "next_token": isLast ? "" : _generateNextToken()
         }
     }
 
@@ -147,36 +149,39 @@ function _generateNumber(from, to) {
     return Math.floor(Math.random() * to) + from;
 }
 
-function countTweets() {
-    let num1 = _generateNumber(0, 50);
-    let num2 = _generateNumber(0, 50);
-    let num3 = _generateNumber(0, 50);
-    return {
-        "data": [
-            {
-              "end": "2022-10-25T01:00:00.000Z",
-              "start": "2022-10-25T00:00:00.000Z",
-              "tweet_count": num1
-            },
-            {
-                "end": "2022-10-25T03:00:00.000Z",
-                "start": "2022-10-25T02:00:00.000Z",
-                "tweet_count": num2
-            },
-            {
-                "end": "2022-10-25T01:05:00.000Z",
-                "start": "2022-10-25T00:04:00.000Z",
-                "tweet_count": num3
-            }
-        ],
-        "meta": {
-            "total_tweet_count": num1+num2+num3
-        }
+function nockTwitterUsersByUsername(username, exists=true) {
+    if(exists) {
+        return nock("https://api.twitter.com") 
+                .get(`/2/users/by/username/${username}`).query({'user.fields': 'name,username,profile_image_url'})
+                .reply(200, {
+                    "data": {
+                        username: username,
+                        profile_image_url: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png',
+                        name: _generateString(10),
+                        id: _generateTweetId()
+                    }
+                });
+    } else {
+        return nock("https://api.twitter.com") 
+                .get(`/2/users/by/username/${username}`).query({'user.fields': 'name,username,profile_image_url'})
+                .reply(200, {
+                    "errors": [
+                      {
+                        "value": username,
+                        "detail": `Could not find user with username: [${username}].`,
+                        "title": "Not Found Error",
+                        "resource_type": "user",
+                        "parameter": "username",
+                        "resource_id": username,
+                        "type": "https://api.twitter.com/2/problems/resource-not-found"
+                      }
+                    ]
+                })
     }
 }
 
 module.exports = {
     generateParams: generateParams,
     generateTweets: generateTweets,
-    countTweets: countTweets
+    nockTwitterUsersByUsername: nockTwitterUsersByUsername
 }
