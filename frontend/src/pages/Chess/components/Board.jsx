@@ -17,6 +17,7 @@ class Board extends React.Component {
         this.promotion_modal = null;
 
         this._handlePieceMove = this._handlePieceMove.bind(this);
+        this._handleDraggablePiece = this._handleDraggablePiece.bind(this);
     }
 
     componentDidMount() {
@@ -25,7 +26,10 @@ class Board extends React.Component {
 
     render() {
         return (<>
-            <Chessboard position={this.state.fen} onPieceDrop={this._handlePieceMove} boardOrientation={this.state.player_color} />
+            <Chessboard position={this.state.fen} 
+                        onPieceDrop={this._handlePieceMove} 
+                        boardOrientation={this.state.player_color} 
+                        isDraggablePiece={this._handleDraggablePiece} />
 
             <div className="modal fade" id="modal-promotion" tabIndex="-1" aria-labelledby="modal-promotion-label" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
@@ -92,6 +96,10 @@ class Board extends React.Component {
         });
     }
 
+    _handleDraggablePiece(data) {
+        const color = data.piece[0] === "w" ? "white" : "black";
+        return color === this.state.player_color;
+    }
 
     updateFEN(fen) {
         this.chess_controller.load(fen);
