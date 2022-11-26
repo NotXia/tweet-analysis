@@ -18,6 +18,8 @@ class Test extends React.Component {
 
             end_state: null,
             end_description: null,
+
+            error_message: null
         };
 
         this.board = React.createRef();
@@ -44,6 +46,8 @@ class Test extends React.Component {
                 </div>
                 
                 <main style={{ flex: "1 1 auto" }}>
+                    <div className="col-12 text-center text-danger fw-semibold"> { this.state.error_message } </div>
+
                     <div className="d-flex justify-content-center align-items-center h-100">
                         {/* Schermata iniziale */}
                         <div className={`${this.state.game_ready ? "d-none" : ""}`}>
@@ -116,7 +120,7 @@ class Test extends React.Component {
             this.timer.current.setTime(0);
         } 
         const onError = (err) => {
-            console.log(err)
+            this.setState({ error_message: "Si è verificato un errore" });
         }
 
         this.game = new ChessGame(onTurnStart, onMove, onGameOver, onError);
