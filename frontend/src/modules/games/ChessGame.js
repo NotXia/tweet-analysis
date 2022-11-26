@@ -2,7 +2,6 @@ import { io } from "socket.io-client";
 
 export default class ChessGame {
     /**
-     * 
      * @param {(player:string, timer:number) => void} onTurnStart                           Richiamato a inizio del turno. player indica il giocatore di quel turno [player, opponent], timer il timeout assegnato
      * @param {(player:string, move:{from:string, to:string, promotion:string}, fen:string) => void} onMove   Richiamato a seguito di una mossa. player indica il giocatore [player, opponent]
      * @param {(state:string, reason:string) => void} onGameOver                            Richiamato a fine partita. state contiene lo stato [win, loss, draw] e reason il motivo
@@ -43,6 +42,10 @@ export default class ChessGame {
                 else {
                     this.onGameOver(data.state, data.reason);
                 }
+            });
+
+            this.socketIO.on("disconnect", () => {
+                this.onError();
             });
 
             this.socketIO.on("connect", () => {

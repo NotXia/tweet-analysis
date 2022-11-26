@@ -51,20 +51,23 @@ class Test extends React.Component {
                     <div className="d-flex justify-content-center align-items-center h-100">
                         {/* Schermata iniziale */}
                         <div className={`${this.state.game_ready ? "d-none" : ""}`}>
-                            <button className="btn btn-outline-success btn-lg" onClick={() => this.stateGame()}>Inizia una partita</button>
+                            <button className="btn btn-outline-success btn-lg" onClick={() => this.startGame()}>Inizia una partita</button>
                         </div>
 
                         {/* Partita */}
                         <div className={`${this.state.game_ready ? "" : "d-none"} w-100`}>
                             <div className="container-fluid">
                                 <div className="row">
+                                    {/* Scacchiera */}
                                     <div className="col-12 col-md-6">
                                         <div className="d-flex justify-content-center justify-content-md-end">
                                             <Board ref={this.board} id="BasicBoard" onMove={this.onBoardMove} width={this.state.board_width} />
                                         </div>
                                     </div>
 
+                                    {/* Informazioni di gioco */}
                                     <div className="col-12 col-md-6">
+                                        {/* Timer */}
                                         <div className="d-flex justify-content-evenly">
                                             <div className={`${this.state.current_color === "white" ? "" : "invisible"}`}>
                                                 <img src={`${process.env.PUBLIC_URL}/icons/chess/king_white.png`} alt="Turno bianchi" />
@@ -75,6 +78,7 @@ class Test extends React.Component {
                                             </div>
                                         </div>
 
+                                        {/* Esito */}
                                         <p className="m-0 fs-1 text-center fw-bold">{ this.state.end_state }</p>
                                         <p className="fs-2 text-center">{ this.state.end_description }</p>
                                     </div>
@@ -89,7 +93,7 @@ class Test extends React.Component {
         </>);
     }
 
-    async stateGame() {
+    async startGame() {
         const onTurnStart = (player, timer) => {
             this.setState({ current_color: this.state.current_color === "white" ? "black" : "white"  });
             this.timer.current.setTime(timer);
@@ -114,6 +118,7 @@ class Test extends React.Component {
                 case "insufficient_material":   this.setState({ end_description: "Pedine insufficienti" }); break;
                 case "50_move":                 this.setState({ end_description: "Regola delle cinquanta mosse" }); break;
                 case "timeout":                 this.setState({ end_description: "Tempo scaduto" }); break;
+                case "invalid_move":            this.setState({ end_description: "Mossa invalida" }); break;
                 default: break;
             }
 

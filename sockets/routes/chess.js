@@ -26,10 +26,6 @@ function init(socket_namespace) {
 
                 controller.onPlayerMove(socket, data, response);
             });
-    
-            // socket.on("disconnect", () => {
-            //     controller.onClientDisconnect(socket)
-            // });
         }
         catch (err) {
             console.error(err)

@@ -2,7 +2,7 @@ const ChessGame = require("../../modules/chess/ChessGame.js");
 const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
 
 
-const TIMER_TOLLERANCE = 2000;
+const TIMER_TOLLERANCE = 500;
 const PLAYER_TIMEOUT = 15000;
 const OPPONENT_DELAY = -1500;
 const NEW_GAME_TIMEOUT = 60000;
@@ -59,7 +59,6 @@ class GameSession {
      * @param {{from:string, to:string}} move   La mossa fatta
      */
     handlePlayerMove(move) {
-        console.log("PLY MOVE", move)
         clearTimeout(this.player_move_timeout); // Annulla il timeout del giocatore
 
         this.controller.move(move.from, move.to, move.promotion);
@@ -96,7 +95,6 @@ class GameSession {
      * @param {{from:string, to:string}} move   La mossa fatta
      */
     handleOpponentMove(move) {
-        console.log("OPP MOVE", move)
         this.controller.move(move.from, move.to, move.promotion);
         this.socket.emit("chess.move", { player: "opponent", move: move, fen: this.controller.getFEN() }); // Acknowledge della mossa
     }
@@ -142,13 +140,13 @@ class GameSession {
 }
 
 
-let socketid_to_game = {}
-let socketid_to_gametimeout = {};
+let socketid_to_game = {};          // Mappa socket id alla partita
+let socketid_to_gametimeout = {};   // Mappa socket id al timeout della partita
 
 /* Gestisce la creazione di una partita */
 async function onGameCreate(socket, data, response) {
     try {
-        console.log("CONN", socket.id)
+        // Creazione partita
         let game = new GameSession(socket);
         socketid_to_game[socket.id] = game;
 
@@ -162,7 +160,6 @@ async function onGameCreate(socket, data, response) {
         });
     }
     catch (err) {
-        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }
@@ -184,7 +181,6 @@ async function onGameStart(socket, data, response) {
         }
     }
     catch (err) {
-        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }
@@ -196,8 +192,6 @@ function onPlayerMove(socket, data, response) {
         if (!game) { return; }
 
         const move = data.move;
-
-        console.log(move)
 
         // Mossa fatta fuori dal proprio turno
         if (game.getTurn() !== "player") { return response({ status: "error", error: "Non è il tuo turno" }); }
@@ -217,7 +211,6 @@ function onPlayerMove(socket, data, response) {
         }
     }
     catch (err) {
-        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }
