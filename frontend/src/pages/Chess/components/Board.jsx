@@ -26,7 +26,8 @@ class Board extends React.Component {
 
     render() {
         return (<>
-            <Chessboard position={this.state.fen} 
+            <Chessboard boardWidth={this.props.width}
+                        position={this.state.fen} 
                         onPieceDrop={this._handlePieceMove} 
                         boardOrientation={this.state.player_color} 
                         isDraggablePiece={this._handleDraggablePiece} />

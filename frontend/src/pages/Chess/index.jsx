@@ -11,7 +11,8 @@ class Test extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            game_ready: false
+            game_ready: false,
+            board_width: (Math.min(window.innerHeight, window.innerWidth)) * 0.7
         };
 
         this.board = React.createRef();
@@ -19,22 +20,26 @@ class Test extends React.Component {
         this.onBoardMove = this.onBoardMove.bind(this);
     }
 
+    componentDidMount() {
+        window.onresize = (e) => {
+            this.setState({ board_width: (Math.min(window.innerHeight, window.innerWidth)) * 0.7 })
+        };
+    }
+
     render() {
         return (<>
             <Helmet>
-                <title>Test</title>
+                <title>Scacchi</title>
             </Helmet>
 
             <Navbar />
             
-            <h1>Scacchi con Twitter</h1>
-
-            <div className={`${this.state.game_ready ? "d-none" : ""} d-flex align-items-center justify-content-center`}>
+            <div className={`${this.state.game_ready ? "d-none" : ""} d-flex align-items-center justify-content-center mt-3`}>
                 <button className="btn btn-outline-success btn-lg" onClick={() => this.stateGame()}>Inizia una partita</button>
             </div>
 
-            <div className={`${this.state.game_ready ? "" : "d-none"} d-flex justify-content-center`}>
-                <Board ref={this.board} id="BasicBoard" onMove={this.onBoardMove} />
+            <div className={`${this.state.game_ready ? "" : "d-none"} d-flex justify-content-center mt-3`}>
+                <Board ref={this.board} id="BasicBoard" onMove={this.onBoardMove} width={this.state.board_width} />
             </div>
         </>);
     }
