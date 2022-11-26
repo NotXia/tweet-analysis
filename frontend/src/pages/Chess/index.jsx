@@ -2,10 +2,11 @@ import React from "react";
 import { Helmet } from 'react-helmet'
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from "../../components/Navbar"
-import ChessGame from "../../modules/games/ChessGame"
-import Board from "./components/Board"
-import Timer from "./components/Timer"
+import Navbar from "../../components/Navbar";
+import ChessGame from "../../modules/games/ChessGame";
+import Board from "./components/Board";
+import Timer from "./components/Timer";
+import { Chess } from "chess.js";
 
 
 class Test extends React.Component {
@@ -14,7 +15,9 @@ class Test extends React.Component {
         this.state = {
             game_ready: false,
             board_width: (Math.min(window.innerHeight, window.innerWidth)) * 0.75,
-            current_color: "black",
+            current_color: "",
+            player_color: "",
+            opponent_color: "",
 
             end_state: null,
             end_description: null,
@@ -79,8 +82,16 @@ class Test extends React.Component {
                                         </div>
 
                                         {/* Esito */}
-                                        <p className="m-0 fs-1 text-center fw-bold">{ this.state.end_state }</p>
-                                        <p className="fs-2 text-center">{ this.state.end_description }</p>
+                                        {
+                                            this.state.end_state &&
+                                            (<>
+                                                <p className="m-0 fs-1 text-center fw-bold">{ this.state.end_state }</p>
+                                                <p className="fs-2 text-center">{ this.state.end_description }</p>
+                                                <div className="d-flex justify-content-center">
+                                                    <button className="btn btn-outline-success" onClick={() => this.startGame()}>Gioco di nuovo</button>
+                                                </div>
+                                            </>)
+                                        }
                                     </div>
 
                                 </div>
@@ -95,7 +106,7 @@ class Test extends React.Component {
 
     async startGame() {
         const onTurnStart = (player, timer) => {
-            this.setState({ current_color: this.state.current_color === "white" ? "black" : "white"  });
+            this.setState({ current_color: player === "player" ? this.state.player_color : this.state.opponent_color });
             this.timer.current.setTime(timer);
         }
         const onMove = (player, move, fen) => {
@@ -131,10 +142,17 @@ class Test extends React.Component {
 
         // Creazione partita
         await this.game.create();
-        this.board.current.setPlayerColor( this.game.player_color === "w" ? "white" : "black" );
+        const player_color = this.game.player_color === "w" ? "white" : "black";
+        const opponent_color = this.game.player_color === "w" ? "black" : "white";
+        this.board.current.setPlayerColor( player_color );
+        this.board.current.updateFEN((new Chess()).fen());
 
         // Avvio partita
-        this.setState({ game_ready: true }, () => {
+        this.setState({ 
+            game_ready: true, 
+            player_color: player_color, opponent_color: opponent_color,
+            end_state: null, end_description: null
+        }, () => {
             this.game.start();
         });
     }

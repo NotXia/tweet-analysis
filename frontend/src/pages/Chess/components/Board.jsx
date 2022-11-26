@@ -46,12 +46,13 @@ class Board extends React.Component {
                         boardOrientation={this.state.player_color} 
                         isDraggablePiece={this._handleDraggablePiece} />
 
+            {/* Modale per selezioanre la promozione del pedone */}
             <div className="modal fade" id="modal-promotion" tabIndex="-1" aria-labelledby="modal-promotion-label" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <div className="w-100">
-                                <h2 className="fs-5 text-center" id="modal-promotion-label">Seleziona la promozione</h2>
+                                <h2 className="fs-5 text-center fw-bold" id="modal-promotion-label">Seleziona la promozione</h2>
                             </div>
                         </div>
                         <div className="modal-body">
@@ -76,6 +77,9 @@ class Board extends React.Component {
         </>);
     }
 
+    /**
+     * Indica se un movimento causa una promozione
+     */
     _isPromotion(from, to) {
         const piece = this.chess_controller.get(from);
 
@@ -85,6 +89,9 @@ class Board extends React.Component {
         );
     }
 
+    /**
+     * Gestisce e valida il movimento di una pedina
+     */
     async _handlePieceMove(from, to) {
         let promotion = undefined;
         if (this._isPromotion(from, to)) { 
@@ -92,14 +99,17 @@ class Board extends React.Component {
         }
 
         let move = this.chess_controller.move({ from: from, to: to, promotion: promotion });
-        console.log(move, { from: from, to: to, promotion: promotion })
-        if (!move) { return false; }
+        if (!move) { return false; } // Mossa invalida
 
         this.props.onMove(from, to, promotion);
         this.setState({ fen: this.chess_controller.fen() });
         return true;
     }
 
+    /**
+     * Visualizza un modale per la selezione della promozione
+     * @returns {Promise<string>} Promozione scelta
+     */
     async _promptPromotion() {
         this.promotion_modal.show();
 
@@ -111,16 +121,27 @@ class Board extends React.Component {
         });
     }
 
+    /**
+     * Indica se una pedina è interagibile
+     */
     _handleDraggablePiece(data) {
         const color = data.piece[0] === "w" ? "white" : "black";
         return color === this.state.player_color;
     }
 
+    /**
+     * Aggiorna il FEN della scacchera
+     * @param {string} fen  FEN da caricare
+     */
     updateFEN(fen) {
         this.chess_controller.load(fen);
         this.setState({ fen: fen });
     }
 
+    /**
+     * Imposta il colore del giocatore
+     * @param {string} color    Colore del giocatore
+     */
     setPlayerColor(color) {
         this.setState({ player_color: color });
     }

@@ -4,7 +4,7 @@ const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js
 
 const TIMER_TOLLERANCE = 500;
 const PLAYER_TIMEOUT = 15000;
-const OPPONENT_DELAY = -1500;
+const OPPONENT_DELAY = 1000;
 const NEW_GAME_TIMEOUT = 60000;
 
 module.exports = {
