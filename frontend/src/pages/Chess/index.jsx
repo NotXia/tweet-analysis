@@ -14,7 +14,10 @@ class Test extends React.Component {
         this.state = {
             game_ready: false,
             board_width: (Math.min(window.innerHeight, window.innerWidth)) * 0.75,
-            current_color: "black"
+            current_color: "black",
+
+            end_state: null,
+            end_description: null,
         };
 
         this.board = React.createRef();
@@ -67,7 +70,11 @@ class Test extends React.Component {
                                                 <img src={`${process.env.PUBLIC_URL}/icons/chess/king_black.png`} alt="Turno neri" />
                                             </div>
                                         </div>
+
+                                        <p className="m-0 fs-1 text-center fw-bold">{ this.state.end_state }</p>
+                                        <p className="fs-2 text-center">{ this.state.end_description }</p>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -89,7 +96,24 @@ class Test extends React.Component {
             this.board.current.updateFEN(fen);
         } 
         const onGameOver = (state, reason) => {
-            console.log(state, reason)
+            switch (state) {
+                case "win":  this.setState({ end_state: "Vittoria" }); break;
+                case "loss": this.setState({ end_state: "Sconfitta" }); break;
+                case "draw": this.setState({ end_state: "Pareggio" }); break;
+                default: break;
+            }
+
+            switch (reason) {
+                case "checkmate":               this.setState({ end_description: "Scacco matto" }); break;
+                case "stalemate":               this.setState({ end_description: "Stallo" }); break;
+                case "threefold_repetition":    this.setState({ end_description: "Ripetizione" }); break;
+                case "insufficient_material":   this.setState({ end_description: "Pedine insufficienti" }); break;
+                case "50_move":                 this.setState({ end_description: "Regola delle cinquanta mosse" }); break;
+                case "timeout":                 this.setState({ end_description: "Tempo scaduto" }); break;
+                default: break;
+            }
+
+            this.timer.current.setTime(0);
         } 
         const onError = (err) => {
             console.log(err)

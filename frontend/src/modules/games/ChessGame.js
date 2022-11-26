@@ -37,7 +37,12 @@ export default class ChessGame {
             });
             
             this.socketIO.on("chess.game_over", (data) => {
-                this.onGameOver(data.state, data.reason);
+                if (data.state === "checkmate") {
+                    this.onGameOver(data.winner === this.player_color ? "win" : "loss", "checkmate");
+                }
+                else {
+                    this.onGameOver(data.state, data.reason);
+                }
             });
 
             this.socketIO.on("connect", () => {

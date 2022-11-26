@@ -40,7 +40,7 @@ class Timer extends React.Component {
     }
 
     setTime(ms) {
-        if (ms < 0) { return; }
+        if (ms < 0) { return this.setState({ time: 0 }); }
         clearTimeout(this.current_decrease);
 
         this.setState({ time: ms+1000 }, () => {
