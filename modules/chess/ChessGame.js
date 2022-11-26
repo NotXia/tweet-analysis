@@ -9,14 +9,31 @@ module.exports = class ChessGame {
 
     /**
      * Esegue una mossa sulla scacchiera (se valida)
-     * @param {string} from     Casella di partenza (es. f2)
-     * @param {string} to       Casella di arrivo (es. f3)
+     * @param {string} from         Casella di partenza (es. f2)
+     * @param {string} to           Casella di arrivo (es. f3)
+     * @param {string} promotion    Promozione per l'eventuale pedone
      * @throws {InvalidChessMove} Se la mossa è invalida
      */
-    move(from, to) {
-        let result = this.game.move({from: from, to: to});
+    move(from, to, promotion="q") {
+        if (!this.isPromotion(from, to)) { promotion = undefined; }
+        let result = this.game.move({ from: from, to: to, promotion: promotion });
         
         if (result === null) { throw new InvalidChessMove(); }
+    }
+
+    /**
+     * Indica se la pedina ha bisogno di una promozione
+     * @param {string} from     Casella di partenza (es. f2)
+     * @param {string} to       Casella di arrivo (es. f3)
+     * @returns {boolean} true se è una promozione, false altrimenti
+     */
+    isPromotion(from, to) {
+        const piece = this.game.get(from);
+
+        return (
+            piece.type === "p" && // La pedina è un pedone
+            ((piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1")) // È arrivata alla fine
+        );
     }
 
     /**

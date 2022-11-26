@@ -4,7 +4,7 @@ const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js
 
 const TIMER_TOLLERANCE = 2000;
 const PLAYER_TIMEOUT = 5000;
-const OPPONENT_DELAY = PLAYER_TIMEOUT;
+const OPPONENT_DELAY = -1500;
 const NEW_GAME_TIMEOUT = 60000;
 
 module.exports = {
@@ -192,6 +192,8 @@ async function onGameStart(socket, data, response) {
 function onPlayerMove(socket, data, response) {
     try {
         let game = socketid_to_game[socket.id];
+        if (!game) { return; }
+
         const move = data.move;
 
         console.log(move)
@@ -214,7 +216,6 @@ function onPlayerMove(socket, data, response) {
         }
     }
     catch (err) {
-        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }
