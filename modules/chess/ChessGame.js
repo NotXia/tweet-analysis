@@ -49,4 +49,12 @@ module.exports = class ChessGame {
     getTurn() {
         return this.game.turn();
     }
+
+    /**
+     * Restituisce la configurazione attuale in notazione FEN
+     * @returns {string} FEN della configurazione attuale
+     */
+    getFEN() {
+        return this.game.fen();
+    }
 }

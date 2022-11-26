@@ -68,4 +68,9 @@ describe("Test gestore partita scacchi", function () {
         expect( chess.hasEnded().state ).toEqual("draw");
         expect( chess.hasEnded().reason ).toEqual("insufficient_material");
     });
+
+    test("Generazione FEN", function () {
+        let chess = new ChessGame();
+        expect( chess.getFEN() ).toEqual("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    });
 });
