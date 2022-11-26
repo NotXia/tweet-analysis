@@ -1,3 +1,17 @@
+/*
+    Gestisce una scacchiera
+
+    Attributi:
+    - width     Dimensione della scacchiera (in pixel)
+
+    Callback
+    - onMove(from, to, promotion)   Richiamata quando il giocatore effettua una mossa (valida)
+
+    Metodi:
+    - updateFEN(fen)            Per aggiornare il FEN della scacchiera
+    - setPlayerColor(color)     Per impostare il colore del giocatore    
+*/
+
 import React from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";

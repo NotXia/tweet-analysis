@@ -61,7 +61,7 @@ class Test extends React.Component {
                                     {/* Scacchiera */}
                                     <div className="col-12 col-md-6">
                                         <div className="d-flex justify-content-center justify-content-md-end">
-                                            <Board ref={this.board} id="BasicBoard" onMove={this.onBoardMove} width={this.state.board_width} />
+                                            <Board ref={this.board} onMove={this.onBoardMove} width={this.state.board_width} />
                                         </div>
                                     </div>
 
@@ -100,7 +100,6 @@ class Test extends React.Component {
         }
         const onMove = (player, move, fen) => {
             this.setState({ fen: fen });
-            console.log(player, move, fen);
             this.board.current.updateFEN(fen);
         } 
         const onGameOver = (state, reason) => {
@@ -140,6 +139,9 @@ class Test extends React.Component {
         });
     }
 
+    /**
+     * Gestisce la mossa del giocatore
+     */
     onBoardMove(from, to, promotion) {
         this.game.move(from, to, promotion);
     }

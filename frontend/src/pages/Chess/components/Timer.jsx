@@ -1,3 +1,10 @@
+/*
+    Visualizza un timer con granularità al secondo
+
+    Metodi:
+    - setTime(ms)   Imposta il valore del timer
+*/
+
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
