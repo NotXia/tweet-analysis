@@ -4,7 +4,7 @@ export default class ChessGame {
     /**
      * 
      * @param {(player:string, timer:number) => void} onTurnStart                           Richiamato a inizio del turno. player indica il giocatore di quel turno [player, opponent], timer il timeout assegnato
-     * @param {(player:string, move:{from:string, to:string}, fen:string) => void} onMove   Richiamato a seguito di una mossa. player indica il giocatore [player, opponent]
+     * @param {(player:string, move:{from:string, to:string, promotion:string}, fen:string) => void} onMove   Richiamato a seguito di una mossa. player indica il giocatore [player, opponent]
      * @param {(state:string, reason:string) => void} onGameOver                            Richiamato a fine partita. state contiene lo stato [win, loss, draw] e reason il motivo
      * @param {(err) => void} onError                                                       Richiamato in caso di errore
      */
@@ -67,14 +67,15 @@ export default class ChessGame {
 
     /**
      * Esegue una mossa
-     * @param {string} from     Casella di partenza
-     * @param {string} to       Casella di arrivo
+     * @param {string} from         Casella di partenza
+     * @param {string} to           Casella di arrivo
+     * @param {string} promotion    Eventuale promozione del pedone
      */
-    move(from, to) {
+    move(from, to, promotion) {
         try {
             if (this.current_turn === "player") {
                 this.socketIO.emit("chess.move", { 
-                    move: { from: from, to: to } 
+                    move: { from: from, to: to, promotion: promotion } 
                 });
             }
         }

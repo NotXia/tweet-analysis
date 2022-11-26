@@ -3,7 +3,7 @@ const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js
 
 
 const TIMER_TOLLERANCE = 2000;
-const PLAYER_TIMEOUT = 5000;
+const PLAYER_TIMEOUT = 15000;
 const OPPONENT_DELAY = -1500;
 const NEW_GAME_TIMEOUT = 60000;
 
@@ -62,7 +62,7 @@ class GameSession {
         console.log("PLY MOVE", move)
         clearTimeout(this.player_move_timeout); // Annulla il timeout del giocatore
 
-        this.controller.move(move.from, move.to);
+        this.controller.move(move.from, move.to, move.promotion);
         this.socket.emit("chess.move", { player: "player", move: move, fen: this.controller.getFEN() }); // Acknowledge della mossa
     }
 
@@ -97,14 +97,14 @@ class GameSession {
      */
     handleOpponentMove(move) {
         console.log("OPP MOVE", move)
-        this.controller.move(move.from, move.to);
+        this.controller.move(move.from, move.to, move.promotion);
         this.socket.emit("chess.move", { player: "opponent", move: move, fen: this.controller.getFEN() }); // Acknowledge della mossa
     }
 
     async getOpponentMove() {
         // Soluzione temporanea per i test (mossa casuale)
         let move = this.controller.game.moves({ verbose: true })[0];
-        return { from: move.from, to: move.to }
+        return { from: move.from, to: move.to, promotion: move.flags.includes("p") ? "q" : undefined };
     }
 
 
@@ -119,7 +119,7 @@ class GameSession {
         this.endGame();
         if (result.state === "checkmate") {
             this.socket.emit("chess.game_over", { 
-                state: result.winner === game.player_color ? "win" : "loss", 
+                state: result.winner === this.player_color ? "win" : "loss", 
                 reason: "checkmate" 
             });
         }
@@ -184,6 +184,7 @@ async function onGameStart(socket, data, response) {
         }
     }
     catch (err) {
+        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }
@@ -216,6 +217,7 @@ function onPlayerMove(socket, data, response) {
         }
     }
     catch (err) {
+        console.log(err)
         return response({ status: "error", error: "Si è verificato un errore" });
     }
 }

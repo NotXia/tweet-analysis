@@ -53,8 +53,8 @@ class Test extends React.Component {
         this.game.start();
     }
 
-    onBoardMove(from, to) {
-        this.game.move(from, to);
+    onBoardMove(from, to, promotion) {
+        this.game.move(from, to, promotion);
     }
 
 
