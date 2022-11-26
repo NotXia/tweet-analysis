@@ -1,5 +1,6 @@
 require("dotenv").config();
 const ChessGame = require("../../modules/chess/ChessGame.js");
+const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
 
 
 describe("Test gestore partita scacchi", function () {
@@ -13,10 +14,18 @@ describe("Test gestore partita scacchi", function () {
     test("Movimenti pedina", function () {
         const chess = new ChessGame();
 
-        expect( chess.move("f2", "f3") ).toBeTruthy();
-        expect( chess.move("c7", "c5") ).toBeTruthy();
-        expect( chess.move("e8", "e6") ).toBeFalsy();
-        expect( chess.move("e1", "e3") ).toBeFalsy();
+        chess.move("f2", "f3");
+        chess.move("c7", "c5");
+        try {
+            chess.move("e8", "e6");
+            expect(true).toBeFalsy();
+        }
+        catch(err) { expect(err).toBeDefined(); }
+        try {
+            chess.move("e1", "e3");
+            expect(true).toBeFalsy();
+        }
+        catch(err) { expect(err).toBeDefined(); }
     });
 
     test("Rilevazione turni", function () {
@@ -27,7 +36,7 @@ describe("Test gestore partita scacchi", function () {
         expect( chess.getTurn() ).toEqual("b");
         chess.move("c7", "c5");
         expect( chess.getTurn() ).toEqual("w");
-        chess.move("e1", "e3"); // Mossa invalida
+        try { chess.move("e1", "e3"); } catch (err) { /* Mossa invalida */ }
         expect( chess.getTurn() ).toEqual("w");
         chess.move("e2", "e3");
         expect( chess.getTurn() ).toEqual("b");

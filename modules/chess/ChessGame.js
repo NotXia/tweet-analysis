@@ -1,5 +1,5 @@
 const { Chess } = require("chess.js");
-
+const InvalidChessMove = require("./errors/InvalidChessMove.js")
 
 function _generateId() { return `${(new Date()).getTime()}_${Math.random().toString(16).slice(2)}`; }
 
@@ -13,12 +13,12 @@ module.exports = class ChessGame {
      * Esegue una mossa sulla scacchiera (se valida)
      * @param {string} from     Casella di partenza (es. f2)
      * @param {string} to       Casella di arrivo (es. f3)
-     * @returns {boolean} true se la mossa è valida, false altrimenti
+     * @throws {InvalidChessMove} Se la mossa è invalida
      */
     move(from, to) {
         let result = this.game.move({from: from, to: to});
-    
-        return result != null;
+        
+        if (result === null) { throw new InvalidChessMove(); }
     }
 
     /**
