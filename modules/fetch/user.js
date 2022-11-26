@@ -34,7 +34,7 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10, star
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
     if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
-    const resTwts = await _twt_fetch(resUsr.id, pagination_token, quantity, start_time, end_time);
+    const resTwts = await _twt_fetch(username, pagination_token, quantity, start_time, end_time);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
     let page = {
@@ -100,16 +100,17 @@ async function _usr_fetch(username) {
 /**
  * Chiamata alle API di Twitter per ottenere i dati degli ultimi 10 tweet, o dei 10 tweet della pagina indicata dal 
  * pagination token (se presente), di un utente dato il suo ID
- * @param {number} userId                         ID dell'utente
+ * @param {number} username                       Username dell'utente
  * @param {number} pagination_token               Token della pagina da visualizzare
  * @param {number} quantity                       Quantità di tweet da visualizzare
  * @param {number} start_time                     Data minima dei tweet da ottenere (facoltativo)
  * @param {number} end_time                       Data massima dei tweet da ottenere (facoltativo)
  * @returns {Promise<Object[]>}                   Array di 10 tweet ciascuno con informazioni varie
  */
-async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
+async function _twt_fetch(username, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
     const limit = new Date('2010-11-06T00:00:01Z');
     const date = _normalizeDate(limit, start_time, end_time);
+    username = _normalizeQuery(username);
 
     let options = {
         
@@ -118,15 +119,15 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
         },
 
         params: {
-            'max_results': quantity,
-            'exclude': 'retweets,replies',
-            'tweet.fields': 'created_at,text,public_metrics',
-            'expansions': 'geo.place_id,attachments.media_keys',
-            'place.fields': 'country,full_name,geo',
-            'media.fields': 'url,variants'
+            query: `from:${username} -is:reply -is:retweet`,
+            "max_results": quantity,                                            // Numero massimo Tweet per pagina
+            "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
+            "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
+            "place.fields": "country,full_name,geo",                            // Campi della località
+            "media.fields": "url,variants",                                     // Campi degli allegati
+            "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
         },
 
-        validateStatus: () => true
     };
     if (pagination_token != '') {
         options.params['pagination_token'] = pagination_token;
@@ -138,6 +139,15 @@ async function _twt_fetch(userId, pagination_token = '', quantity = 10, start_ti
         options.params["end_time"] = date.end_time;
     }
 
-    const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, options);
+    let response;
+    try {
+        response = await axios.get(`https://api.twitter.com/2/tweets/search/all`, options);
+    } catch (err) {
+        if (err.response.data.status === 429) {
+            await new Promise(r => setTimeout(r, 1000));
+            return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+        }
+        return null;
+    }
     return response.data;
 }
