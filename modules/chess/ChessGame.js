@@ -1,11 +1,9 @@
 const { Chess } = require("chess.js");
 const InvalidChessMove = require("./errors/InvalidChessMove.js")
 
-function _generateId() { return `${(new Date()).getTime()}_${Math.random().toString(16).slice(2)}`; }
 
 module.exports = class ChessGame {
     constructor() {
-        this.id = _generateId();
         this.game = new Chess();
     }
 

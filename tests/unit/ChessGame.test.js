@@ -7,7 +7,6 @@ describe("Test gestore partita scacchi", function () {
     test("Creazione partita", function () {
         const chess = new ChessGame();
 
-        expect( chess.id ).toBeDefined();
         expect( chess.game ).toBeDefined();
     });
 
@@ -20,12 +19,12 @@ describe("Test gestore partita scacchi", function () {
             chess.move("e8", "e6");
             expect(true).toBeFalsy();
         }
-        catch(err) { expect(err).toBeDefined(); }
+        catch(err) { expect(err instanceof InvalidChessMove).toBeTruthy(); }
         try {
             chess.move("e1", "e3");
             expect(true).toBeFalsy();
         }
-        catch(err) { expect(err).toBeDefined(); }
+        catch(err) { expect(err instanceof InvalidChessMove).toBeTruthy(); }
     });
 
     test("Rilevazione turni", function () {
