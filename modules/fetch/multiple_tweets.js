@@ -15,10 +15,10 @@ module.exports = { multipleTweetsFetch: multipleTweetsFetch };
 async function multipleTweetsFetch(fetcher, query, pagination_token="", quantity=10, start_time='', end_time='') {
     let fetchedTweets = [];
     
-    if (query[0] === '#') { 
+    /* if (query[0] === '#') { 
         const max_tweets = await getCountRecentKeywordTweets(query);
         if (max_tweets < quantity) { quantity = max_tweets; }
-    }
+    } */
     
     let remaining = quantity;
     while (remaining > 0) {
