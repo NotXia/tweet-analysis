@@ -1,5 +1,3 @@
-const { getCountRecentKeywordTweets } = require("../../modules/fetch/countRecent.js");
-
 module.exports = { multipleTweetsFetch: multipleTweetsFetch };
 
 /**
