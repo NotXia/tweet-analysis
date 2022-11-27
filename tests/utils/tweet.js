@@ -25,7 +25,7 @@ function generateParams(query, pagination_token="", quantity=10, start_time = ''
     return params;
 }
 
-function generateTweets(quantity, isLast=false, begin_date, end_date) {
+function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=undefined) {
     let timeStep = 0;
     let startTime = begin_date ? moment(begin_date).unix() : 1669394652
     if (begin_date && end_date) { timeStep = Math.floor(( moment(end_date).unix() - moment(begin_date).unix() ) / quantity ); }
@@ -141,10 +141,10 @@ function _generateMediaId() {
 }
 
 function _generateString(length) {
-    var result           = '';
-    var chars       = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var charsLen = chars.length;
-    for ( var i = 0; i < length; i++ ) {
+    let result      = '';
+    const chars     = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const charsLen  = chars.length;
+    for ( let i = 0; i < length; i++ ) {
         result += chars.charAt(Math.floor(Math.random() * charsLen));
     }
     return result;
