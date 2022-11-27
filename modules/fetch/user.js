@@ -145,7 +145,7 @@ async function _twt_fetch(username, pagination_token = '', quantity = 10, start_
     } catch (err) {
         if (err.response?.data?.status === 429) {
             await new Promise(r => setTimeout(r, 1000));
-            return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+            return _twt_fetch(keyword, pagination_token, quantity, start_time, end_time);
         }
         return null;
     }
