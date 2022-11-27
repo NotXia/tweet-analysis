@@ -120,6 +120,14 @@ function _generateTweet(creation_date="2010-11-06T00:00:01Z") {
     }
 }
 
+function generateWinningWordTweet(text) {
+    let formattedTweet = generateTweets(1);
+
+    formattedTweet.data[0].text = text;
+
+    return formattedTweet;
+}
+
 function _generateTweetId() {
     let id;
     let date = Date.now();
@@ -215,6 +223,7 @@ function checkTweetFormat(tweet) {
 module.exports = {
     generateParams: generateParams,
     generateTweets: generateTweets,
+    generateWinningWordTweet: generateWinningWordTweet,
     nockTwitterUsersByUsername: nockTwitterUsersByUsername,
     checkTweetFormat: checkTweetFormat
 }
