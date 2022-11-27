@@ -1,6 +1,6 @@
 require("dotenv").config();
 const moment = require('moment');
-const { generateParams, generateWinningWordTweet } = require("../utils/tweet.js");
+const { generateParams, generateCustomTweet } = require("../utils/tweet.js");
 import nock from "nock";
 
 moment().format();
@@ -14,7 +14,7 @@ describe("Test ricerca parola vincente", function () {
         const query = `from:${from} "${search}"`;
         nock("https://api.twitter.com")
             .get('/2/tweets/search/all').query(generateParams(query, "", 10, moment("2022-11-25T00:00:01Z").utc().startOf("day").toISOString(), moment("2022-11-25T00:00:01Z").utc().endOf("day").toISOString()))
-            .reply(200, generateWinningWordTweet("La #parola della #ghigliottina de #leredita di oggi è: DISTANZA") );
+            .reply(200, generateCustomTweet("La #parola della #ghigliottina de #leredita di oggi è: DISTANZA") );
 
         const word = await getWinningWord("2022-11-25T00:00:01Z");
         expect(word).toEqual("DISTANZA");
@@ -26,7 +26,7 @@ describe("Test ricerca parola vincente", function () {
         const query = `from:${from} "${search}"`;
         nock("https://api.twitter.com")
             .get('/2/tweets/search/all').query(generateParams(query, "", 10, moment("2022-11-25T00:00:01Z").utc().startOf("day").toISOString(), moment("2022-11-25T00:00:01Z").utc().endOf("day").toISOString()))
-            .reply(200, generateWinningWordTweet(`
+            .reply(200, generateCustomTweet(`
                 Complimenti ai 57 giocatori che hanno indovinato!
 
                 La #parola della #ghigliottina de #leredita di oggi è: INTERVALLO
@@ -50,7 +50,7 @@ describe("Test ricerca parola vincente", function () {
         const query = `from:${from} "${search}"`;
         nock("https://api.twitter.com")
             .get('/2/tweets/search/all').query(generateParams(query, "", 10, moment("2022-11-25T00:00:01Z").utc().startOf("day").toISOString(), moment("2022-11-25T00:00:01Z").utc().endOf("day").toISOString()))
-            .reply(200, generateWinningWordTweet(`
+            .reply(200, generateCustomTweet(`
                 Complimenti ai 57  giocatori che  hanno indovinato!
 
                 La  #parola  della  #ghigliottina  de  #leredita  di  oggi  è:  BALLO
