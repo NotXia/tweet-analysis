@@ -4,8 +4,10 @@ const moment = require('moment');
 module.exports = { getWinningWord: getWinningWord }
 
 /**
- * Restituisce la parola vincente del gioco della Ghigliottina del giorno scelto.
+ * Restituisce la parola vincente del gioco scelto per il giorno scelto.
  * @param {string} date         Giorno scelto
+ * @param {string} search       Frase da ricercare per il gioco scelto
+ * @param {string} from         Username account twitter che pubblica la risposta
  * @returns {Promise<string>}   Parola del giorno indicato
  */
 async function getWinningWord(date=moment().format(), search="La #parola della #ghigliottina de #leredita di oggi è:", from="quizzettone") {
