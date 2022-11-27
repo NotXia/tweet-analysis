@@ -7,12 +7,16 @@
     "start": "node index.js",
     "build": "npm run build --prefix ./frontend",
     "test": "npm run test:unit && npm run test:api && npm run test:react",
+    
     "jest:unit": "jest --passWithNoTests --globalSetup ./tests/utils/unit.global_init.js",
     "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
     "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
+    "jest:integration": "jest --passWithNoTests --globalSetup ./tests/utils/integration.global_init.js",
+    
     "test:unit": "npm run jest:unit -- --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
     "test:api": "npm run jest:api -- --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
-    "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
+    "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js",
+    "test:integration": "npm run jest:integration -- --coverage --coverageDirectory ./coverage/integration ./tests/integration/.*.test.js"
   },
   "jest": {
     "testPathIgnorePatterns": [

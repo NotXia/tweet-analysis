@@ -21,8 +21,8 @@ module.exports = {
  * @param {number} quantity                     Quantità di tweet da visualizzare (facoltativo, 10 di default)
  * @param {number} start_time                   Data minima dei tweet da ottenere (facoltativo)
  * @param {number} end_time                     Data massima dei tweet da ottenere (facoltativo)
- * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: {id: string, full_name: string, country: string, coords: {long: number, lat: number}}, media: [{url: string, type: string}]}], next_token: string}
+ * @returns {Promise<[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ *          location: {id: string, full_name: string, country: string, coords: {long: number, lat: number}}, media: [{url: string, type: string}]}], next_token: string>}
  *          Array di tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
@@ -145,7 +145,7 @@ async function _twt_fetch(username, pagination_token = '', quantity = 10, start_
     } catch (err) {
         if (err.response?.data?.status === 429) {
             await new Promise(r => setTimeout(r, 1000));
-            return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+            return _twt_fetch(username, pagination_token, quantity, start_time, end_time);
         }
         return null;
     }

@@ -1,15 +1,22 @@
 require("dotenv").config();
 const moment = require('moment');
 moment().format();
+const { checkTweetFormat } = require("../utils/tweet.js");
 
 const { getTweetsByUser, testing } = require("../../modules/fetch/user.js");
 
+
+jest.setTimeout(60000);
+
+
 let userTest;
-const limit = new Date('2010-11-06T00:00:01Z');
 const today = new Date();
 today.setHours(23,59,59,999);
 let future = new Date();
 future = new Date(moment(future).add(7, 'days'));
+
+let page1_tweets;
+
 
 describe("Test ricerca nome utente", function () {
     test("Controllo esistenza utente", async function () {
@@ -36,98 +43,98 @@ describe("Test ricerca nome utente", function () {
 });
 
 describe("Test ricerca tweet dato username utente", function () {
-    test("Controllo esistenza utente", function () {
-        expect( userTest.username ).toBeDefined();
-    });
-
-    test("Ricerca tweet per username utente senza pagination token", async function () {
-        const tweets = await getTweetsByUser('sweteam12');
-        for (const tweet of tweets.tweets) {
-            expect( tweet.name ).toBeDefined();
-            expect( tweet.username ).toBeDefined();
-            expect( tweet.pfp ).toBeDefined();
-            expect( tweet.text ).toBeDefined();
-            expect( tweet.time ).toBeDefined();
-            expect( tweet.likes ).toBeDefined();
-            expect( tweet.comments ).toBeDefined();
-            expect( tweet.retweets ).toBeDefined();
-            expect( tweet.media ).toBeDefined();
-            if (tweet.location) {
-                expect( tweet.location.id ).toBeDefined();
-                expect( tweet.location.full_name ).toBeDefined();
-                expect( tweet.location.country ).toBeDefined();
-                expect( tweet.location.coords.long ).toBeDefined();
-                expect( tweet.location.coords.lat ).toBeDefined();
-            }
+    test("Ricerca tweet per username utente (prima pagina, senza pagination token)", async function () {
+        page1_tweets = await getTweetsByUser('sweteam12');
+        for (const tweet of page1_tweets.tweets) {
+            checkTweetFormat(tweet);
         }
     });
 
     test("Ricerca tweet per username utente con pagination token", async function () {
-        const tweetsPage1 = await getTweetsByUser(userTest.username);
-        expect( tweetsPage1.next_token ).toBeDefined();
-        const tweetsPage2 = await getTweetsByUser(userTest.username, tweetsPage1.next_token);
+        expect( page1_tweets.next_token ).toBeDefined();
+        
+        const tweetsPage2 = await getTweetsByUser(userTest.username, page1_tweets.next_token);
         for (const tweet of tweetsPage2.tweets) {
-            expect( tweet.name ).toBeDefined();
-            expect( tweet.username ).toBeDefined();
-            expect( tweet.pfp ).toBeDefined();
-            expect( tweet.text ).toBeDefined();
-            expect( tweet.time ).toBeDefined();
-            expect( tweet.likes ).toBeDefined();
-            expect( tweet.comments ).toBeDefined();
-            expect( tweet.retweets ).toBeDefined();
-            expect( tweet.media ).toBeDefined();
-            if (tweet.location) {
-                expect( tweet.location.id ).toBeDefined();
-                expect( tweet.location.full_name ).toBeDefined();
-                expect( tweet.location.country ).toBeDefined();
-                expect( tweet.location.coords.long ).toBeDefined();
-                expect( tweet.location.coords.lat ).toBeDefined();
-            }
+            checkTweetFormat(tweet);
         }
     });
 
+    test("Ricerca tweet per username utente vuoto", async function () {
+        try {
+            await getTweetsByUser('');
+        } catch (error) {
+            return expect( error ).toBeDefined();
+        }
+        throw new Error('Eccezione non lanciata');
+    });
+
+    test("Ricerca tweet per username errato", async function () {
+        try {
+            await getTweetsByUser('sdfsdgfaaaaasd');
+        } catch (error) {
+            return expect( error ).toBeDefined();
+        }
+        throw new Error('Eccezione non lanciata');
+    });
+
+    test("Ricerca tweet per pagination token errato", async function () {
+        try {
+            await getTweetsByUser(userTest.username, 'dasfdasfsd');
+        } catch (error) {
+            return expect( error ).toBeDefined();
+        }
+        throw new Error('Eccezione non lanciata');
+    });
+
+    test("Ricerca tweet per username errato e pagination token errato", async function () {
+        try {
+            await getTweetsByUser('adfdasdsgsg', 'dasfdasfsd');
+        } catch (error) {
+            return expect( error ).toBeDefined();
+        }
+        throw new Error('Eccezione non lanciata');
+    });
+});
+
+describe("Test ricerca per date", function () {
     test("Ricerca tweet per username in intervallo temporale con date valide", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z', '2022-11-05T11:12:31Z');
+        const tweets = await getTweetsByUser(userTest.username, '', 10, '2022-11-01T15:20:12Z', '2022-11-05T11:12:31Z');
         for (const tweet of tweets.tweets) {
+            checkTweetFormat(tweet);
             expect( tweet.time >= '2022-11-01T00:00:00.000Z' ).toBeTruthy();
             expect( tweet.time <= '2022-11-05T23:59:59.999Z' ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con solo data d'inizio", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z');
+        const tweets = await getTweetsByUser(userTest.username, '', 10, '2022-11-01T15:20:12Z');
         for (const tweet of tweets.tweets) {
+            checkTweetFormat(tweet);
             expect( tweet.time >= '2022-11-01T00:00:00.000Z' ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con solo data di fine", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '', '2022-11-05T11:12:31Z');
+        const tweets = await getTweetsByUser(userTest.username, '', 10, '', '2022-11-05T11:12:31Z');
         for (const tweet of tweets.tweets) {
-            expect( tweet.time <= '2022-11-05T23:59:59.999Z' ).toBeTruthy();
-        }
-    });
-
-    test("Ricerca tweet per username in intervallo temporale con data di inizio prima del limite", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '2009-11-06T00:00:01Z', '2022-11-05T11:12:31Z');
-        for (const tweet of tweets.tweets) {
-            const time = new Date(tweet.time);
-            expect( time >= limit ).toBeTruthy();
+            checkTweetFormat(tweet);
             expect( tweet.time <= '2022-11-05T23:59:59.999Z' ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con data di fine nel futuro", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '', future);
+        const tweets = await getTweetsByUser(userTest.username, '', 10, '', future);
         for (const tweet of tweets.tweets) {
+            checkTweetFormat(tweet);
             const time = new Date(tweet.time);
             expect( time <= today ).toBeTruthy();
         }
     });
 
     test("Ricerca tweet per username in intervallo temporale con date nello stesso giorno", async function () {
-        const tweets = await getTweetsByUser(userTest.username, '', 20, '2022-11-01T15:20:12Z', '2022-11-01T17:12:31Z');
+        const tweets = await getTweetsByUser(userTest.username, '', 10, '2022-11-01T15:20:12Z', '2022-11-01T17:12:31Z');
         for (const tweet of tweets.tweets) {
+            checkTweetFormat(tweet);
             expect( tweet.time >= '2022-11-01T00:00:00.000Z' ).toBeTruthy();
             expect( tweet.time <= '2022-11-01T23:59:59.999Z' ).toBeTruthy();
         }
@@ -139,9 +146,10 @@ describe("Test ricerca tweet dato username utente", function () {
         let today_end = new Date();
         today_end.setHours(23,59,59,999);
 
-        const tweets = await getTweetsByUser(userTest.username, '', 20, today_start, today_end);
+        const tweets = await getTweetsByUser(userTest.username, '', 10, today_start, today_end);
 
         for (const tweet of tweets.tweets) {
+            checkTweetFormat(tweet);
             const time = new Date(tweet.time);
             expect( time >= today_start ).toBeTruthy();
             expect( time <= today ).toBeTruthy();
@@ -150,64 +158,28 @@ describe("Test ricerca tweet dato username utente", function () {
 
     test("Ricerca tweet per username in intervallo temporale con data di fine prima di data d'inizio", async function () {
         try {
-            await getTweetsByUser(userTest.username, '', 20, '2022-11-05T11:12:31Z', '2022-11-01T15:20:12Z');
-            fail('Eccezione non lanciata');
+            await getTweetsByUser(userTest.username, '', 10, '2022-11-05T11:12:31Z', '2022-11-01T15:20:12Z');
         } catch (error) {
-            expect( error ).toBeDefined();
+            return expect( error ).toBeDefined();
         }
+        throw new Error('Eccezione non lanciata');
     });
 
     test("Ricerca tweet per username in intervallo temporale con data di inizio nel futuro", async function () {
         try {
-            await getTweetsByUser(userTest.username, '', 20, future);
-            fail('Eccezione non lanciata');
+            await getTweetsByUser(userTest.username, '', 10, future);
         } catch (error) {
-            expect( error ).toBeDefined();
+            return expect( error ).toBeDefined();
         }
+        throw new Error('Eccezione non lanciata');
     });
 
     test("Ricerca tweet per username in intervallo temporale con data di fine prima del limite", async function () {
         try {
-            await getTweetsByUser(userTest.username, '', 20, '', '2009-11-06T00:00:01Z');
-            fail('Eccezione non lanciata');
+            await getTweetsByUser(userTest.username, '', 10, '', '2009-11-06T00:00:01Z');
         } catch (error) {
-            expect( error ).toBeDefined();
+            return expect( error ).toBeDefined();
         }
-    });
-
-    test("Ricerca tweet per username utente vuoto", async function () {
-        try {
-            await getTweetsByUser('');
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
-    test("Ricerca tweet per username errato", async function () {
-        try {
-            await getTweetsByUser('sdfsdgfaaaaasd');
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
-    test("Ricerca tweet per pagination token errato", async function () {
-        try {
-            await getTweetsByUser(userTest.username, 'dasfdasfsd');
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
-    });
-
-    test("Ricerca tweet per username errato e pagination token errato", async function () {
-        try {
-            await getTweetsByUser('adfdasdsgsg', 'dasfdasfsd');
-            fail('Eccezione non lanciata');
-        } catch (error) {
-            expect( error ).toBeDefined();
-        }
+        throw new Error('Eccezione non lanciata');
     });
 });

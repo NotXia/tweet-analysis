@@ -201,9 +201,29 @@ function nockTwitterUsersByUsername(username, exists=true) {
     }
 }
 
+function checkTweetFormat(tweet) {
+    expect( tweet.name ).toBeDefined();
+    expect( tweet.username ).toBeDefined();
+    expect( tweet.pfp ).toBeDefined();
+    expect( tweet.text ).toBeDefined();
+    expect( tweet.time ).toBeDefined();
+    expect( tweet.likes ).toBeDefined();
+    expect( tweet.comments ).toBeDefined();
+    expect( tweet.retweets ).toBeDefined();
+    expect( tweet.media ).toBeDefined();
+    if (tweet.location) {
+        expect( tweet.location.id ).toBeDefined();
+        expect( tweet.location.full_name ).toBeDefined();
+        expect( tweet.location.country ).toBeDefined();
+        expect( tweet.location.coords.long ).toBeDefined();
+        expect( tweet.location.coords.lat ).toBeDefined();
+    }
+}
+
 module.exports = {
     generateParams: generateParams,
     generateTweets: generateTweets,
     generateWinningWordTweet: generateWinningWordTweet,
-    nockTwitterUsersByUsername: nockTwitterUsersByUsername
+    nockTwitterUsersByUsername: nockTwitterUsersByUsername,
+    checkTweetFormat: checkTweetFormat
 }

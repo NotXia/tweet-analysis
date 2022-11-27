@@ -19,7 +19,7 @@ async function tweetsByUser(req, res) {
 
     if (!process.env.NODE_ENV.includes("testing")) {
         // Caching tweet
-        await Promise.all(tweets_response.tweets.map(async (tweet) => await TweetModel.cacheTweet(tweet)));
+        await Promise.all(tweets_response.tweets.map(async (tweet) => TweetModel.cacheTweet(tweet)));
     }
 }
 
