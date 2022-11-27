@@ -62,14 +62,14 @@ class Test extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     {/* Scacchiera */}
-                                    <div className="col-12 col-md-6">
+                                    <div className="col-12 col-md-8 col-lg-6">
                                         <div className="d-flex justify-content-center justify-content-md-end">
                                             <Board ref={this.board} onMove={this.onBoardMove} width={this.state.board_width} />
                                         </div>
                                     </div>
 
                                     {/* Informazioni di gioco */}
-                                    <div className="col-12 col-md-6">
+                                    <div className="col-12 col-md-4 col-lg-6">
                                         {/* Timer */}
                                         <div className="d-flex justify-content-evenly">
                                             <div className={`${this.state.current_color === "white" ? "" : "invisible"}`}>
