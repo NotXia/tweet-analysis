@@ -82,13 +82,11 @@ class Board extends React.Component {
      */
     _isPromotion(from, to) {
         const piece = this.chess_controller.get(from);
-        const destination = this.chess_controller.get(to);
+        const board_copy = new Chess(this.state.fen);
 
         return (
-            piece.type === "p" &&                                                                       // La pedina è un pedone
-            ((piece.color === "w" && from[1] === "7") || (piece.color === "b" && from[1] === "2")) &&   // È nella penultima riga
-            ((piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1")) &&       // Arriva nell'ultima riga
-            (!destination)                                                                              // La destinazione è vuota
+            piece.type === "p" &&                                       // La pedina è un pedone
+            board_copy.move({ from: from, to: to, promotion: "q" })     // Simula la mossa (e quindi determina se valida)
         );
     }
 
