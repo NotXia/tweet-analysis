@@ -21,7 +21,7 @@ const today = new Date();
 const date = (today.toISOString()).split("T");
 
 const __max_date_limit = date[0];
-const __min_date_limit = "2010-11-06";
+const __min_date_limit = "2006-03-26";
 
 
 class SearchTweets extends React.Component {
@@ -39,9 +39,8 @@ class SearchTweets extends React.Component {
 
             stream_state: "off",                    // Indica lo stato dello stream di tweet ["off", "loading", "live"]
 
-            date_week_limited: false,
             limited_min_date: __min_date_limit,     // Limite minimo imposto per tipo di ricerca
-            select_min_date: __min_date_limit,      // Limite minimo attuale della data (a init: "2010-11-06")
+            select_min_date: __min_date_limit,      // Limite minimo attuale della data
             select_max_date: __max_date_limit,      // Limite massimo attuale della data (a init: data di oggi)
             error_message: ""
         };
@@ -100,8 +99,7 @@ class SearchTweets extends React.Component {
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
                                             {/* Barra primaria - Query */}
                                             <div className="input-group flex">
-                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username"
-                                                        onChange={ (e) => this.dateRangeModifier(e) } required />
+                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" required />
                                                 {/* Bottone per avviare stream di tweet */}
                                                 <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
                                                     {
@@ -135,13 +133,15 @@ class SearchTweets extends React.Component {
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
                                                             <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
-                                                                min={this.state.limited_min_date} max={this.state.select_max_date} onChange={(e) => { this.setState({ select_min_date: (e.target.value!==""? e.target.value : this.state.limited_min_date) })}}/>
+                                                                min={__min_date_limit} max={this.state.select_max_date} 
+                                                                onChange={ (e) => this.setState({ select_min_date: (e.target.value!==""? e.target.value : __min_date_limit) }) } />
                                                     </div>
                                                     {/* Data di fine */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
                                                         <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
-                                                                min={this.state.select_min_date} max={__max_date_limit} onChange={(e) => { this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }}/>
+                                                                min={this.state.select_min_date} max={__max_date_limit} 
+                                                                onChange={ (e) => this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }/>
                                                     </div>
                                                 </div>
                                                 <p className="small text-muted m-0 ms-1 mt-2" style={{ fontSize: "0.7rem" }}>Cambiando il numero di ricerche cambia il numero di tweet fetchati per la prossima pagina</p>    
@@ -315,36 +315,6 @@ class SearchTweets extends React.Component {
 
         tweets_data.tweets = fetched_tweets;
         return tweets_data;
-    }
-    
-    /**
-     * Modifica il limite della selezione per la data minima a seconda del tipo di ricerca
-     * Se la tipologia della query attuale è "#" oppure parola chiave, saranno selezionabili solo oggi e i 7 giorni prima di oggi
-     * Altrimenti viene reimpostato il limite normale (2010-11-06)
-     */
-    dateRangeModifier(e) {
-        e.preventDefault();
-        const query = this.input.query.current.value;
-        let aweekago = new Date();
-
-        if ((query[0] !== "@" && query !== "") && this.state.date_week_limited === false) {
-            
-            aweekago.setDate(aweekago.getDate()-7);
-            const newLimit = ((aweekago.toISOString()).split("T"))[0];
-            this.setState({
-                date_week_limited: true,
-                limited_min_date: newLimit,
-                select_min_date: newLimit,
-                select_max_date: __max_date_limit
-            });
-        }
-        else if((query[0] === "@" || query === "") && this.state.date_week_limited === true) {
-            this.setState({
-                date_week_limited: false,
-                limited_min_date: __min_date_limit,
-                select_min_date: __min_date_limit
-            });
-        }
     }
 
 
