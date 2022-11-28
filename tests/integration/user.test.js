@@ -173,13 +173,4 @@ describe("Test ricerca per date", function () {
         }
         throw new Error('Eccezione non lanciata');
     });
-
-    test("Ricerca tweet per username in intervallo temporale con data di fine prima del limite", async function () {
-        try {
-            await getTweetsByUser(userTest.username, '', 10, '', '2009-11-06T00:00:01Z');
-        } catch (error) {
-            return expect( error ).toBeDefined();
-        }
-        throw new Error('Eccezione non lanciata');
-    });
 });
