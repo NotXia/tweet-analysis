@@ -34,9 +34,3 @@ async function getWinningWord(date=moment().format(), search="La #parola della #
     }
 
 }
-
-async function main() {
-    console.log(await getWinningWord());
-}
-
-main();
