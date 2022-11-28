@@ -108,7 +108,7 @@ async function _usr_fetch(username) {
  * @returns {Promise<Object[]>}                   Array di 10 tweet ciascuno con informazioni varie
  */
 async function _twt_fetch(username, pagination_token = '', quantity = 10, start_time = '', end_time = '') {
-    const limit = new Date('2010-11-06T00:00:01Z');
+    const limit = new Date('2006-03-26T00:00:01Z');
     const date = _normalizeDate(limit, start_time, end_time);
     username = _normalizeQuery(username);
 
