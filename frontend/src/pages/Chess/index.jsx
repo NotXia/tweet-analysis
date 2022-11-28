@@ -63,7 +63,7 @@ class Test extends React.Component {
                                 <div className="row">
                                     {/* Scacchiera */}
                                     <div className="col-12 col-md-8 col-lg-6">
-                                        <div className="d-flex justify-content-center justify-content-md-end">
+                                        <div className={`d-flex justify-content-center justify-content-md-end`} style={{ pointerEvents: this.state.end_state ? "none" : "auto" }}>
                                             <Board ref={this.board} onMove={this.onBoardMove} width={this.state.board_width} />
                                         </div>
                                     </div>
