@@ -1,7 +1,5 @@
 const httpError = require("http-errors");
 const date_validator = require("./validators/date.js");
-const moment = require('moment');
-moment().format();
 
 const gamesGhigliottina = [
     function (req, _, next) {       //Validazione dell'input
