@@ -21,7 +21,7 @@ describe("Richieste corrette a /games/ghigliottina ", function () {
         expect( res.body.tweets.length ).toEqual(100);
     });
 
-    test("Data nel passato con risultato contenente links", async function () {
+    test("Data nel passato con risultato contenente URL", async function () {
         const query = "#leredita";
         const date = moment("2022-10-25T15:00:00.000Z").utc();
 

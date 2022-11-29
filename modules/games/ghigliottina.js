@@ -7,7 +7,7 @@ module.exports = {
 
 /**
  * Funzione gestore per i tweet della ghigliottina.
- * Se la data è oggi, viene avviato lo stream.
+ * Se la data è oggi, vengono restituiti i tweet dei partecipanti che hanno provato fino al momento della richiesta.
  * Se è nel passato, vengono restituiti tutti i tweet dei partecipanti della data richiesta.
  * Errore altrimenti.
  * @param {String} date la data richiesta
@@ -19,10 +19,10 @@ async function ghigliottina(date) {
     const today = moment().utc().startOf("day").format();
     date = moment(date).utc().startOf("day").format();
     if(date === today) {
-        // fetchedTweets = _ghigliottinaLive();
+        fetchedTweets = await _ghigliottinaTweetsFetcher(date, true);
     }
     else if(date < today) {
-        fetchedTweets = await _ghigliottinaHistory(date);
+        fetchedTweets = await _ghigliottinaTweetsFetcher(date);
     }
     else {
         throw new Error("Data nel futuro");
@@ -36,20 +36,18 @@ async function ghigliottina(date) {
  * @param {String} date data dove si vogliono recuperare i tweet
  * @return I tweet recuperati
  */
-async function _ghigliottinaHistory(date) {
+async function _ghigliottinaTweetsFetcher(date, isToday=false) {
     let start_date = moment(date).utc().startOf("day").toISOString();
-    let end_date = moment(date).utc().endOf("day").toISOString();
-    
+    let end_date = isToday? moment().utc().subtract(20, 'seconds').toISOString() : moment(date).utc().endOf("day").toISOString();
+    console.log(date, start_date, end_date, isToday);
     let pagination_token = "";
-    let fetchedTweets = [];
     let out = [];
     do {            //Recupera tutti i tweet contenenti "#leredita" per la data indicata
         try {
-            let currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
-            fetchedTweets = fetchedTweets.concat(currentFetch.tweets);
+            const currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
 
-            for(const tweet of fetchedTweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
-                if(_isEligible(tweet.text)) {                       //Se il tweet è qualificabile viene immesso nell'array di output
+            for(const tweet of currentFetch.tweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
+                if(_isEligible(tweet.text)) {                             //Se il tweet è qualificabile viene immesso nell'array di output
                     tweet.text = _normalizeText(tweet.text);
                     out.push(tweet);
                 }
@@ -74,13 +72,9 @@ async function _ghigliottinaHistory(date) {
  * @returns {boolean} true se il testo soddisfa i requisiti, false altrimenti
  */
 function _isEligible(text) {
-    let out = false;
     let tmp_text = _normalizeText(text).split(" ");
         
-        if(tmp_text.length === 2 && (tmp_text[0] === "#leredita" || tmp_text[1] === "#leredita"))
-            out = true;
-
-    return out;
+    return tmp_text.length === 2 && (tmp_text[0] === "#leredita" || tmp_text[1] === "#leredita");
 }
 
 /**
