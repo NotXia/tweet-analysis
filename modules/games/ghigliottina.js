@@ -39,9 +39,12 @@ async function ghigliottina(date) {
 async function _ghigliottinaTweetsFetcher(date, isToday=false) {
     let start_date = moment(date).utc().startOf("day").toISOString();
     let end_date = isToday? moment().utc().subtract(20, 'seconds').toISOString() : moment(date).utc().endOf("day").toISOString();
-    console.log(date, start_date, end_date, isToday);
+    
     let pagination_token = "";
-    let out = [];
+    let out = [{
+        tweet: [],
+        word: ""
+    }];
     do {            //Recupera tutti i tweet contenenti "#leredita" per la data indicata
         try {
             const currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
@@ -49,7 +52,11 @@ async function _ghigliottinaTweetsFetcher(date, isToday=false) {
             for(const tweet of currentFetch.tweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
                 if(_isEligible(tweet.text)) {                             //Se il tweet è qualificabile viene immesso nell'array di output
                     tweet.text = _normalizeText(tweet.text);
-                    out.push(tweet);
+                    const phrase = tweet.text.split(" ");
+                    out.push({
+                        tweet: tweet,
+                        word: (phrase[0] === "#leredita" ? phrase[1] : phrase[0])
+                    });
                 }
             }
 
@@ -61,6 +68,7 @@ async function _ghigliottinaTweetsFetcher(date, isToday=false) {
         }
     }while(pagination_token !== "");
 
+    out.shift();        //Rimozione del primo elemento nullo
     return out;
 }
 

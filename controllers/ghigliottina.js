@@ -1,5 +1,5 @@
 const { ghigliottina } = require("../modules/games/ghigliottina.js");
-const TweetModel = require("../models/Tweets.js");
+const TweetModel = require("../models/Ghigliottina.js");
 
 async function gamesGhigliottina(req, res) {
     let tweets_response;
