@@ -21,7 +21,7 @@ describe("Test modulo ghigliottina", function() {
         expect( result.length ).toEqual(4);
     });
 
-    test("Ghigliottina di una data del passato dove i tweet contengono link", async function () {
+    test("Ghigliottina di una data del passato dove i tweet contengono URL", async function () {
         const query = "#leredita";
         const date = moment("2022-10-25T15:00:00.000Z").utc();
         let batch = generateTweets(4, true, date.startOf("day").toISOString(), date.endOf("day").toISOString(), "#leredita https://t.co/LS655lKPU3");
@@ -33,7 +33,7 @@ describe("Test modulo ghigliottina", function() {
         const result = await(ghigliottina("2022-10-25T15:00:00.000Z"));
         expect( result.length ).toEqual(0);
     });
-    
+
     test("Ghigliottina di una data del futuro", async function () {
         const query = "#leredita";
         const date = moment().utc().add(2, 'days');

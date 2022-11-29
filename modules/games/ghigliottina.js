@@ -7,7 +7,9 @@ module.exports = {
 
 /**
  * Funzione gestore per i tweet della ghigliottina.
- * Se la data è oggi, viene avviato lo stream, altrimenti vengono restituiti tutti i tweet dei partecipanti della data richiesta
+ * Se la data è oggi, viene avviato lo stream.
+ * Se è nel passato, vengono restituiti tutti i tweet dei partecipanti della data richiesta.
+ * Errore altrimenti.
  * @param {String} date la data richiesta
  * @return Una pagina contenente i tweet inerenti
  */
@@ -40,11 +42,19 @@ async function _ghigliottinaHistory(date) {
     
     let pagination_token = "";
     let fetchedTweets = [];
-    do {
+    let out = [];
+    do {            //Recupera tutti i tweet contenenti "#leredita" per la data indicata
         try {
             let currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
             fetchedTweets = fetchedTweets.concat(currentFetch.tweets);
-            if(currentFetch.next_token === "") { break; }
+
+            for(const tweet of fetchedTweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
+                if(_isEligible(tweet.text)) {                       //Se il tweet è qualificabile viene immesso nell'array di output
+                    tweet.text = _normalizeText(tweet.text);
+                    out.push(tweet);
+                }
+            }
+
             pagination_token = currentFetch.next_token;
         }catch(err){
             console.log(err);
@@ -53,18 +63,13 @@ async function _ghigliottinaHistory(date) {
         }
     }while(pagination_token !== "");
 
-    let out = [];
-    for(const tweet of fetchedTweets) {
-        if(_isEligible(tweet.text)) {
-            tweet.text = _normalizeText(tweet.text);
-            out.push(tweet);
-        }
-    }
     return out;
 }
 
 /**
  * Controlla se il testo del tweet corrisponde al formato corretto per partecipare alla ghigliottina
+ * Un tweet è qualificato se contiene:
+ * - "#leredita" e la parola con cui si tenta di indovinare
  * @param {String} text testo da controllare
  * @returns {boolean} true se il testo soddisfa i requisiti, false altrimenti
  */
