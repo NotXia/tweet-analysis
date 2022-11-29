@@ -25,7 +25,7 @@ function generateParams(query, pagination_token="", quantity=10, start_time = ''
     return params;
 }
 
-function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=undefined) {
+function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=undefined, text="#uniboswe2122 https://t.co/LS655lKPU3") {
     let timeStep = 0;
     let startTime = begin_date ? moment(begin_date).unix() : 1669394652
     if (begin_date && end_date) { timeStep = Math.floor(( moment(end_date).unix() - moment(begin_date).unix() ) / quantity ); }
@@ -47,7 +47,7 @@ function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=u
     }
 
     for (let i = 0; i < quantity; i++) {
-        const tweet = _generateTweet(moment.unix(startTime).toISOString());
+        const tweet = _generateTweet(moment.unix(startTime).toISOString(), text);
         out.data.push(tweet.tweet);
         out.includes.users.push(tweet.user);
         out.includes.media = out.includes.media.concat(tweet.media);
@@ -58,7 +58,7 @@ function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=u
     return out;
 }
 
-function _generateTweet(creation_date="2010-11-06T00:00:01Z") {
+function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe2122 https://t.co/LS655lKPU3") {
     let tweetId = _generateTweetId();
     let authorId = _generateTweetId();
     let mediaId1 = _generateMediaId();
@@ -82,7 +82,7 @@ function _generateTweet(creation_date="2010-11-06T00:00:01Z") {
               "like_count": _generateNumber(1, 500),
               "quote_count": _generateNumber(1, 50)
             },
-            "text": "#uniboswe2122 https://t.co/LS655lKPU3"
+            "text": text
         },
         user: {
             "username": "SWETeam12",
@@ -120,10 +120,11 @@ function _generateTweet(creation_date="2010-11-06T00:00:01Z") {
     }
 }
 
-function generateCustomTweet(text) {
+function generateCustomTweet(text, date="2010-11-06T00:00:01Z") {
     let formattedTweet = generateTweets(1);
 
     formattedTweet.data[0].text = text;
+    formattedTweet.data[0].created_at = date;
 
     return formattedTweet;
 }
