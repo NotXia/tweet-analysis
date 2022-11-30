@@ -8,7 +8,7 @@ module.exports = { getWinningWord: getWinningWord }
  * @param {string} date         Giorno scelto
  * @param {string} search       Frase da ricercare per il gioco scelto
  * @param {string} from         Username account twitter che pubblica la risposta
- * @returns {Promise<string>}   Parola del giorno indicato
+ * @returns {Promise<Object>}   Parola del giorno indicato e data relativa
  */
 async function getWinningWord(date=moment().format(), search="La #parola della #ghigliottina de #leredita di oggi è:", from="quizzettone") {
     search = search.replace(/\s\s+/g, " ");
@@ -20,7 +20,9 @@ async function getWinningWord(date=moment().format(), search="La #parola della #
         let tweetText = word.tweets[0].text.replace(/(\r\n|\n|\r)/gm, " ");           // Viene modificata la stringa togliendo gli "a capo"
         tweetText = tweetText.replace(/\s\s+/g, " ");                                 // Vengono collassati tutti gli spazi in uno solo
 
-        const result = tweetText.match(new RegExp(`${search}\\s(\\w+)`))[1];          // Ricerca parola vincente
+        let result = {}
+        result.word = tweetText.match(new RegExp(`${search}\\s(\\w+)`))[1];          // Ricerca parola vincente
+        result.date = word.tweets[0].time;
 
         return result
     } catch (err) {
