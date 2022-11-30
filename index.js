@@ -51,4 +51,4 @@ if (!process.env.NODE_ENV.includes("testing")) {
     });
 }
 
-module.exports = app;
+module.exports = server;

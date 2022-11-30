@@ -1,11 +1,12 @@
+require("dotenv").config();
 const ChessGame = require("../../modules/chess/ChessGame.js");
 const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
 
 
-const TIMER_TOLLERANCE = 500;
-const PLAYER_TIMEOUT = 15000;
-const OPPONENT_DELAY = 1000;
-const NEW_GAME_TIMEOUT = 60000;
+const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0 : 500;
+const PLAYER_TIMEOUT =      process.env.NODE_ENV.includes("testing") ? 1000 : 15000;
+const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100 : 1000;
+const NEW_GAME_TIMEOUT =    process.env.NODE_ENV.includes("testing") ? 1000 : 60000;
 
 module.exports = {
     init: init,
