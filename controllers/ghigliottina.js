@@ -8,7 +8,7 @@ async function ghigliottinaWinningWord(req, res) {
         winning_word = await WordModel.getWordOfDay(req.query.date, "l'eredita");
 
         if (!winning_word) {
-                winning_word = await getWinningWord(req.query.date);
+        winning_word = await getWinningWord(req.query.date, "La #parola della #ghigliottina de #leredita di oggi è:", "quizzettone");
         }
     } catch (error) {
         if (error.message === "Tweet non trovato") { return res.sendStatus(404); }
