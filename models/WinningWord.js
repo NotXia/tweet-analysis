@@ -13,7 +13,7 @@ const word_scheme = mongoose.Schema ({
  * Gestisce il salvataggio di una parola del giorno
  * @param {Object} winning_word    Parola da salvare
  */
-word_scheme.statics.cacheWord = async function(winning_word) {
+word_scheme.statics.cacheWord = async function(winning_word, game) {
     try {
         await new this({
             word: winning_word.word,
@@ -31,9 +31,9 @@ word_scheme.statics.cacheWord = async function(winning_word) {
  * @param {String} date         Data da ricercare
  * @returns {Promise<string>}   Parola del giorno 
  */
-word_scheme.statics.getWordOfDay = async function(date) {
+word_scheme.statics.getWordOfDay = async function(date, game) {
     try {
-        const word = await this.findOne({ date: moment(date).startOf("day").toISOString() });
+        const word = await this.findOne({ date: moment(date).startOf("day").toISOString(), game: game });
         if(!word) { return null; }
         return word.word;
     } catch (err) {
