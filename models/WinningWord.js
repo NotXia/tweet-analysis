@@ -19,7 +19,7 @@ word_scheme.statics.cacheWord = async function(winning_word, game) {
     try {
         await new this({
             word: winning_word.word,
-            date: moment(winning_word.date).startOf("day").toISOString(),
+            date: moment(winning_word.date).utc().startOf("day").toISOString(),
             game: game
         }).save();
     } catch (err) {
@@ -37,7 +37,7 @@ word_scheme.statics.getWordOfDay = async function(date, game) {
     if (process.env.NODE_ENV.includes("testing")) { return null; }
 
     try {
-        const word = await this.findOne({ date: moment(date).startOf("day").toISOString(), game: game });
+        const word = await this.findOne({ date: moment(date).utc().startOf("day").toISOString(), game: game });
         if(!word) { return null; }
         return { word: word.word, date: word.date };
     } catch (err) {

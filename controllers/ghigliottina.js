@@ -11,6 +11,7 @@ async function ghigliottinaWinningWord(req, res) {
                 winning_word = await getWinningWord(req.query.date);
         }
     } catch (error) {
+        if (error.message === "Tweet non trovato") { res.sendStatus(404); }
         res.sendStatus(500);
         return;
     }
@@ -22,7 +23,7 @@ async function ghigliottinaWinningWord(req, res) {
 
     if (!process.env.NODE_ENV.includes("testing")) {
         // Caching tweet
-        await Promise.all(winning_word.map(async (word) => WordModel.cacheWord(word, "l'eredita")));
+        await WordModel.cacheWord(winning_word, "l'eredita");
     }
 }
 
