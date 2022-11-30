@@ -2,11 +2,11 @@ require('dotenv').config();
 const mongoose = require("mongoose");
 const consts = require("./utils/consts.js");
 const moment = require("moment");
-const { findOne } = require('./Tweets.js');
 
 const word_scheme = mongoose.Schema ({
     word: String,
-    date: String
+    date: String,
+    game: String
 })
 
 /**
@@ -17,7 +17,8 @@ word_scheme.statics.cacheWord = async function(winning_word) {
     try {
         await new this({
             word: winning_word.word,
-            date: moment(winning_word.date).startOf("day").toISOString()
+            date: moment(winning_word.date).startOf("day").toISOString(),
+            game: winning_word.game
         }).save();
     } catch (err) {
         if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Parola già inserita

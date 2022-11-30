@@ -6,6 +6,7 @@ async function ghigliottinaWinningWord(req, res) {
 
     try {
         winning_word = await getWinningWord(req.query.date, req.query.search, req.query.from);
+        winning_word.game = "l'eredita";
     } catch (error) {
         res.sendStatus(500);
         return;
