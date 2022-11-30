@@ -16,12 +16,10 @@ module.exports = {
 async function ghigliottina(date) {
     let fetchedTweets = [];
     
-    const today = moment().utc().startOf("day").format();
-    date = moment(date).utc().startOf("day").format();
-    if(date === today) {
-        fetchedTweets = await _ghigliottinaTweetsFetcher(date, true);
-    }
-    else if(date < today) {
+    const today = moment().utc().startOf("day");
+    const testdate = moment(date).startOf("day");
+    
+    if(testdate <= today) {
         fetchedTweets = await _ghigliottinaTweetsFetcher(date);
     }
     else {
@@ -34,21 +32,17 @@ async function ghigliottina(date) {
 /**
  * Funzione che recupera i tweet di coloro che hanno provato ad indovinare la ghigliottina di una determinata data nel passato.
  * @param {String} date data dove si vogliono recuperare i tweet
- * @return I tweet recuperati
+ * @return {Promise<[{tweet:Object, word:string}]>} I tweet recuperati
  */
-async function _ghigliottinaTweetsFetcher(date, isToday=false) {
+async function _ghigliottinaTweetsFetcher(date) {
     let start_date = moment(date).utc().startOf("day").toISOString();
-    let end_date = isToday? moment().utc().subtract(20, 'seconds').toISOString() : moment(date).utc().endOf("day").toISOString();
+    let end_date = moment().format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")? moment(date).utc().subtract(30, "seconds").toISOString() : moment(date).utc().endOf("day").toISOString();
     
     let pagination_token = "";
-    let out = [{
-        tweet: [],
-        word: ""
-    }];
+    let out = [];
     do {            //Recupera tutti i tweet contenenti "#leredita" per la data indicata
         try {
             const currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
-
             for(const tweet of currentFetch.tweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
                 if(_isEligible(tweet.text)) {                             //Se il tweet è qualificabile viene immesso nell'array di output
                     tweet.text = _normalizeText(tweet.text);
@@ -68,7 +62,6 @@ async function _ghigliottinaTweetsFetcher(date, isToday=false) {
         }
     }while(pagination_token !== "");
 
-    out.shift();        //Rimozione del primo elemento nullo
     return out;
 }
 
@@ -81,7 +74,6 @@ async function _ghigliottinaTweetsFetcher(date, isToday=false) {
  */
 function _isEligible(text) {
     let tmp_text = _normalizeText(text).split(" ");
-        
     return tmp_text.length === 2 && (tmp_text[0] === "#leredita" || tmp_text[1] === "#leredita");
 }
 

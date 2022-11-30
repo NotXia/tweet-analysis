@@ -20,20 +20,20 @@ describe("Test modulo ghigliottina", function() {
         const result = await(ghigliottina("2022-10-25T15:00:00.000Z"));
         expect( result.length ).toEqual(4);
     });
-    /*
-    test("Ghigliottina di oggi", async function () {
-        const query = "#leredita";
-        const date = moment().utc();
-        let batch = generateTweets(4, true, date.startOf("day").toISOString(), date.toISOString(), "#leredita cammelletto");
-        console.log(batch);
-        nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams(query, "", 100, date.startOf("day").toISOString(), date.toISOString()))
-            .reply(200, batch);
-        
-        const result = await(ghigliottina(moment().toISOString()));
-        expect( result.length ).toEqual(4);
-    });
-    */
+    
+    //test("Ghigliottina di oggi", async function () {
+    //    const query = "#leredita";
+    //    const date = moment().utc();
+    //    let batch = generateTweets(4, true, moment().utc().startOf("day").toISOString(), date.toISOString(), "#leredita cammelletto");
+    //    
+    //    nock("https://api.twitter.com")
+    //        .get('/2/tweets/search/all').query(generateParams(query, "", 100, moment().utc().startOf("day").toISOString(), date.toISOString()))
+    //        .reply(200, batch);
+    //    
+    //    const result = await(ghigliottina(moment().utc().toISOString()));
+    //    expect( result.length ).toEqual(4);
+    //});
+    
     test("Ghigliottina di una data del passato dove i tweet contengono URL", async function () {
         const query = "#leredita";
         const date = moment("2022-10-25T15:00:00.000Z").utc();
