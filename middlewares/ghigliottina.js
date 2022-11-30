@@ -12,7 +12,7 @@ const ghigliottinaWinningWord = [
         if (!req.query.from)    { req.query.from = "quizzettone"; }
 
         // Se la data è nel futuro
-        try { date_validator.isFuture(req.query.start_time); } catch (error) { errors.start_time = error.message; }
+        try { date_validator.isFuture(req.query.date); } catch (error) { errors.date = error.message; }
 
         if (Object.keys(errors).length !== 0) { return next( httpError(400, JSON.stringify(errors)) ); }
         return next();
