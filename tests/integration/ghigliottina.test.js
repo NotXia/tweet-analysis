@@ -15,7 +15,7 @@ describe("Test ricerca tweet della ghigliottina idonei", function() {
     });
 
     test("Tweet ghigliottina di oggi", async function() {
-        let past_tweets = await ghigliottina(moment().toISOString());
+        let past_tweets = await ghigliottina(moment().utc().toISOString());
         expect( past_tweets ).toBeDefined();
     });
 
