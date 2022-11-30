@@ -17,7 +17,7 @@ describe("Test ricerca parola vincente", function () {
             .reply(200, generateCustomTweet("La #parola della #ghigliottina de #leredita di oggi è: DISTANZA") );
 
         const word = await getWinningWord("2022-11-25T00:00:01Z");
-        expect(word).toEqual("DISTANZA");
+        expect(word.word).toEqual("DISTANZA");
     });
 
     test("Ricerca parola vincente con tweet da più righe", async function () {
@@ -41,7 +41,7 @@ describe("Test ricerca parola vincente", function () {
                 Vediamo chi sono i campioni 👇👇👇`) );
 
         const word = await getWinningWord("2022-11-25T00:00:01Z");
-        expect(word).toEqual("INTERVALLO");
+        expect(word.word).toEqual("INTERVALLO");
     });
 
     test("Ricerca parola vincente con tweet da più righe e doppi spazi", async function () {
@@ -65,6 +65,6 @@ describe("Test ricerca parola vincente", function () {
                 Vediamo chi sono i campioni 👇👇👇`) );
 
         const word = await getWinningWord("2022-11-25T00:00:01Z");
-        expect(word).toEqual("BALLO");
+        expect(word.word).toEqual("BALLO");
     });
 })

@@ -25,7 +25,7 @@ let page1_tweets;
 
 describe("Test ricerca tweet per hashtag", function () {
     test("Ricerca tweet per hashtag (prima pagina, senza pagination token)", async function () {
-        page1_tweets = await getTweetsByKeyword("#reazioneacatena");
+        page1_tweets = await getTweetsByKeyword("#leredita");
         for (const tweet of page1_tweets.tweets) {
             checkTweetFormat(tweet);
         }
@@ -46,7 +46,7 @@ describe("Test pagination token", function () {
     test("Ricerca tweet per hashtag con pagination token", async function () {
         expect( page1_tweets.next_token ).toBeDefined();
 
-        const tweetsPage2 = await getTweetsByKeyword("#reazioneacatena", page1_tweets.next_token);
+        const tweetsPage2 = await getTweetsByKeyword("#leredita", page1_tweets.next_token);
         for (const tweet of tweetsPage2.tweets) {
             checkTweetFormat(tweet);
         }
@@ -64,7 +64,7 @@ describe("Test pagination token", function () {
 
     test("Ricerca tweet per hashtag con pagination token sbagliato", async function () {
         try {
-            await getTweetsByKeyword("#reazioneacatena", "dsifj");
+            await getTweetsByKeyword("#leredita", "dsifj");
         } catch (error) {
             return expect( error ).toBeDefined();
         }
@@ -75,7 +75,7 @@ describe("Test pagination token", function () {
 
 describe("Test ricerca per date", function () {
     test("Ricerca tweet per hashtag in intervallo temporale con date valide", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 10, date1, date2);
+        const tweets = await getTweetsByKeyword("#leredita", '', 10, date1, date2);
         for (const tweet of tweets.tweets) {
             checkTweetFormat(tweet);
 
@@ -86,7 +86,7 @@ describe("Test ricerca per date", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con solo data d'inizio", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 10, date1);
+        const tweets = await getTweetsByKeyword("#leredita", '', 10, date1);
         for (const tweet of tweets.tweets) {
             checkTweetFormat(tweet);
 
@@ -96,7 +96,7 @@ describe("Test ricerca per date", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con solo data di fine", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 10, '', date2);
+        const tweets = await getTweetsByKeyword("#leredita", '', 10, '', date2);
         for (const tweet of tweets.tweets) {
             checkTweetFormat(tweet);
 
@@ -106,7 +106,7 @@ describe("Test ricerca per date", function () {
     });
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di fine nel futuro", async function () {
-        const tweets = await getTweetsByKeyword("#reazioneacatena", '', 10, '', future);
+        const tweets = await getTweetsByKeyword("#leredita", '', 10, '', future);
         for (const tweet of tweets.tweets) {
             checkTweetFormat(tweet);
 
@@ -134,7 +134,7 @@ describe("Test ricerca per date", function () {
     
     test("Ricerca tweet per hashtag in intervallo temporale con date nello stesso giorno", async function () {
         try {
-            await getTweetsByKeyword("#reazioneacatena", '', 10, date1, date1);
+            await getTweetsByKeyword("#leredita", '', 10, date1, date1);
         }
         catch (err) {
             return expect(err).toBeDefined();
@@ -144,7 +144,7 @@ describe("Test ricerca per date", function () {
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di fine prima di data d'inizio", async function () {
         try {
-            await getTweetsByKeyword("#reazioneacatena", '', 10, date2, date1);
+            await getTweetsByKeyword("#leredita", '', 10, date2, date1);
         } catch (error) {
             return expect( error ).toBeDefined();
         }
@@ -153,7 +153,7 @@ describe("Test ricerca per date", function () {
 
     test("Ricerca tweet per hashtag in intervallo temporale con data di inizio nel futuro", async function () {
         try {
-            await getTweetsByKeyword("#reazioneacatena", '', 10, future);
+            await getTweetsByKeyword("#leredita", '', 10, future);
         } catch (error) {
             return expect( error ).toBeDefined();
         }
