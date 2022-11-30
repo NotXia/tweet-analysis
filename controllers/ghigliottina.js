@@ -5,8 +5,7 @@ async function ghigliottinaWinningWord(req, res) {
     let winning_word = {};
 
     try {
-        winning_word.word = await getWinningWord(req.query.date, req.query.search, req.query.from);
-        winning_word.date = req.query.date;
+        winning_word = await getWinningWord(req.query.date, req.query.search, req.query.from);
     } catch (error) {
         res.sendStatus(500);
         return;
