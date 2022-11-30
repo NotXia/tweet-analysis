@@ -24,9 +24,9 @@ async function getWinningWord(date=moment().format(), search="La #parola della #
         result.word = tweetText.match(new RegExp(`${search}\\s(\\w+)`))[1];          // Ricerca parola vincente
         result.date = word.tweets[0].time;
 
-        return result
+        return result;
     } catch (err) {
-        return null;
+        throw new Error("Tweet non trovato");
     }
 
 }
