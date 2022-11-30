@@ -18,7 +18,7 @@ async function ghigliottinaWinningWord(req, res) {
 
     if (!process.env.NODE_ENV.includes("testing")) {
         // Caching tweet
-        await Promise.all(winning_word.map(async (word) => WordModel.cacheTweet(word)));
+        await Promise.all(winning_word.map(async (word) => WordModel.cacheWord(word)));
     }
 }
 

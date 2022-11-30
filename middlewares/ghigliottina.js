@@ -8,8 +8,6 @@ const ghigliottinaWinningWord = [
         let errors = {};
 
         if (!req.query.date)    { req.query.date = moment().format(); }
-        if (!req.query.search)  { req.query.search = "La #parola della #ghigliottina de #leredita di oggi è:"; }
-        if (!req.query.from)    { req.query.from = "quizzettone"; }
 
         // Se la data è nel futuro
         try { date_validator.isFuture(req.query.date); } catch (error) { errors.date = error.message; }
