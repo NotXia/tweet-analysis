@@ -32,7 +32,7 @@ app.use(cors({ origin: ["http://localhost:3000", "https://tcxia.ddns.net"] }));
 app.use("/analysis", analysis_router);
 app.use("/tweets", user_router);
 app.use("/tweets", keyword_router);
-app.use("/games", games_router)
+app.use("/games", games_router);
 
 
 app.use(error_handler); // Gestore errori
