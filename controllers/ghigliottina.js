@@ -11,7 +11,7 @@ async function ghigliottinaWinningWord(req, res) {
                 winning_word = await getWinningWord(req.query.date);
         }
     } catch (error) {
-        if (error.message === "Tweet non trovato") { res.sendStatus(404); }
+        if (error.message === "Tweet non trovato") { return res.sendStatus(404); }
         res.sendStatus(500);
         return;
     }
