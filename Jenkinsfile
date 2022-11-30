@@ -43,6 +43,16 @@ pipeline {
                         failure { updateGitlabCommitStatus name: "API test", state: "failed" }
                     } 
                 }
+                stage("Socket tests") { 
+                    steps {
+                        updateGitlabCommitStatus name: "Socket test", state: "pending"
+                        sh "npm run test:socket" 
+                    }
+                    post {
+                        success { updateGitlabCommitStatus name: "Socket test", state: "success" }
+                        failure { updateGitlabCommitStatus name: "Socket test", state: "failed" }
+                    } 
+                }
                 stage("React tests") { 
                     steps {
                         updateGitlabCommitStatus name: "React test", state: "pending"
