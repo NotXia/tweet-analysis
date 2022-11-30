@@ -18,7 +18,7 @@ word_scheme.statics.cacheWord = async function(winning_word, game) {
         await new this({
             word: winning_word.word,
             date: moment(winning_word.date).startOf("day").toISOString(),
-            game: winning_word.game
+            game: game
         }).save();
     } catch (err) {
         if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Parola già inserita
@@ -35,7 +35,7 @@ word_scheme.statics.getWordOfDay = async function(date, game) {
     try {
         const word = await this.findOne({ date: moment(date).startOf("day").toISOString(), game: game });
         if(!word) { return null; }
-        return word.word;
+        return { word: word.word, date: word.date };
     } catch (err) {
         return null;
     }
