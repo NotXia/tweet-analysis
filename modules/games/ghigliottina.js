@@ -17,8 +17,8 @@ async function ghigliottina(date) {
     let fetchedTweets = [];
     
     const today = moment().utc().startOf("day");
-    const testdate = moment(date).startOf("day");
-    
+    const testdate = moment(date).utc().startOf("day");
+
     if(testdate <= today) {
         fetchedTweets = await _ghigliottinaTweetsFetcher(date);
     }
@@ -36,7 +36,7 @@ async function ghigliottina(date) {
  */
 async function _ghigliottinaTweetsFetcher(date) {
     let start_date = moment(date).utc().startOf("day").toISOString();
-    let end_date = moment().format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")? moment().utc().subtract(30, "seconds").toISOString() : moment(date).utc().endOf("day").toISOString();
+    let end_date = moment().format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")? date : moment(date).utc().endOf("day").toISOString();
     
     let pagination_token = "";
     let out = [];
