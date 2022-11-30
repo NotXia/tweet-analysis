@@ -5,8 +5,7 @@ async function ghigliottinaWinningWord(req, res) {
     let winning_word = {};
 
     try {
-        winning_word = await getWinningWord(req.query.date, req.query.search, req.query.from);
-        winning_word.game = "l'eredita";
+        winning_word = await getWinningWord(req.query.date);
     } catch (error) {
         res.sendStatus(500);
         return;
@@ -19,7 +18,7 @@ async function ghigliottinaWinningWord(req, res) {
 
     if (!process.env.NODE_ENV.includes("testing")) {
         // Caching tweet
-        await Promise.all(winning_word.map(async (word) => WordModel.cacheWord(word)));
+        await Promise.all(winning_word.map(async (word) => WordModel.cacheWord(word, "l'eredita")));
     }
 }
 
