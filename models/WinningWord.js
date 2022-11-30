@@ -17,6 +17,8 @@ word_scheme.statics.cacheWord = async function(winning_word, game) {
     if (process.env.NODE_ENV.includes("testing")) { return; }
 
     try {
+        if (await this.getWordOfDay(moment(winning_word.date).startOf("day").toISOString(), game)) { return; } // Parola già in cache
+        
         await new this({
             word: winning_word.word,
             date: moment(winning_word.date).utc().startOf("day").toISOString(),
