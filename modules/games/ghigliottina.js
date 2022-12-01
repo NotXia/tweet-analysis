@@ -56,7 +56,7 @@ async function _ghigliottinaTweetsFetcher(date) {
                     const phrase = tweet.text.split(" ");
                     out.push({
                         tweet: tweet,
-                        word: (phrase[0] === "#leredita" ? phrase[1] : phrase[0])
+                        word: (phrase[0] === "#leredita" ? phrase[1].replace(/[!?@#$%^&*]/g, "") : phrase[0].replace(/[!?@#$%^&*]/g, ""))
                     });
                 }
             }
