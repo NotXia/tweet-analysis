@@ -53,16 +53,6 @@ pipeline {
                         failure { updateGitlabCommitStatus name: "React test", state: "failed" }
                     } 
                 }
-                stage("Integration tests") { 
-                    steps {
-                        updateGitlabCommitStatus name: "Integration test", state: "pending"
-                        sh "npm run test:integration" 
-                    }
-                    post {
-                        success { updateGitlabCommitStatus name: "Integration test", state: "success" }
-                        failure { updateGitlabCommitStatus name: "Integration test", state: "failed" }
-                    } 
-                }
             }
         }
 
@@ -120,6 +110,17 @@ pipeline {
             post {
                 success { updateGitlabCommitStatus name: "Development deploy", state: "success" }
                 failure { updateGitlabCommitStatus name: "Development deploy", state: "failed" }
+            } 
+        }
+
+        stage("Integration tests") { 
+            steps {
+                updateGitlabCommitStatus name: "Integration test", state: "pending"
+                sh "npm run test:integration" 
+            }
+            post {
+                success { updateGitlabCommitStatus name: "Integration test", state: "success" }
+                failure { updateGitlabCommitStatus name: "Integration test", state: "failed" }
             } 
         }
     }
