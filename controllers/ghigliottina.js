@@ -32,9 +32,15 @@ async function ghigliottinaWinningWord(req, res) {
 
 async function gamesGhigliottina(req, res) {
     let tweets_response;
+    let should_cache = false;
 
     try {
-        tweets_response = await ghigliottina(req.query.date);
+        tweets_response = await TweetModel.cacheGhigliottina(req.query.date);
+        
+        if (!tweets_response || tweets_response.length === 0) {
+            should_cache = true;
+            tweets_response = await ghigliottina(req.query.date);
+        }
     } catch (error) {
         res.sendStatus(500);
         return;
@@ -44,7 +50,9 @@ async function gamesGhigliottina(req, res) {
 
     if (!process.env.NODE_ENV.includes("testing")) {
         // Caching tweet
-        await Promise.all(tweets_response.map(async (tweet) => TweetModel.cacheTweet(tweet)));
+        if (should_cache) {
+            await Promise.all(tweets_response.map(async (tweet) => TweetModel.cacheTweet(tweet, req.query.date)));
+        }
     }
 }
 

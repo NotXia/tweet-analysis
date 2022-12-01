@@ -4,8 +4,10 @@ const consts = require("./utils/consts.js");
 
 
 const tweet_scheme = mongoose.Schema ({
+    _id: { type: String, required: true },
+    date: String,
     tweet: {
-        _id: { type: String, required: true },
+        id: { type: String, required: true },
         name: String,
         username: String,
         pfp: String,
@@ -38,11 +40,15 @@ const tweet_scheme = mongoose.Schema ({
  * Gestisce il salvataggio di un tweet
  * @param {Object} tweet    Tweet da salvare
  */
-tweet_scheme.statics.cacheTweet = async function(tweet) {
+tweet_scheme.statics.cacheTweet = async function(tweet, date) {
+    if (process.env.NODE_ENV.includes("testing")) { return; }
+
     try {
         await new this({
+            _id: tweet.tweet.id,
+            date: date,
             tweet: {
-                _id: tweet.tweet.id,
+                id: tweet.tweet.id,
                 name: tweet.tweet.name,
                 username: tweet.tweet.username,
                 pfp: tweet.tweet.pfp,
@@ -63,5 +69,17 @@ tweet_scheme.statics.cacheTweet = async function(tweet) {
     }
 };
 
+tweet_scheme.statics.cacheGhigliottina = async function(date) {
+    if (process.env.NODE_ENV.includes("testing")) { return null; }
 
-module.exports = mongoose.model("tweets_Ghigliottina", tweet_scheme);
+    try {
+        let tweets = await this.find({ date: date });
+        return tweets;
+    }
+    catch (err) {
+        throw err;
+    }
+};
+
+
+module.exports = mongoose.model("tweets_ghigliottina", tweet_scheme);
