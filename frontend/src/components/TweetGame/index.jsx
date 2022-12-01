@@ -46,7 +46,7 @@ class TweetGame extends React.Component {
                     <p className="small">{moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>
                 </div>
                 
-                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{he.decode(word.toUpperCase())}</p>
+                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{word?.toUpperCase()}</p>
                 
                 <div className={tweet.location ? "" : "d-none"}>
                     <div className="d-flex mt-2">

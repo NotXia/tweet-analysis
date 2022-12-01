@@ -38,7 +38,7 @@ class SearchTweets extends React.Component {
         return (<>
             
             <Helmet>
-                <title>Ricerca tweet</title>
+                <title>{ this.props.title }</title>
             </Helmet>
             
             <Navbar />
@@ -68,7 +68,7 @@ class SearchTweets extends React.Component {
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
                                 <div className="d-flex flex-column justify-content-center align-items-center w-100 p-2">
-                                    <h1 className="text-center" style={{ fontSize: "3rem"}}>La Ghigliottina<br /><small className="text-muted">#leredità</small></h1>
+                                    <h1 className="text-center" style={{ fontSize: "3rem"}}>{ this.props.title }<br /><small className="text-muted">{ this.props.hashtag }</small></h1>
                                     <form className="align-items-start">
                                         {/* Data */}
                                         <div>
@@ -99,16 +99,16 @@ class SearchTweets extends React.Component {
                                                     <div className="overflow-auto border rounded border-opacity-100" style={{ height: "50vh" }}>
                                                     {
                                                         (() => {
-                                                            if (this.state.winning_word === "") { return <div className="fs-5 d-flex align-items-center text-center h-100">Non è ancora stata annunciata la parola vincente</div>; }
+                                                            if (this.state.winning_word === "") { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Non è ancora stata annunciata la parola vincente</div>; }
 
                                                             const winners = this.getWinners();
 
-                                                            if (winners.length === 0) { return <div className="fs-5 d-flex align-items-center text-center h-100">Nessuno ha indovinato la parola di oggi</div>; }
+                                                            if (winners.length === 0) { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Nessuno ha indovinato la parola di oggi</div>; }
                                                             else {
                                                                 return (
                                                                     <ul className="list-group list-group-flush">
                                                                     {
-                                                                        this.getWinners().map((tweet) => (
+                                                                        winners.map((tweet) => (
                                                                             <li key={`winner-tweet-${tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
                                                                                 <TweetUser tweet={tweet} />
                                                                             </li>
@@ -157,7 +157,7 @@ class SearchTweets extends React.Component {
 
         // Ricerca tentativi
         try {
-            let tweets_data = await getGhigliottinaAttempts(date);
+            let tweets_data = await this.props.getAttemptsFunction(date);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
@@ -172,7 +172,7 @@ class SearchTweets extends React.Component {
 
         // Ricerca parola vincente
         try {
-            const winning_word = await getGhigliottinaWord(date);
+            const winning_word = await this.props.getWinningWordFunction(date);
 
             this.setState({ 
                 winning_word: winning_word.word,
