@@ -1,16 +1,10 @@
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
-import nock from "nock";
-process.env.REACT_APP_API_PATH = "http://localhost";
 
-import Tweet from "./index";
+import TweetGame from "./index";
 
 
 describe("Test visualizzazione tweet", function () {
-    nock("http://localhost")
-    .get('/analysis/sentiment').query({ tweet: "Ciao a tutti #catenaareazione" })
-    .times(5).reply(200, { sentiment: "positive", score: 3, language: "it" });
-
     test("Tweet testuale", async function () {
         const tweet = {
             id: "0000000000000000000",
@@ -22,11 +16,12 @@ describe("Test visualizzazione tweet", function () {
             location: {},
             media: []
         }
+        const word = "Ciao"
 
-        const { container } = render(<Tweet tweet={tweet} />);
+        const { container } = render(<TweetGame tweet={tweet} word={word} />);
         expect( await screen.findByText("Giggi") ).toBeInTheDocument();
         expect( await screen.findByText("@Luiggi") ).toBeInTheDocument();
-        expect( await screen.findByText("Ciao a tutti #catenaareazione") ).toBeInTheDocument();
+        expect( await screen.findByText(word.toUpperCase()) ).toBeInTheDocument();
 
         const img_src = [...container.querySelectorAll("img")].map((img) => img.src);
         expect( img_src.includes("https://dominiofittizio.org/percorso/fittizio/file") ).toBeTruthy();
@@ -48,7 +43,7 @@ describe("Test visualizzazione tweet", function () {
             media: []
         }
 
-        render(<Tweet tweet={tweet} />);
+        render(<TweetGame tweet={tweet} word={"Ciao"} />);
         expect( await screen.findByText("Campodimele - Italy") ).toBeInTheDocument();
     });
 
@@ -67,11 +62,11 @@ describe("Test visualizzazione tweet", function () {
             ]
         }
 
-        const { container } = render(<Tweet tweet={tweet} />);
+        const { container } = render(<TweetGame tweet={tweet} word={"Ciao"} />);
         const img_src = [...container.querySelectorAll("img")].map((img) => img.src);
         expect( img_src.includes("https://dominiofittizio.org/percorso/fittizio/file") ).toBeTruthy();
-        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image1.png") ).toBeTruthy();
-        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image2.png") ).toBeTruthy();
+        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image1.png") ).toBeFalsy();
+        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image2.png") ).toBeFalsy();
     });
 
     test("Tweet con video e gif", async function () {
@@ -89,10 +84,10 @@ describe("Test visualizzazione tweet", function () {
             ]
         }
 
-        const { container } = render(<Tweet tweet={tweet} />);
+        const { container } = render(<TweetGame tweet={tweet} word={"Ciao"} />);
         const video_src = [...container.querySelectorAll("video > source")].map((video) => video.src);
-        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
-        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
+        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeFalsy();
+        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeFalsy();
     });
 
     test("Tweet con immagini e video", async function () {
@@ -112,31 +107,12 @@ describe("Test visualizzazione tweet", function () {
             ]
         }
 
-        const { container } = render(<Tweet tweet={tweet} />);
+        const { container } = render(<TweetGame tweet={tweet} word={"Ciao"} />);
         const img_src = [...container.querySelectorAll("img")].map((img) => img.src);
         const video_src = [...container.querySelectorAll("video > source")].map((video) => video.src);
-        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image1.png") ).toBeTruthy();
-        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image2.png") ).toBeTruthy();
-        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
-        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeTruthy();
-    });
-
-    test("Tweet sentiment analysis", async function () {
-        nock("http://localhost")
-        .get('/analysis/sentiment').query({ tweet: "Sono veramente tanto felice #catenaareazione" })
-        .reply(200, { sentiment: "positive", score: 3, language: "it" });
-
-        const tweet = {
-            id: "0000000000000000000",
-            name: "Giggi", username: "Luiggi",
-            pfp: "https://dominiofittizio.org/percorso/fittizio/file",
-            text: "Sono veramente tanto felice #catenaareazione",
-            time: "2022-10-30T09:00:00.000Z",
-            likes: 5, comments: 6, retweets: 7,
-            location: {},
-            media: []
-        }
-        render(<Tweet tweet={tweet} />);
-        expect( await screen.findByText("🙂") ).toBeInTheDocument();
+        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image1.png") ).toBeFalsy();
+        expect( img_src.includes("https://dominiofittizio.org/percorso/finto/image2.png") ).toBeFalsy();
+        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeFalsy();
+        expect( video_src.includes("https://dominiofittizio.org/percorso/finto/video.mp4") ).toBeFalsy();
     });
 });
