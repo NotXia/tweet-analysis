@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const middlewareGhigliottina = require("../middlewares/ghigliottina.js");
-const controllerGhigliottina = require("../controllers/ghigliottina.js");
+const middlewareGames = require("../middlewares/games.js");
 
-router.get("/ghigliottina/winning_word", middlewareGhigliottina.ghigliottinaWinningWordValidation, controllerGhigliottina.ghigliottinaWinningWord);
-router.get("/ghigliottina", middlewareGhigliottina.gamesGhigliottinaValidation, controllerGhigliottina.gamesGhigliottina);
+const controllerGhigliottina = require("../controllers/ghigliottina.js");
+const controllerCatenaFinale = require("../controllers/catenafinale.js");
+
+router.get("/ghigliottina/winning_word", middlewareGames.gamesWinningWordValidation, controllerGhigliottina.ghigliottinaWinningWord);
+router.get("/ghigliottina", middlewareGames.gamesValidation, controllerGhigliottina.gamesGhigliottina);
+
+router.get("/catenafinale/winning_word", middlewareGames.gamesWinningWordValidation, controllerCatenaFinale.catenaFinaleWinningWord);
 
 module.exports = router;

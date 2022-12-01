@@ -2,7 +2,7 @@ const httpError = require("http-errors");
 const date_validator = require("./validators/date.js");
 const moment = require('moment');
 
-const gamesGhigliottina = [
+const games = [
     function (req, _, next) {       //Validazione dell'input
         let errors = {};
 
@@ -16,7 +16,7 @@ const gamesGhigliottina = [
     }
 ];
 
-const ghigliottinaWinningWord = [
+const gamesWinningWord = [
     function (req, _, next) {       //Validazione dell'input
         let errors = {};
 
@@ -31,6 +31,6 @@ const ghigliottinaWinningWord = [
 ];
 
 module.exports = {
-    gamesGhigliottinaValidation: gamesGhigliottina,
-    ghigliottinaWinningWordValidation: ghigliottinaWinningWord
+    gamesValidation: games,
+    gamesWinningWordValidation: gamesWinningWord
 };
