@@ -1,6 +1,6 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
 const WordModel = require("../models/WinningWord.js");
-const { ghigliottina } = require("../modules/games/catenaFinale.js");
+const { catenaFinale } = require("../modules/games/catenaFinale.js");
 const TweetModel = require("../models/CatenaFinale.js");
 
 async function catenaFinaleWinningWord(req, res) {
@@ -35,11 +35,11 @@ async function gamesCatenaFinale(req, res) {
     let should_cache = false;
 
     try {
-        tweets_response = await TweetModel.cacheGhigliottina(req.query.date);
+        tweets_response = await TweetModel.cacheCatenaFinale(req.query.date);
         
         if (!tweets_response || tweets_response.length === 0) {
             should_cache = true;
-            tweets_response = await ghigliottina(req.query.date);
+            tweets_response = await catenaFinale(req.query.date);
         }
     } catch (error) {
         res.sendStatus(500);
