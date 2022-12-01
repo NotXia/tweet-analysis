@@ -65,6 +65,7 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
     }
     catch (err) {
         if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Tweet già salvato
+        console.log(err);
         throw err;
     }
 };

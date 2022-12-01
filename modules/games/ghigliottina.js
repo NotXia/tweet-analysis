@@ -64,7 +64,6 @@ async function _ghigliottinaTweetsFetcher(date) {
             pagination_token = currentFetch.next_token;
         }catch(err){
             console.log(err);
-            pagination_token = "";
             break;
         }
     }while(pagination_token !== "");
