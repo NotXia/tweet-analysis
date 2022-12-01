@@ -10,5 +10,6 @@ router.get("/ghigliottina/winning_word", middlewareGames.gamesWinningWordValidat
 router.get("/ghigliottina", middlewareGames.gamesValidation, controllerGhigliottina.gamesGhigliottina);
 
 router.get("/catenafinale/winning_word", middlewareGames.gamesWinningWordValidation, controllerCatenaFinale.catenaFinaleWinningWord);
+router.get("/catenaFinale", middlewareGames.gamesValidation, controllerCatenaFinale.gamesCatenaFinale);
 
 module.exports = router;
