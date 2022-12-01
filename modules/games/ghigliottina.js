@@ -36,13 +36,19 @@ async function ghigliottina(date) {
  */
 async function _ghigliottinaTweetsFetcher(date) {
     let start_date = moment(date).utc().startOf("day").toISOString();
-    let end_date = moment().format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")? date : moment(date).utc().endOf("day").toISOString();
+    let end_date = moment(date).utc().endOf("day").toISOString();
     
+    const isToday = (moment().utc().startOf("day").toISOString() === moment(date).utc().startOf("day").toISOString());
     let pagination_token = "";
     let out = [];
     do {            //Recupera tutti i tweet contenenti "#leredita" per la data indicata
         try {
-            const currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
+            let currentFetch;
+
+            if(isToday) 
+                currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date);
+            else 
+                currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
             
             for(const tweet of currentFetch.tweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
                 if(_isEligible(tweet.text)) {                             //Se il tweet è qualificabile viene immesso nell'array di output

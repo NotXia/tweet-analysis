@@ -24,10 +24,11 @@ describe("Test modulo ghigliottina", function() {
     test("Ghigliottina di oggi", async function () {
         const query = "#leredita";
         const now = moment().utc();
-        let batch = generateTweets(100, true, moment().utc().startOf("day").toISOString(), now.startOf("minute").toISOString(), "#leredita giacomino");
+        let batch = generateTweets(100, true, moment().utc().startOf("day").toISOString(), "", "#leredita giacomino");
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams(query, "", 100, moment().utc().startOf("day").toISOString(), now.startOf("minute").toISOString()))
+            .get('/2/tweets/search/all').query(generateParams(query, "", 100, moment().utc().startOf("day").toISOString()))
             .reply(200, batch);
+
         const result = await(ghigliottina(now.startOf("minute").toISOString()));
         expect( result.length ).toEqual(100);
     });
