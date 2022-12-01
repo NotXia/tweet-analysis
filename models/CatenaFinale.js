@@ -69,7 +69,7 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
     }
 };
 
-tweet_scheme.statics.cacheGhigliottina = async function(date) {
+tweet_scheme.statics.cacheCatenaFinale = async function(date) {
     if (process.env.NODE_ENV.includes("testing")) { return null; }
 
     try {
@@ -82,4 +82,4 @@ tweet_scheme.statics.cacheGhigliottina = async function(date) {
 };
 
 
-module.exports = mongoose.model("tweets_ghigliottina", tweet_scheme);
+module.exports = mongoose.model("tweets_catenaFinale", tweet_scheme);
