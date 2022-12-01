@@ -1,5 +1,7 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
 const WordModel = require("../models/WinningWord.js");
+const { ghigliottina } = require("../modules/games/ghigliottina.js");
+const TweetModel = require("../models/Ghigliottina.js");
 
 async function ghigliottinaWinningWord(req, res) {
     let winning_word = {};
@@ -27,6 +29,34 @@ async function ghigliottinaWinningWord(req, res) {
     }
 }
 
+
+async function gamesGhigliottina(req, res) {
+    let tweets_response;
+    let should_cache = false;
+
+    try {
+        tweets_response = await TweetModel.cacheGhigliottina(req.query.date);
+        
+        if (!tweets_response || tweets_response.length === 0) {
+            should_cache = true;
+            tweets_response = await ghigliottina(req.query.date);
+        }
+    } catch (error) {
+        res.sendStatus(500);
+        return;
+    }
+
+    res.status(200).json({ tweets: tweets_response });
+
+    if (!process.env.NODE_ENV.includes("testing")) {
+        // Caching tweet
+        if (should_cache) {
+            await Promise.all(tweets_response.map(async (tweet) => TweetModel.cacheTweet(tweet, req.query.date)));
+        }
+    }
+}
+
 module.exports = {
+    gamesGhigliottina: gamesGhigliottina,
     ghigliottinaWinningWord: ghigliottinaWinningWord
 };
