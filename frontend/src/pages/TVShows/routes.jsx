@@ -5,11 +5,11 @@ import { getCatenaFinaleAttempts, getCatenaFinaleWord } from "../../modules/game
 let routes = [
     {
         path: "/ghigliottina",
-        element: <TVGame title="La Ghigliottina" hashtag="#leredità" getAttemptsFunction={ getGhigliottinaAttempts } getWinningWordFunction={ getGhigliottinaWord } />,
+        element: <TVGame key="1" title="La Ghigliottina" hashtag="#leredità" getAttemptsFunction={ getGhigliottinaAttempts } getWinningWordFunction={ getGhigliottinaWord } />,
     },
     {
         path: "/catenafinale",
-        element: <TVGame title="Catena Finale" hashtag="#reazioneacatena" getAttemptsFunction={ getCatenaFinaleAttempts } getWinningWordFunction={ getCatenaFinaleWord } />,
+        element: <TVGame key="2" title="Catena Finale" hashtag="#reazioneacatena" getAttemptsFunction={ getCatenaFinaleAttempts } getWinningWordFunction={ getCatenaFinaleWord } />,
     }
 ]
 
