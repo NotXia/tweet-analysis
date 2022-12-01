@@ -5,7 +5,7 @@ async function catenaFinaleWinningWord(req, res) {
     let winning_word = {};
 
     try {
-        winning_word = await WordModel.getWordOfDay(req.query.date, "l'eredita");
+        winning_word = await WordModel.getWordOfDay(req.query.date, "reazione a catena");
 
         if (!winning_word) {
             winning_word = await getWinningWord(req.query.date, "La #parola della #catena finale per #reazioneacatena di oggi è:", "quizzettone");
