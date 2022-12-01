@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
 import Navbar from "../../components/Navbar";
 import TweetGame from "../../components/TweetGame";
+import TweetUser from "../../components/TweetUser";
 import GeolocationMap from "../../components/maps/GeolocationMap";
 import { getGhigliottinaAttempts, getGhigliottinaWord } from "../../modules/games/ghigliottinaGame";
 import moment from "moment";
@@ -86,6 +87,50 @@ class SearchTweets extends React.Component {
                                         </div>
                                     </div>
                                 }
+
+                                <div className="container-fluid mt-2">
+                                    <div className="row">
+                                        {/* Vincitori di oggi */}
+                                        <div className="col-12 col-md-6">
+                                            {
+                                                this.state.date !== "" &&
+                                                <div>
+                                                    <p className="fs-5 fw-bold text-center mb-0">Vincitori di oggi</p>
+                                                    <div className="overflow-auto border rounded border-opacity-100" style={{ height: "50vh" }}>
+                                                    {
+                                                        (() => {
+                                                            if (this.state.winning_word === "") { return <div className="fs-5 d-flex align-items-center text-center h-100">Non è ancora stata annunciata la parola vincente</div>; }
+
+                                                            const winners = this.getWinners();
+
+                                                            if (winners.length === 0) { return <div className="fs-5 d-flex align-items-center text-center h-100">Nessuno ha indovinato la parola di oggi</div>; }
+                                                            else {
+                                                                return (
+                                                                    <ul className="list-group list-group-flush">
+                                                                    {
+                                                                        this.getWinners().map((tweet) => (
+                                                                            <li key={`winner-tweet-${tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
+                                                                                <TweetUser tweet={tweet} />
+                                                                            </li>
+                                                                        ))
+                                                                    }
+                                                                    </ul>
+                                                                )
+                                                            }
+                                                        })()
+                                                    }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        {/* Vincitori di sempre */}
+                                        <div className="col-12 col-md-6">
+
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         {/* Mappa geolocalizzazione */}
@@ -108,24 +153,57 @@ class SearchTweets extends React.Component {
     async searchTweets(date) {
         date = `${date}T00:00:00Z`;
 
-        try {
-            this.setState({ fetching: true }); // Inizio fetching
+        this.setState({ fetching: true }); // Inizio fetching
 
+        // Ricerca tentativi
+        try {
             let tweets_data = await getGhigliottinaAttempts(date);
-            const winning_word = await getGhigliottinaWord(date);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
                 date: date,
-                winning_word: winning_word.word,
                 
-                fetching: false,
-                error_message:""
-            })
+                error_message: ""
+            });
         }
         catch (err) {
             this.setState({ error_message: "Si è verificato un errore durante la ricerca" });
         }
+
+        // Ricerca parola vincente
+        try {
+            const winning_word = await getGhigliottinaWord(date);
+
+            this.setState({ 
+                winning_word: winning_word.word,
+                error_message: ""
+            });
+        }
+        catch (err) {
+            if (err.response.status !== 404) { 
+                this.setState({ error_message: "Si è verificato un errore durante la ricerca della parola vincente" });
+            }
+        }
+
+        this.setState({ fetching: false });
+    }
+
+    getWinners() {
+        if (this.state.winning_word === "") { return []; }
+
+        let winners = [];
+        let winner_username = {};
+        
+        this.state.tweets.forEach((tweet) => {
+            if (tweet.word.toUpperCase() === this.state.winning_word.toUpperCase()) {
+                if (!winner_username[tweet.tweet.username]) {
+                    winners.push(tweet.tweet);
+                    winner_username[tweet.tweet.username] = true;
+                }
+            }
+        });
+
+        return winners;
     }
     
 }
