@@ -3,8 +3,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
 import Navbar from "../../components/Navbar";
-import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js";
-import Tweet from "../../components/Tweet";
+import TweetGame from "../../components/TweetGame";
 import GeolocationMap from "../../components/maps/GeolocationMap";
 import { getGhigliottinaAttempts, getGhigliottinaWord } from "../../modules/games/ghigliottinaGame";
 import moment from "moment";
@@ -58,7 +57,7 @@ class SearchTweets extends React.Component {
                             <div className="list-group border border-white rounded-4">
                             {
                                 this.state.tweets.map((tweet) => (
-                                    <Tweet key={tweet.tweet.id} tweet={tweet.tweet} />
+                                    <TweetGame key={tweet.tweet.id} tweet={tweet.tweet} word={tweet.word} />
                                 ))
                             }
                             </div>
