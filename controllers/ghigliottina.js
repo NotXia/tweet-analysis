@@ -36,7 +36,7 @@ async function gamesGhigliottina(req, res) {
 
     try {
         tweets_response = await TweetModel.cacheGhigliottina(req.query.date);
-        
+
         if (!tweets_response || tweets_response.length === 0) {
             should_cache = true;
             tweets_response = await ghigliottina(req.query.date);
