@@ -19,9 +19,9 @@ export async function getGhigliottinaAttempts(date=moment().utc().startOf("day")
 }
 
 /**
- * Restituisce la parola vincende della #ghigliottina di un dato giorno
+ * Restituisce la parola vincente della #ghigliottina di un dato giorno
  * @param {String} date      Data da cercare in formato ISO 8601
- * @returns {Promise<{word:String, date:String}>}  word parola vincente, date e ora della pubblicazione del tweet con la parola vincente
+ * @returns {Promise<{word:String, date:String}>}  word parola vincente, date data e ora della pubblicazione del tweet con la parola vincente
  */
  export async function getGhigliottinaWord(date=moment().utc().startOf("day").toISOString()) {
     const res = await axios({
