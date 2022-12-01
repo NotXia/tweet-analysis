@@ -9,7 +9,7 @@ import moment from "moment";
  */
 export async function getCatenaFinaleAttempts(date=moment().utc().startOf("day").toISOString()) {
     const res = await axios({
-        method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/catenafinale`,
+        method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/catenaFinale`,
         params: {
             date: moment(date).utc().startOf("day").toISOString()
         }
