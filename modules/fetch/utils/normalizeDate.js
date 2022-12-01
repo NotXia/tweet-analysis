@@ -16,13 +16,11 @@ function _normalizeDate(limit, start_time = '', end_time = '') {
 
     if (start_time != '') {
         start_time = new Date(start_time);
-        today.setHours(0,0,0,0);
         if (start_time <= limit) { start_time = ''; }   // Se la data di inizio è prima del limite massimo di twitter, non viene impostata (quindi é illimitata)
         else if (start_time > today) { throw new Error('Data di inizio non valida') }  // Se la data di inizio è nel futuro, viene lanciato un errore
     }
     if (end_time != '') { 
         end_time = new Date(end_time);
-        today.setHours(23,59,59,999);
         if (end_time >= today) { end_time = ''; }   // Se la data di fine è oggi o nel futuro, non viene impostata (quindi i tweet arriveranno a oggi)
         else if (end_time < limit) { throw new Error('Data di fine non valida') }   // Se la data di fine è prima del limite massimo di twitter, viene lanciato un errore
     }

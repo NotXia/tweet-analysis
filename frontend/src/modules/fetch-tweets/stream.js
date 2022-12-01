@@ -16,7 +16,7 @@ export function connectToStream(filter, onTweet, onConnect=()=>{}, onDisconnect=
     if (!filter || (!filter.username && !filter.keyword)) { throw new Error("Parametri di ricerca mancanti"); }
     if (!onTweet) { throw new Error("Non è stata indicata nessuna operazione da eseguire all'arrivo dei tweet"); }
     
-    const socketIO = io(`/tweets/stream`, { path: `${process.env.REACT_APP_BASE_PATH}/socket.io` });
+    const socketIO = io(`${process.env.REACT_APP_SOCKET_PATH}/tweets/stream`, { path: `${process.env.REACT_APP_BASE_PATH}socket.io` });
 
     socketIO.on("connect", async () => {
         socketIO.emit("tweet.stream.init", filter, (res) => {

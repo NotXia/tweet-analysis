@@ -21,8 +21,8 @@ module.exports = {
  * @param {number} quantity                     Quantità di tweet da visualizzare (facoltativo, 10 di default)
  * @param {number} start_time                   Data minima dei tweet da ottenere (facoltativo)
  * @param {number} end_time                     Data massima dei tweet da ottenere (facoltativo)
- * @returns {[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
- *          location: {id: string, full_name: string, country: string, coords: {long: number, lat: number}}, media: [{url: string, type: string}]}], next_token: string}
+ * @returns {Promise<[{id: number, name:string, username: string, pfp: string, text: string, time: string, likes: number, comments: number, retweets: number, 
+ *          location: {id: string, full_name: string, country: string, coords: {long: number, lat: number}}, media: [{url: string, type: string}]}], next_token: string>}
  *          Array di tweet aventi ciascuno:
  *          ID del tweet, Nome dell'utente, Username (@), link alla foto profilo dell'utente, contenuto del tweet, data e ora, numero di like, numero di commenti, 
  *          numero di retweet, posizione del tweet (se abilitata), array di media (se presenti, altrimenti array vuoto)
@@ -33,7 +33,7 @@ async function getTweetsByUser(username, pagination_token ="", quantity=10, star
 
     //Chiamate alle API per ottenere l'utente e i relativi tweet
     const resUsr = await _usr_fetch(username);
-    if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'usarname esiste
+    if (!resUsr) {throw new Error("Username non esistente o errore nel recuperare l'utente");}                    //Controlla se l'username esiste
     const resTwts = await _twt_fetch(username, pagination_token, quantity, start_time, end_time);
     if (!resTwts.data) {throw new Error('Pagination token non esistente o errore nel recuperare i tweet');}       //Controlla se il pagination token esiste    
 
@@ -143,9 +143,9 @@ async function _twt_fetch(username, pagination_token = '', quantity = 10, start_
     try {
         response = await axios.get(`https://api.twitter.com/2/tweets/search/all`, options);
     } catch (err) {
-        if (err.response.data.status === 429) {
+        if (err.response?.data?.status === 429) {
             await new Promise(r => setTimeout(r, 1000));
-            return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+            return _twt_fetch(username, pagination_token, quantity, start_time, end_time);
         }
         return null;
     }

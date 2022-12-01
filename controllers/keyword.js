@@ -17,8 +17,10 @@ async function tweetsByKeyword(req, res) {
         next_token: tweets_response.next_token
     });
 
-    // Caching tweet
-    await Promise.all(tweets_response.tweets.map(async (tweet) => await TweetModel.cacheTweet(tweet)));
+    if (!process.env.NODE_ENV.includes("testing")) {
+        // Caching tweet
+        await Promise.all(tweets_response.tweets.map(async (tweet) => TweetModel.cacheTweet(tweet)));
+    }
 }
 
 module.exports = {
