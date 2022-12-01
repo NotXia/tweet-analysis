@@ -65,7 +65,6 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
     }
     catch (err) {
         if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Tweet già salvato
-        console.log(err);
         throw err;
     }
 };
@@ -78,7 +77,7 @@ tweet_scheme.statics.cacheGhigliottina = async function(date) {
         return tweets;
     }
     catch (err) {
-        throw err;
+        return null;
     }
 };
 
