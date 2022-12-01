@@ -20,7 +20,6 @@ const user_router = require("./routes/user.js");
 const keyword_router = require("./routes/keyword.js");
 const games_router = require("./routes/games.js");
 
-
 const { initSocket } = require("./sockets/init.js");
 
 
