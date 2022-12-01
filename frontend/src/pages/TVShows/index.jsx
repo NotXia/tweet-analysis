@@ -6,7 +6,6 @@ import Navbar from "../../components/Navbar";
 import TweetGame from "../../components/TweetGame";
 import TweetUser from "../../components/TweetUser";
 import GeolocationMap from "../../components/maps/GeolocationMap";
-import { getGhigliottinaAttempts, getGhigliottinaWord } from "../../modules/games/ghigliottinaGame";
 import moment from "moment";
 
 /**
@@ -72,18 +71,33 @@ class SearchTweets extends React.Component {
                                     <form className="align-items-start">
                                         {/* Data */}
                                         <div>
-                                            <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "1.2rem" }} htmlFor="date">Data</label>
-                                            <input className="form-control" id="date" type="date" style={{ fontSize: "1.6rem" }}
-                                                min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { this.searchTweets(e.target.value) }}/>
+                                            <div className="d-flex align-items-end justify-content-center">
+                                                <div className={`mb-2 me-2 ${this.state.fetching ? "" : "d-none"}`}>
+                                                    <div className="spinner-grow" role="status">
+                                                        <span className="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "1.2rem" }} htmlFor="date">Data</label>
+                                                    <input className="form-control" id="date" type="date" style={{ fontSize: "1.6rem" }}
+                                                        min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { this.searchTweets(e.target.value) }}
+                                                        disabled={this.state.fetching} />
+                                                </div>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
 
+                                {/* Parola del giorno */}
                                 {
                                     this.state.winning_word !== "" &&
-                                    <div className="d-flex justify-content-center mt-2">
-                                        <div className="border rounded fs-3 p-2 px-4">
-                                            { this.state.winning_word }
+                                    <div>
+                                        <p className="fs-5 fw-bold text-center mb-0 mt-2">Parola di oggi</p>
+                                        <div className="d-flex justify-content-center">
+                                            <div className="border rounded fs-3 p-2 px-4">
+                                                { this.state.winning_word }
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -108,7 +122,7 @@ class SearchTweets extends React.Component {
                                                                 return (
                                                                     <ul className="list-group list-group-flush">
                                                                     {
-                                                                        winners.map((tweet) => (
+                                                                        winners.reverse().map((tweet) => (
                                                                             <li key={`winner-tweet-${tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
                                                                                 <TweetUser tweet={tweet} />
                                                                             </li>
@@ -153,20 +167,27 @@ class SearchTweets extends React.Component {
     async searchTweets(date) {
         date = `${date}T00:00:00Z`;
 
-        this.setState({ fetching: true }); // Inizio fetching
+        // Inizio fetching
+        this.setState({ 
+            fetching: true, error_message: "",
+            tweets: [],
+            date: "",
+            winning_word: "",
+        });
 
         // Ricerca tentativi
         try {
             let tweets_data = await this.props.getAttemptsFunction(date);
+            tweets_data = tweets_data.tweets;
+            tweets_data.sort((t1, t2) => moment(t2.tweet.time).diff(moment(t1.tweet.time)));
 
             this.setState({ 
-                tweets: tweets_data.tweets,
-                date: date,
-                
-                error_message: ""
+                tweets: tweets_data,
+                date: date
             });
         }
         catch (err) {
+            console.log(err)
             this.setState({ error_message: "Si è verificato un errore durante la ricerca" });
         }
 
@@ -176,7 +197,6 @@ class SearchTweets extends React.Component {
 
             this.setState({ 
                 winning_word: winning_word.word,
-                error_message: ""
             });
         }
         catch (err) {
