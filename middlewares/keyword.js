@@ -13,14 +13,12 @@ const tweetsByKeyword = [
         if (!req.query.start_time)  { req.query.start_time = ''; }
         if (!req.query.end_time)    { req.query.end_time = ''; }
 
-        let today = new Date();
-        let aweekago = new Date(moment(today).subtract(7, 'days'));
+        const limit = new Date('2006-03-26T00:00:01Z');
 
         // Se la data di inizio è nel futuro
         try { date_validator.isFuture(req.query.start_time); } catch (error) { errors.start_time = error.message; }
 
-        // Se la data di fine è prima del limite
-        try { date_validator.isBeforeLimit(req.query.end_time, aweekago); } catch (error) { errors.end_time = error.message; }
+        try { date_validator.isBeforeLimit(req.query.end_time, limit); } catch (error) { errors.end_time = error.message; }
 
         //Se la data di fine è prima della data di inizio
         try { date_validator.isEndBeforeStart(req.query.start_time, req.query.end_time); } catch (error) { errors.dates = error.message }

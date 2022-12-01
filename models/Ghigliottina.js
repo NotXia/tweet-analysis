@@ -60,7 +60,7 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
                 location: tweet.tweet.location,
                 media: tweet.tweet.media
             },
-            word: tweet.tweet.word
+            word: tweet.word
         }).save();
     }
     catch (err) {

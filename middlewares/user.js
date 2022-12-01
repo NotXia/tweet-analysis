@@ -11,7 +11,7 @@ const tweetsByUser = [
         if (!req.query.start_time)  { req.query.start_time = ''; }
         if (!req.query.end_time)    { req.query.end_time = ''; }
 
-        const limit = new Date('2010-11-06T00:00:01Z');
+        const limit = new Date('2006-03-26T00:00:01Z');
 
         // Se la data di inizio è nel futuro
         try { date_validator.isFuture(req.query.start_time); } catch (error) { errors.start_time = error.message; }
