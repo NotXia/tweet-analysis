@@ -2,7 +2,8 @@ const { getTweetsByKeyword } = require("../fetch/keyword.js");
 const moment = require("moment");
 
 module.exports = {
-    ghigliottina: ghigliottina
+    ghigliottina: ghigliottina,
+    catenaFinale: catenaFinale
 };
 
 /**
@@ -14,13 +15,36 @@ module.exports = {
  * @return Una pagina contenente i tweet inerenti
  */
 async function ghigliottina(date) {
+    return await _getUserAttempts(date, "#leredita");
+}
+
+/**
+ * Funzione gestore per i tweet per reazione a catena.
+ * Se la data è oggi, vengono restituiti i tweet dei partecipanti che hanno provato fino al momento della richiesta.
+ * Se è nel passato, vengono restituiti tutti i tweet dei partecipanti della data richiesta.
+ * Errore altrimenti.
+ * @param {String} date la data richiesta
+ * @return Una pagina contenente i tweet inerenti
+ */
+async function catenaFinale(date) {
+    return await _getUserAttempts(date, "#reazioneacatena");
+}
+
+
+/**
+ * Restituisce i tweet di chi prova a indovinare un dato gioco
+ * @param {String} date     Data dei tentativi (formato ISO)
+ * @param {String} query    Query da usare per individuare i tentativi
+ * @returns {Promise<[{tweet:Object, word:string}]>} Tweet di chi prova a indovinare
+ */
+ async function _getUserAttempts(date, query) {
     let fetchedTweets = [];
     
     const today = moment().utc().startOf("day");
     const testdate = moment(date).utc().startOf("day");
 
     if(testdate <= today) {
-        fetchedTweets = await _ghigliottinaTweetsFetcher(date);
+        fetchedTweets = await _tweetsFetcher(date, query);
     }
     else {
         throw new Error("Data nel futuro");
@@ -29,12 +53,13 @@ async function ghigliottina(date) {
     return fetchedTweets;
 }
 
+
 /**
  * Funzione che recupera i tweet di coloro che hanno provato ad indovinare la ghigliottina di una determinata data nel passato.
  * @param {String} date data dove si vogliono recuperare i tweet
  * @return {Promise<[{tweet:Object, word:string}]>} I tweet recuperati
  */
-async function _ghigliottinaTweetsFetcher(date) {
+async function _tweetsFetcher(date, query) {
     let start_date = moment(date).utc().startOf("day").toISOString();
     let end_date = moment(date).utc().endOf("day").toISOString();
     
@@ -46,17 +71,17 @@ async function _ghigliottinaTweetsFetcher(date) {
             let currentFetch;
 
             if(isToday) 
-                currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date);
+                currentFetch = await getTweetsByKeyword(query, pagination_token, 100, start_date);
             else 
-                currentFetch = await getTweetsByKeyword("#leredita", pagination_token, 100, start_date, end_date);
+                currentFetch = await getTweetsByKeyword(query, pagination_token, 100, start_date, end_date);
             
             for(const tweet of currentFetch.tweets) {                     //Per tutti i tweet ricevuti controlla se sono qualificabili al gioco
-                if(_isEligible(tweet.text)) {                             //Se il tweet è qualificabile viene immesso nell'array di output
+                if(_isEligible(tweet.text, query)) {                             //Se il tweet è qualificabile viene immesso nell'array di output
                     tweet.text = _normalizeText(tweet.text);
                     const phrase = tweet.text.split(" ");
                     out.push({
                         tweet: tweet,
-                        word: (phrase[0] === "#leredita" ? phrase[1].replace(/[!?@#$%^&*]/g, "") : phrase[0].replace(/[!?@#$%^&*]/g, ""))
+                        word: (phrase[0] === query ? phrase[1] : phrase[0]).replace(/[!?@#$%^&*]/g, "")
                     });
                 }
             }
@@ -78,9 +103,9 @@ async function _ghigliottinaTweetsFetcher(date) {
  * @param {String} text testo da controllare
  * @returns {boolean} true se il testo soddisfa i requisiti, false altrimenti
  */
-function _isEligible(text) {
+function _isEligible(text, query) {
     let tmp_text = _normalizeText(text).split(" ");
-    return tmp_text.length === 2 && (tmp_text[0] === "#leredita" || tmp_text[1] === "#leredita");
+    return tmp_text.length === 2 && (tmp_text[0] === query || tmp_text[1] === query);
 }
 
 /**
