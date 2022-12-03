@@ -1,6 +1,7 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
+const moment = require("moment");
 
 
 /**
@@ -63,7 +64,7 @@ function userAttempts(tweet_fetcher, game_name) {
     
         if (!process.env.NODE_ENV.includes("testing")) {
             // Caching tweet
-            if (should_cache) {
+            if (should_cache || moment(req.query.date).isSame(moment(), "day")) { // Prova sempre a fare caching dei tweet di oggi
                 await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
             }
         }
