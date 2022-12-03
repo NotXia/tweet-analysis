@@ -2,7 +2,7 @@ require("dotenv").config();
 const moment = require('moment');
 moment().format();
 
-const { ghigliottina } = require("../../modules/games/ghigliottina.js")
+const { ghigliottina } = require("../../modules/games/userAttempts")
 
 
 jest.setTimeout(60000);

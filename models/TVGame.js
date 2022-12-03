@@ -1,11 +1,13 @@
 require('dotenv').config();
 const mongoose = require("mongoose");
 const consts = require("./utils/consts.js");
+const moment = require("moment");
 
 
 const tweet_scheme = mongoose.Schema ({
     _id: { type: String, required: true },
     date: String,
+    game: String,
     tweet: {
         id: { type: String, required: true },
         name: String,
@@ -39,14 +41,17 @@ const tweet_scheme = mongoose.Schema ({
 /**
  * Gestisce il salvataggio di un tweet
  * @param {Object} tweet    Tweet da salvare
+ * @param {String} game     Nome del gioco
+ * @param {String} date     Giorno del tweet (in formato ISO)
  */
-tweet_scheme.statics.cacheTweet = async function(tweet, date) {
+tweet_scheme.statics.cacheTweet = async function(tweet, game, date) {
     if (process.env.NODE_ENV.includes("testing")) { return; }
 
     try {
         await new this({
             _id: tweet.tweet.id,
-            date: date,
+            date: moment(date).utc().startOf("day").toISOString(),
+            game: game,
             tweet: {
                 id: tweet.tweet.id,
                 name: tweet.tweet.name,
@@ -69,11 +74,16 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
     }
 };
 
-tweet_scheme.statics.cacheCatenaFinale = async function(date) {
+/**
+ * Estrae i tweet di un dato gioco in un dato giorno
+ * @param {String} game     Nome del gioco
+ * @param {String} date     Giorno del gioco (in formato ISO)
+ */
+tweet_scheme.statics.getCache = async function(game, date) {
     if (process.env.NODE_ENV.includes("testing")) { return null; }
 
     try {
-        let tweets = await this.find({ date: date });
+        let tweets = await this.find({ date: moment(date).utc().startOf("day").toISOString(), game: game });
         return tweets;
     }
     catch (err) {
@@ -82,4 +92,4 @@ tweet_scheme.statics.cacheCatenaFinale = async function(date) {
 };
 
 
-module.exports = mongoose.model("tweets_catenaFinale", tweet_scheme);
+module.exports = mongoose.model("tvgame_tweets", tweet_scheme);
