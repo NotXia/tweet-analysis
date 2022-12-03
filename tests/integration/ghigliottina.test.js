@@ -5,7 +5,8 @@ moment().format();
 const { ghigliottina } = require("../../modules/games/userAttempts")
 
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
+afterEach(async () => { await new Promise(r => setTimeout(r, 1000)); });
 
 
 describe("Test ricerca tweet della ghigliottina idonei", function() {

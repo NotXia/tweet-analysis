@@ -4,7 +4,9 @@ moment().format();
 
 const { getWinningWord } = require("../../modules/games/winningWord.js");
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
+afterEach(async () => { await new Promise(r => setTimeout(r, 1000)); });
+
 
 describe("Test ricerca tweet con parola vincente", function () {
     test("Ricerca parola del passato", async function () {
