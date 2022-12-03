@@ -6,7 +6,8 @@ moment().format();
 const { getTweetsByKeyword } = require("../../modules/fetch/keyword.js");
 
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
+afterEach(async () => { await new Promise(r => setTimeout(r, 1000)); });
 
 
 let today = new Date();
