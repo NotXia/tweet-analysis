@@ -5,7 +5,7 @@ import nock from "nock";
 
 moment().format();
 
-const { catenaFinale } = require("../../modules/games/catenaFinale.js");
+const { catenaFinale } = require("../../modules/games/userAttempts.js");
 
 describe("Test modulo catenaFinale", function() {
     test("Catena finale di una data del passato", async function () {
