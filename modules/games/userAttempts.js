@@ -15,7 +15,7 @@ module.exports = {
  * @return Una pagina contenente i tweet inerenti
  */
 async function ghigliottina(date) {
-    return await _getUserAttempts(date, "#leredita");
+    return _getUserAttempts(date, "#leredita");
 }
 
 /**
@@ -27,7 +27,7 @@ async function ghigliottina(date) {
  * @return Una pagina contenente i tweet inerenti
  */
 async function catenaFinale(date) {
-    return await _getUserAttempts(date, "#reazioneacatena");
+    return _getUserAttempts(date, "#reazioneacatena");
 }
 
 

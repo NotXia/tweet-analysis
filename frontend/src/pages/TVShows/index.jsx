@@ -115,14 +115,14 @@ class SearchTweets extends React.Component {
                                                         (() => {
                                                             if (this.state.winning_word === "") { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Non è ancora stata annunciata la parola vincente</div>; }
 
-                                                            const winners = this.getWinners();
+                                                            const winners = this.getWinners().reverse();
 
                                                             if (winners.length === 0) { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Nessuno ha indovinato la parola di oggi</div>; }
                                                             else {
                                                                 return (
                                                                     <ul className="list-group list-group-flush">
                                                                     {
-                                                                        winners.reverse().map((tweet) => (
+                                                                        winners.map((tweet) => (
                                                                             <li key={`winner-tweet-${tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
                                                                                 <TweetUser tweet={tweet} />
                                                                             </li>
