@@ -165,6 +165,8 @@ class SearchTweets extends React.Component {
      * Funzione richiamata al submit del form
      */
     async searchTweets(date) {
+        if (date === "") { return this.setState({ error_message: "", tweets: [], date: "", winning_word: "" }); }
+
         date = `${date}T00:00:00Z`;
 
         // Inizio fetching
