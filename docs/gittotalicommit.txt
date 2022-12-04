@@ -6,5 +6,13 @@
     22	Tian Cheng Xia <tiancheng.xia@studio.unibo.it>
     10	Henry Lee <qunhaohaohenry.lee@studio.unibo.it>
      1	Manuel Paris <manuelparis1111@gmail.com>
-co-authored commits:
-505
+co-authored commits:506
+Co-author list:    Co-authored-by: Lee Henry <qunhaohaohenry.lee@studio.unibo.it>
+    Co-authored-by: Manuel Paris <Malteon@users.noreply.github.com>
+    Co-authored-by: Manuel Paris <manuel.paris@studio.unibo.it>
+    Co-authored-by: Qun Hao Henry Lee <qunhaohaohenry.lee@studio.unibo.it>
+    Co-authored-by: Tian Cheng Xia <NotXia@users.noreply.github.com>
+    Co-authored-by: Tian Cheng Xia <tiancheng.xia@studio.unibo.it>
+    Co-authored-by: Zaid Cheikh Ibrahim <zaid.cheikhibrahim@studio.unibo.it>
+    Co-authored-by: Zaid Cheikh <zaid.cheikhibrahim@studio.unibo.it>
+    Co-authored-by: Zaid <Zaid1710@users.noreply.github.com>

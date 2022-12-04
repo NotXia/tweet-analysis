@@ -1,0 +1,19 @@
+SONO PRESENTI DUE SOTTOPROGETTI - METTERO' I COMMENTI SOLO SU QUESTO 
+LE STATISTICHE SONO SEPARATE
+
+
+13 novembre
+ok
+taiga(in uso)
+mattermost in uso
+
+4 dicembre
+
+elevatissimo numero di commit con uso frequente di PP con partecipazione, in misura diversa di tutti 
+Compare SQ in un progetto (non nell'altro)
+Test presenti nel frontend, molto approfonditi
+Tauga presente ma non utilizzato per la progettazione, solo per il wiki (che si affianca a quello di gitlab)
+mattermost abbastanza utilizzato
+Documentazioni generale?
+ 
+
