@@ -1,4 +1,3 @@
-require("dotenv").config();
 const stopword = require("stopword");
 const stopwordsiso  = require("stopwords-iso");
 const getCountryISO3 = require("country-iso-2-to-3");

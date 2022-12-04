@@ -1,36 +1,64 @@
 import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Helmet } from 'react-helmet'
-import Navbar from "../../components/Navbar"
-import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js"
-import { hashtagSearchTweet } from "../../modules/fetch-tweets/search_hashtag.js"
-import Tweet from "../../components/Tweet"
+import { Helmet } from 'react-helmet';
+import Navbar from "../../components/Navbar";
+import { userSearchTweet } from "../../modules/fetch-tweets/search_user.js";
+import { keywordSearchTweet } from "../../modules/fetch-tweets/search_keyword.js";
+import Tweet from "../../components/Tweet";
 import SentimentPie from "../../components/graphs/SentimentPie";
 import TweetsTimeChart from "../../components/graphs/TweetsTimeChart";
 import WordCloud from "../../components/graphs/WordCloud";
+import GeolocationMap from "../../components/maps/GeolocationMap";
+import moment from "moment";
+import { connectToStream } from "../../modules/fetch-tweets/stream"
+import live_dot_css from "./live-dot.module.css";
+
+/**
+ * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
+ */
+const today = new Date();
+const date = (today.toISOString()).split("T");
+
+const __max_date_limit = date[0];
+const __min_date_limit = "2006-03-26";
+
 
 class SearchTweets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tweets: [],
-            query: "",
-            page: "",
-            next_page: "",
+            tweets: [],                             // Array dei tweet
+            query: "",                              // Ricerca          
+            next_page: "",                          // Chiave alla prossima pagina di ricerca
+            quantity: 0,                            // Numero di ricerche da effettuare
+            start_date: "",                         // Data di inizio da dove cercare
+            end_date: "",                           // Data di fine
 
-            fetching: false, // Indica se attualmente si sta richiedendo dei tweet
+            fetching: false,                        // Indica se attualmente si sta richiedendo dei tweet
 
+            stream_state: "off",                    // Indica lo stato dello stream di tweet ["off", "loading", "live"]
+
+            limited_min_date: __min_date_limit,     // Limite minimo imposto per tipo di ricerca
+            select_min_date: __min_date_limit,      // Limite minimo attuale della data
+            select_max_date: __max_date_limit,      // Limite massimo attuale della data (a init: data di oggi)
             error_message: ""
         };
 
-        this.input = {
-            query: React.createRef()
+        this.tweets_buffer = [];
+        this.stream_socket = null;
+
+        this.input = {          // Dati presi quando si submitta il form
+            query: React.createRef(),
+            quantity: React.createRef(),
+            start_date: React.createRef(),
+            end_date: React.createRef()
         }
     }
 
     render() {
         return (<>
+            
             <Helmet>
                 <title>Ricerca tweet</title>
             </Helmet>
@@ -47,51 +75,116 @@ class SearchTweets extends React.Component {
                     </div>
 
                     <div className="row my-2">
-                        <div className="col-12 order-2 col-md-6 order-md-1 col-lg-4">
-                            <div className="list-group ">
-                                {
-                                    this.state.tweets.map((tweet) => (
-                                        <Tweet key={tweet.id} tweet={tweet} />
-                                    ))
-                                }
-                                { this.nextPageButton() }
+                        {/* Tweet fetchati */}
+                        <div className="col-12 order-3 col-md-6 order-md-1 col-lg-3">
+                            <div className="list-group border border-white rounded-4">
+                            {
+                                this.state.tweets.map((tweet) => (
+                                    <Tweet key={tweet.id} tweet={tweet} />
+                                ))
+                            }
+                            { this.nextPageButton() }
                             </div>
                         </div>
 
-                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-8">
+                        <div className="col-12 order-1 col-md-6 order-md-2 col-lg-6">
                             <div className="sticky-top">
                                 {/* Barra di ricerca */}
                                 <div className="d-flex justify-content-center w-100 p-2">
-                                    <div className="col-12 col-md-6 col-lg-4 mt-4">
+                                    <div className="col-12 col-md-10 col-lg-8 mt-4 border border-grey rounded-4 p-3">
+                                        {/* Stato della live */}
+                                        <div className={`text-center mb-1 ${this.state.stream_state === "on" ? "d-block" : "d-none"}`}>
+                                            <div className={`${live_dot_css["live-dot"]} me-2`}></div><span className="fw-semibold">Live</span>
+                                        </div>
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
-                                            <div className="input-group flex-nowrap">
-                                                <input ref={this.input.query} className="form-control" type="text" placeholder="Ricerca" aria-label="Username" />
-                                                <button className="btn btn-outline-secondary" type="submit" id="button-addon1">Cerca</button>
+                                            {/* Barra primaria - Query */}
+                                            <div className="input-group flex">
+                                                <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" required />
+                                                {/* Bottone per avviare stream di tweet */}
+                                                <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
+                                                    {
+                                                        (() => {
+                                                            switch (this.state.stream_state) {
+                                                                case "on": return (<span>Ferma</span>);
+                                                                case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
+                                                                case "off": 
+                                                                default:
+                                                                    return (<span>Live</span>);
+                                                            }
+                                                        })()
+                                                    }
+                                                </button>
+                                                {/* Bottone per la ricerca */}
+                                                <button className="btn btn-outline-secondary" disabled={this.state.stream_state === "on"} type="submit" id="button-addon1">Cerca</button>
                                             </div>
-                                            <p className="ms-1" style={{ fontSize: "0.9rem" }}>Ricerca per hashtag (#) o nome utente (@)</p>
+                                            <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
+                                            <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
+                                            {/* Opzioni avanzate */}
+                                            <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} style={{ cursor: "pointer" }} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
+                                            <div className={`collapse ${this.state.stream_state === "on" ? "d-none" : ""}`} id="advancedOptions">
+                                                <div className="row justify-content-between align-items-center">
+                                                    {/* Numero di ricerche */}
+                                                    <div className="col-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }}
+                                                                defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
+                                                    </div>
+                                                    {/* Data di inizio */}
+                                                    <div className="col-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="start_date">Data di inizio</label>
+                                                            <input ref={this.input.start_date} className="form-control" id="start_date" type="date" style={{ fontSize: "0.80rem" }}
+                                                                min={__min_date_limit} max={this.state.select_max_date} 
+                                                                onChange={ (e) => this.setState({ select_min_date: (e.target.value!==""? e.target.value : __min_date_limit) }) } />
+                                                    </div>
+                                                    {/* Data di fine */}
+                                                    <div className="col-12 col-lg-4">
+                                                        <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="end_date">Data di fine</label>
+                                                        <input ref={this.input.end_date} className="form-control" id="end_date" type="date" style={{ fontSize: "0.80rem" }}
+                                                                min={this.state.select_min_date} max={__max_date_limit} 
+                                                                onChange={ (e) => this.setState({ select_max_date: (e.target.value!==""? e.target.value : __max_date_limit) }) }/>
+                                                    </div>
+                                                </div>
+                                                <p className="small text-muted m-0 ms-1 mt-2" style={{ fontSize: "0.7rem" }}>Cambiando il numero di ricerche cambia il numero di tweet fetchati per la prossima pagina</p>    
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
 
-                                {/* Carica tweet */}
-                                <div className="d-flex justify-content-center w-100 p-2">
-                                    { this.nextPageButton() }
-                                </div>
-
-                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`}>
+                                {/* Bottone Prossima pagina */}
+                                <div>
+                                    <p className={this.state.tweets.length === 0 ? "d-none":"small text-center m-0 mt-1"} ><mark>Attualmente mostrati: <strong>{this.state.tweets.length}</strong> tweet</mark></p>
                                     <div className="d-flex justify-content-center w-100 p-2">
-                                        <div style={{ height: "20rem", width: "100%" }}>
+                                        { this.nextPageButton() }
+                                    </div>
+                                </div>
+                                
+                                {/* Grafici */}
+                                <div className={`${this.state.tweets.length === 0 ? "invisible" : "mt-3 p-2 border border-light rounded-4"}`}>
+                                    <div className="d-flex justify-content-center w-100 p-2">
+                                        <div className="px-2" style={{ height: "30vh", width: "100%" }}>
                                             <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center w-100">
-                                        <div style={{ height: "20rem", width: "30%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
-                                        <div className="d-flex justify-content-center" style={{ height: "20rem", width: "70%" }}>
+                                        <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <WordCloud tweets={this.state.tweets} />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-12 order-2 col-md-6 order-md-2 col-lg-3">
+                            <div className="sticky-top">
+                                <div className={`${this.state.tweets.length === 0 ? "d-none" : ""}`} style={{height: "97vh"}}>
+                                    {
+                                        (this.state.query && this.state.query[0] !== "@") ?
+                                            <GeolocationMap tweets={this.state.tweets} cluster={true} connect={false} /> // Mappa per keyword
+                                        :
+                                            <GeolocationMap tweets={this.state.tweets} cluster={false} connect={true} /> // Mappa per utenti
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -102,17 +195,33 @@ class SearchTweets extends React.Component {
         </>);
     }
 
+    /**
+     * Funzione richiamata al submit del form
+     */
     async searchTweets(e) {
-        e.preventDefault()
-        
+        e.preventDefault();
+    
         try {
+            this.disconnectStream(); // Disconnette l'eventuale stream attualmente in corso
+
             const query = this.input.query.current.value.trim();
-            let tweets_data = await this.fetchTweets(query);
+            const quantity = parseInt(this.input.quantity.current.value.trim());
+            const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
+            let end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
+            this.tweets_buffer = [];
+
+            // Se la data di fine supera la data odierna, viene impostata la data odierna (10 secondi sottratti per necessità delle API di Twitter)
+            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().format(); } 
+
+            let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
             this.setState({ 
                 tweets: tweets_data.tweets,
                 query: query,
+                quantity: quantity,
                 next_page: tweets_data.next_token,
+                start_date: start_date,
+                end_date: end_date,
                 error_message:""
             })
         }
@@ -121,20 +230,25 @@ class SearchTweets extends React.Component {
         }
     }
 
+    /**
+     * Richiede la prossima pagina della ricerca
+     */
     async fetchNextPage(e) {
         e.preventDefault()
 
         try {
             const query = this.state.query;
+            const quantity = parseInt(this.input.quantity.current.value.trim());
+            const start_date = this.state.start_date;
+            const end_date = this.state.end_date;
             
             if(this.state.next_page==="") {
                 return;
             }
-            let tweets_data = await this.fetchTweets(query, this.state.next_page);
+            let tweets_data = await this.fetchTweets(query, this.state.next_page, quantity, start_date, end_date);
     
             this.setState({ 
                 tweets: this.state.tweets.concat(tweets_data.tweets),
-                page: this.state.next_page,
                 next_page: tweets_data.next_token,
                 error_message:""
             })
@@ -144,26 +258,69 @@ class SearchTweets extends React.Component {
         }
     }
 
-    async fetchTweets(query, next_token="") {
-        let tweets_data = { tweets: [], next_token: "" };
+    /**
+     * Ricerca i tweet inerenti alla richiesta
+     * @param {string} query                Username o hashtag della ricerca
+     * @param {string} next_token           Token da dove iniziare la ricerca (default "")
+     * @param {number} quantity             Numero di tweet da ricercare (default 10)
+     * @param {string} start_date           Data inizio di ricerca
+     * @param {string} end_date             Data finale di ricerca
+     * @returns {Promise <object[]>}        Array dei tweet trovati
+     */
+    async fetchTweets(query, next_token="", quantity=10, start_date="", end_date="") {
+        quantity = parseInt(quantity);
+
+        let fetched_tweets = [];
+        let tweets_data = { 
+            tweets: [],
+            next_token: "",
+            quantity:undefined,
+            start_date: "",
+            end_date: ""
+        };
         
         this.setState({ fetching: true }); // Inizio fetching
 
-        if (query[0] === "@") { 
-            tweets_data = await userSearchTweet(query, next_token); 
+        // Estrae dal buffer eventuali tweet salvati
+        if (this.tweets_buffer.length > 0) {
+            fetched_tweets = this.tweets_buffer.slice(0, quantity);     // Estrae dal buffer
+            this.tweets_buffer = this.tweets_buffer.slice(quantity);    // Aggiorna buffer
+            quantity -= fetched_tweets.length;                          // Aggiorna quantità mancante
         }
-        else if (query[0] === "#") { 
-            tweets_data = await hashtagSearchTweet(query, next_token);
+
+        // Se il buffer non soddisfa la richiesta
+        if (quantity > 0) {
+            if (query[0] === "@") { 
+                tweets_data = await userSearchTweet(query, next_token, quantity, start_date, end_date); 
+            }
+            else if (query !== "") { 
+                tweets_data = await keywordSearchTweet(query, next_token, quantity, start_date, end_date);
+            }
+
+            if (tweets_data.tweets.length > quantity) { // Salva nel buffer i tweet in eccesso
+                this.tweets_buffer = this.tweets_buffer.concat(tweets_data.tweets.slice(-(tweets_data.tweets.length-quantity)))
+                
+                // Rimuove i tweet in eccesso
+                fetched_tweets = fetched_tweets.concat(tweets_data.tweets.slice(0, quantity));
+            }
+            else { // I tweet sono nella quantità esatta
+                fetched_tweets = fetched_tweets.concat(tweets_data.tweets);
+            }
+        }
+        else {
+            tweets_data.next_token = next_token; // Mantiene il token salvato se la richiesta è totalmente soddisfatta dal buffer
         }
 
         this.setState({ fetching: false }); // Termine fetching
 
+        tweets_data.tweets = fetched_tweets;
         return tweets_data;
     }
 
+
     nextPageButton() {
         return (
-            <button className={this.state.next_page===""? "d-none":"btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
+            <button className={(this.state.next_page==="" || this.state.stream_state === "on") ? "d-none" : "btn btn-outline-secondary"} onClick={(e) => { this.fetchNextPage(e) }} disabled={this.state.fetching}>
             {
                 (() => {
                     if (this.state.fetching) {
@@ -175,13 +332,68 @@ class SearchTweets extends React.Component {
                         )
                     }
                     else {
-                        return <span>Prossima pagina</span>
+                        return <span>Prossima pagina ({this.state.quantity})</span>
                     }
                 })()
             }
             </button>
         )
     }
+
+
+    handleTweetStream() {
+        this.setState({ stream_state: "loading" });
+
+        if (this.state.stream_state === "off") {
+            this.connectStream();
+        }
+        else {
+            this.disconnectStream();
+        }
+    }
+
+    /* Gestisce la connessione allo stream di tweet */
+    connectStream() {
+        const query_string = this.input.query.current.value;
+        let query = {};
+
+        if (!query_string || query_string === "") { return this.setState({ stream_state: "off" }); }
+
+        // Resetta la pagina se la query è cambiata
+        this.setState({ 
+            tweets: [], 
+            query: query_string,
+            next_page: ""
+        }); 
+
+        // Composizione query
+        if (query_string[0] === "@") { query.username = query_string; }
+        else { query.keyword = query_string; }
+
+        // Inizializzazione funzioni per gestire gli eventi
+        const onTweet = (tweet) => {
+            let tweets = this.state.tweets.slice();
+            tweets.unshift(tweet);
+            this.setState({ tweets: tweets });
+        };
+        const onConnect = () => { this.setState({ stream_state: "on" }) };
+        const onDisconnect = () => { this.disconnectStream() };
+        const onError = () => {
+            this.setState({ error_message: "Si è verificato un errore durante la connessione" });
+            this.disconnectStream(); 
+        };
+        
+        // Connessione allo stream
+        this.stream_socket = connectToStream(query, onTweet, onConnect, onDisconnect, onError);
+    }
+
+    /* Gestisce la disconnessione dallo stream di tweet */
+    disconnectStream() {
+        this.stream_socket?.disconnect();
+        this.stream_socket = null;
+        this.setState({ stream_state: "off" });
+    }
+    
 }
 
 export default SearchTweets;

@@ -17,7 +17,7 @@ pipeline {
             stages {
                 stage("Installing dependencies") {
                     steps {
-                        sh "npm install --force"
+                        sh "npm install"
                     }
                     post {
                         failure { updateGitlabCommitStatus name: "Installing test dependencies", state: "failed" }
@@ -110,6 +110,26 @@ pipeline {
             post {
                 success { updateGitlabCommitStatus name: "Development deploy", state: "success" }
                 failure { updateGitlabCommitStatus name: "Development deploy", state: "failed" }
+            } 
+        }
+
+        stage("Integration tests") { 
+            steps {
+                updateGitlabCommitStatus name: "Integration test", state: "pending"
+                script {
+                    try {
+                        sh "npm run test:integration" 
+                    }
+                    catch (err) {
+                        withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
+                            discordSend title: JOB_NAME, description: "Tranquilli, sono solo falliti gli integration test", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
+                        }
+                    }
+                }
+            }
+            post {
+                success { updateGitlabCommitStatus name: "Integration test", state: "success" }
+                failure { updateGitlabCommitStatus name: "Integration test", state: "failed" }
             } 
         }
     }

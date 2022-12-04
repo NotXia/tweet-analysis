@@ -1,10 +1,12 @@
+const { multipleTweetsFetch } = require("../modules/fetch/multiple_tweets.js");
 const { getTweetsByUser } = require("../modules/fetch/user.js");
+const TweetModel = require("../models/Tweets.js");
 
 async function tweetsByUser(req, res) {
     let tweets_response;
 
     try {
-        tweets_response = await getTweetsByUser(req.query.user, req.query.pag_token);
+        tweets_response = await multipleTweetsFetch(getTweetsByUser, req.query.user, req.query.pag_token, req.query.quantity, req.query.start_time, req.query.end_time);
     } catch (error) {
         res.sendStatus(500);
         return;
@@ -14,6 +16,11 @@ async function tweetsByUser(req, res) {
         tweets: tweets_response.tweets,
         next_token: tweets_response.next_token
     });
+
+    if (!process.env.NODE_ENV.includes("testing")) {
+        // Caching tweet
+        await Promise.all(tweets_response.tweets.map(async (tweet) => TweetModel.cacheTweet(tweet)));
+    }
 }
 
 module.exports = {
