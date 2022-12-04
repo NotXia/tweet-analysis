@@ -19,11 +19,13 @@ const client = new TwitterApi({
 
 /**
  * Gestisce l'upload di un media sui server di Twitter
- * @param {string} media_path   Percorso del media
+ * @param {string|Buffer} media   Media da caricare
  * @returns {Promise<string>} Id del media
  */
-async function _uploadImage(media_path) {
-    const image = await fs.readFile(media_path);
+async function _uploadImage(media) {
+    let image = media;
+    if (typeof media === "string") { image = await fs.readFile(media); } // Se è un percorso, legge il file
+
     const res = await client.v1.post("media/upload.json", { media: image }, { prefix: 'https://upload.twitter.com/1.1/' });
     
     return res.media_id_string;
@@ -32,14 +34,14 @@ async function _uploadImage(media_path) {
 /**
  * Gestisce la pubblicazione di un tweet con eventuali immagini
  * @param {string} text             Contenuto del tweet
- * @param {[string]} media_path     Percorso ai media del tweet
+ * @param {[string|Buffer]} medias  Media da caricare
  * @returns {Promise<string>} Id del tweet
  */
-async function sendTweet(text, media_path=[]) {
+async function sendTweet(text, medias=[]) {
     let media_ids = [];
 
     // Upload media
-    for (let media of media_path) { media_ids.push(await _uploadImage(media)); }
+    for (let media of medias) { media_ids.push(await _uploadImage(media)); }
 
     // Pubblicazione tweet
     const res = await client.v2.post("tweets", { 
