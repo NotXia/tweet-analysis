@@ -33,7 +33,7 @@ async function _uploadImage(media_path) {
  * Gestisce la pubblicazione di un tweet con eventuali immagini
  * @param {string} text             Contenuto del tweet
  * @param {[string]} media_path     Percorso ai media del tweet
- * @returns 
+ * @returns {Promise<string>} Id del tweet
  */
 async function sendTweet(text, media_path=[]) {
     let media_ids = [];
