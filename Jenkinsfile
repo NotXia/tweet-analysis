@@ -11,6 +11,7 @@ pipeline {
 
         stage("Test") {
             environment {
+                NODE_ENV = "testing"
                 TWITTER_BEARER_TOKEN = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
             }
 
@@ -131,9 +132,9 @@ pipeline {
                         sh "npm run test:integration" 
                     }
                     catch (err) {
-                        withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
-                            discordSend title: JOB_NAME, description: "Tranquilli, sono solo falliti gli integration test", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
-                        }
+                        // withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
+                        //     discordSend title: JOB_NAME, description: "Tranquilli, sono solo falliti gli integration test", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
+                        // }
                     }
                 }
             }
