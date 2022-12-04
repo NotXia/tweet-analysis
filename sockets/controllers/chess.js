@@ -1,11 +1,12 @@
 require("dotenv").config();
 const ChessGame = require("../../modules/chess/ChessGame.js");
 const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
+const ChessOpponent = require("../../modules/chess/ChessOpponent");
 
 
-const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0 : 500;
+const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0    : 500;
 const PLAYER_TIMEOUT =      process.env.NODE_ENV.includes("testing") ? 1000 : 15000;
-const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100 : 1000;
+const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100  : 5000;
 const NEW_GAME_TIMEOUT =    process.env.NODE_ENV.includes("testing") ? 1000 : 60000;
 
 module.exports = {
@@ -27,7 +28,10 @@ class GameSession {
 
         this.controller = new ChessGame();
         this.player_color = (["w", "b"])[Math.floor(Math.random()*2)]; // Selezione colore giocatore
-        
+        this.opponent = new ChessOpponent(this.player_color === "w" ? "b" : "w");
+
+        this.curr_tweet_id = null;
+
         this.player_move_timeout = null;
     }
 
@@ -70,13 +74,14 @@ class GameSession {
     /**
      * Gestisce il turno dell'avversario.
      */
-    handleOpponentTurn() {
+    async handleOpponentTurn() {
         this.socket.emit("chess.turn.start", { player: "opponent", timer: OPPONENT_DELAY });
+        await this.opponent.prepareToMove(this.controller.getFEN());
 
         // Delay prima di scegliere la mossa dell'avversario
         setTimeout(async () => {
             try {
-                const move = await this.getOpponentMove();
+                const move = await this.opponent.getMove();
     
                 this.handleOpponentMove(move);
                 if (this.controller.hasEnded()) { return this.handleGameOver(); }
@@ -98,12 +103,6 @@ class GameSession {
     handleOpponentMove(move) {
         this.controller.move(move.from, move.to, move.promotion);
         this.socket.emit("chess.move", { player: "opponent", move: move, fen: this.controller.getFEN() }); // Acknowledge della mossa
-    }
-
-    async getOpponentMove() {
-        // Soluzione temporanea per i test (mossa casuale)
-        let move = this.controller.game.moves({ verbose: true })[0];
-        return { from: move.from, to: move.to, promotion: move.flags.includes("p") ? "q" : undefined };
     }
 
 
