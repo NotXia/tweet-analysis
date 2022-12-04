@@ -27,7 +27,7 @@ module.exports = {
 async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
     if (!keyword) { throw new Error("Parola chiave mancante"); }
     let fetchedTweets = await _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
-    if (!fetchedTweets.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
+    if (!fetchedTweets?.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
     let page = {
@@ -84,10 +84,9 @@ async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, sta
 async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
     keyword = _normalizeQuery(keyword);
 
-    // Controlla che le date siano nel range limite di twitter (gli ultimi 7 giorni)
-    let today = new Date();
-    let aweekago = new Date(moment(today).subtract(7, 'days'));
-    const date = _normalizeDate(aweekago, start_time, end_time);
+    // Controlla che le date siano nel range limite di twitter
+    let limit = new Date("2006-03-26T00:00:00Z");
+    const date = _normalizeDate(limit, start_time, end_time);
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
@@ -101,7 +100,6 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
             "user.fields": "name,profile_image_url,username"                    // Campi dell'utente
         },
 
-        validateStatus: () => true
     };
     if (pagination_token != "") {
         options.params["pagination_token"] = pagination_token;
@@ -113,7 +111,16 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
         options.params["end_time"] = date.end_time;
     }
     
-    const fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/recent`, options);
-
+    let fetchedTweets;
+    try {
+        fetchedTweets = await axios.get(`https://api.twitter.com/2/tweets/search/all`, options);
+    } catch (err) {
+        if (err.response?.data?.status === 429) {
+            await new Promise(r => setTimeout(r, 1000));
+            return _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+        }
+        return null;
+    }
+    
     return fetchedTweets;
 }

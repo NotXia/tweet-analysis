@@ -20,7 +20,16 @@ class Navbar extends React.Component {
                 <div className="collapse navbar-collapse" id="__navbar">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/search">Ricerca</Link>
+                            <Link className="nav-link" to="/">Ricerca</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/ghigliottina">La Ghigliottina</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/catenafinale">Catena Finale</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/chess">Scacchi</Link>
                         </li>
                     </ul>
                 </div>

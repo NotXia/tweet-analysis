@@ -7,12 +7,16 @@
     "start": "node index.js",
     "build": "npm run build --prefix ./frontend",
     "test": "npm run test:unit && npm run test:api && npm run test:react",
+    
     "jest:unit": "jest --passWithNoTests --globalSetup ./tests/utils/unit.global_init.js",
     "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
     "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
+    "jest:integration": "jest --passWithNoTests --globalSetup ./tests/utils/integration.global_init.js",
+    
     "test:unit": "npm run jest:unit -- --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
     "test:api": "npm run jest:api -- --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
-    "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js"
+    "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js",
+    "test:integration": "npm run jest:integration -- --coverage --coverageDirectory ./coverage/integration ./tests/integration/.*.test.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
@@ -23,9 +27,11 @@
     }
   },
   "dependencies": {
+    "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "axios": "^1.1.3",
     "bootstrap": "^5.2.2",
     "chart.js": "^3.9.1",
+    "chess.js": "^1.0.0-alpha.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "country-iso-2-to-3": "^1.1.0",
@@ -35,17 +41,26 @@
     "http-errors": "^2.0.0",
     "jquery": "^3.6.1",
     "languagedetect": "^2.0.0",
+    "leaflet": "^1.9.2",
+    "leaflet-arrowheads": "^1.4.0",
+    "leaflet.markercluster": "^1.5.3",
     "modules": "file:modules",
     "moment": "^2.29.4",
+    "mongoose": "^6.7.3",
     "node-nlp": "^4.24.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",
+    "react-chessboard": "^1.3.1",
     "react-d3-cloud": "^1.0.6",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
+    "react-leaflet": "^4.1.0",
+    "react-leaflet-markercluster": "^3.0.0-rc1",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
     "sentiment-multilang": "^0.0.2",
+    "socket.io": "^4.5.3",
+    "socket.io-client": "^4.5.3",
     "stopword": "^2.0.5",
     "stopwords-iso": "^1.1.0",
     "web-vitals": "^2.1.4"
