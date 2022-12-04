@@ -1,12 +1,12 @@
-   122	NotXia <tiancheng.xia@studio.unibo.it>
+   186	NotXia <tiancheng.xia@studio.unibo.it>
    117	Zaid1710 <zaid.cheikhibrahim@studio.unibo.it>
     91	Manuel Paris <manuel.paris@studio.unibo.it>
-    58	Zaid Cheikh <zaid.cheikhibrahim@studio.unibo.it>
-    58	lee_henry <qunhaohaohenry.lee@studio.unibo.it>
-    22	Tian Cheng Xia <tiancheng.xia@studio.unibo.it>
+    76	lee_henry <qunhaohaohenry.lee@studio.unibo.it>
+    71	Zaid Cheikh <zaid.cheikhibrahim@studio.unibo.it>
+    23	Tian Cheng Xia <tiancheng.xia@studio.unibo.it>
     10	Henry Lee <qunhaohaohenry.lee@studio.unibo.it>
      1	Manuel Paris <manuelparis1111@gmail.com>
-co-authored commits:506
+co-authored commits:605
 Co-author list:    Co-authored-by: Lee Henry <qunhaohaohenry.lee@studio.unibo.it>
     Co-authored-by: Manuel Paris <Malteon@users.noreply.github.com>
     Co-authored-by: Manuel Paris <manuel.paris@studio.unibo.it>
