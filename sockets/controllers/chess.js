@@ -77,15 +77,29 @@ class GameSession {
      */
     async handleOpponentTurn() {
         this.socket.emit("chess.turn.start", { player: "opponent", timer: OPPONENT_DELAY+OPPONENT_SYNC_DELAY });
-        await this.opponent.prepareToMove(this.controller.getFEN());
+
+        if (!process.env.NODE_ENV.includes("testing")) {
+            await this.opponent.prepareToMove(this.controller.getFEN());
+        }
 
         // Delay prima di scegliere la mossa dell'avversario
         setTimeout(async () => {
             try {
                 await new Promise(r => setTimeout(r, OPPONENT_SYNC_DELAY)); // Attende che le Twitter sia allineato con le risposte
-                const move = await this.opponent.getMove();
-                if (!move) { throw new InvalidChessMove(); }
-    
+                let move = null;
+                
+                if (!process.env.NODE_ENV.includes("testing")) {
+                    // Estrae la mossa da Twitter
+                    move = await this.opponent.getMove();
+                }
+
+                // Seleziona una mossa casuale se nessuna è stata scelta
+                if (!move) {
+                    const possible_moves = this.controller.game.moves({ verbose: true });
+                    const random_move = possible_moves[Math.floor(Math.random()*possible_moves.length)];
+                    move = { from: random_move.from, to: random_move.to, promotion: random_move.flags.includes("p") ? "q" : undefined }
+                }
+
                 this.handleOpponentMove(move);
                 if (this.controller.hasEnded()) { return this.handleGameOver(); }
                 this.handlePlayerTurn();
