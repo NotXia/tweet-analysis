@@ -13,7 +13,7 @@ module.exports = class ChessOpponent {
     }
 
     async prepareToMove(current_fen) {
-        const board_image = await generateBoardImage(current_fen);
+        const board_image = await generateBoardImage(current_fen, this.color === "b");
         const tweet_id = await sendTweet(
             `Scegli la tua mossa, giochi i ${this.color === "w" ? "bianchi" : "neri"}.\n` +
             `Rispondi a questo tweet con il formato:\n` +

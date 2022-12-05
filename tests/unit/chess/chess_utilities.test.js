@@ -53,4 +53,9 @@ describe("Generazione immagine scacchiera", function () {
         const image = await generateBoardImage("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         expect( image instanceof Buffer).toBeTruthy();
     }, 15000);
+
+    test("Generazione con FEN e scacchiera invertita", async function () {
+        const image = await generateBoardImage("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", true)
+        expect( image instanceof Buffer).toBeTruthy();
+    }, 15000);
 });
