@@ -1,20 +1,11 @@
 require("dotenv").config();
-const { TwitterApi } = require("twitter-api-v2");
 const fs = require("fs").promises;
+const { getClient } = require("./twitter_oauth.js");
 
 
 module.exports = {
     sendTweet: sendTweet
 }
-
-
-const client = new TwitterApi({
-    version: "2", extension: false,
-    appKey: process.env.TWITTER_OAUTH_CONSUMER_KEY,
-    appSecret: process.env.TWITTER_OAUTH_CONSUMER_SECRET,
-    accessToken: process.env.TWITTER_OAUTH_TOKEN,
-    accessSecret: process.env.TWITTER_OAUTH_TOKEN_SECRET
-});
 
 
 /**
@@ -23,6 +14,7 @@ const client = new TwitterApi({
  * @returns {Promise<string>} Id del media
  */
 async function _uploadImage(media) {
+    const client = getClient();
     let image = media;
     if (typeof media === "string") { image = await fs.readFile(media); } // Se è un percorso, legge il file
 
@@ -38,6 +30,7 @@ async function _uploadImage(media) {
  * @returns {Promise<string>} Id del tweet
  */
 async function sendTweet(text, medias=[]) {
+    const client = getClient();
     let media_ids = [];
 
     // Upload media
