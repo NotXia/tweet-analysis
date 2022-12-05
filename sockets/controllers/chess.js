@@ -6,7 +6,8 @@ const ChessOpponent = require("../../modules/chess/ChessOpponent");
 
 const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0    : 500;
 const PLAYER_TIMEOUT =      process.env.NODE_ENV.includes("testing") ? 1000 : 15000;
-const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100  : 5000;
+const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100  : 20000;
+const OPPONENT_SYNC_DELAY = process.env.NODE_ENV.includes("testing") ? 0    : 10000;
 const NEW_GAME_TIMEOUT =    process.env.NODE_ENV.includes("testing") ? 1000 : 60000;
 
 module.exports = {
@@ -75,13 +76,15 @@ class GameSession {
      * Gestisce il turno dell'avversario.
      */
     async handleOpponentTurn() {
-        this.socket.emit("chess.turn.start", { player: "opponent", timer: OPPONENT_DELAY });
+        this.socket.emit("chess.turn.start", { player: "opponent", timer: OPPONENT_DELAY+OPPONENT_SYNC_DELAY });
         await this.opponent.prepareToMove(this.controller.getFEN());
 
         // Delay prima di scegliere la mossa dell'avversario
         setTimeout(async () => {
             try {
+                await new Promise(r => setTimeout(r, OPPONENT_SYNC_DELAY)); // Attende che le Twitter sia allineato con le risposte
                 const move = await this.opponent.getMove();
+                if (!move) { throw new InvalidChessMove(); }
     
                 this.handleOpponentMove(move);
                 if (this.controller.hasEnded()) { return this.handleGameOver(); }
