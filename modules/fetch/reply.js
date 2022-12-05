@@ -23,23 +23,31 @@ async function getRepliesOf(tweet_id, next_token, quantity=100) {
             query: `conversation_id:${tweet_id} is:reply`,
             "max_results": quantity,
             "tweet.fields": "created_at,text,public_metrics",
+            "expansions": "author_id",
+            "user.fields": "name,profile_image_url,username",
             "pagination_token": next_token
         }
     }) ).data;
 
     // Formattazione risposte
-    let replies = tweet_data.data.map((data) => ({
-        id: data.id,
-        text: data.text,
-        time: data.created_at
-    }));
+    let replies = tweet_data?.data?.map((data) => {
+        const author = tweet_data.includes.users.find(user => user.id === data.author_id);
+        
+        return {
+            id: data.id,
+            name: author.name,
+            username: author.username,
+            pfp: author.profile_image_url,
+            text: data.text,
+            time: data.created_at
+        };
+    });
 
     return {
-        replies: replies,
+        replies: replies ?? [],
         next_token: tweet_data.meta.next_token ?? ""
     };
 }
-
 
 /**
  * Estrae tutte le risposte a un tweet
