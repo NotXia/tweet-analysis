@@ -158,6 +158,8 @@ class GameSession {
      * @param {string} reason   Motivo game over
      */
     async sendGameOverTweet(state, reason) {
+        if (process.env.NODE_ENV.includes("testing")) { return; }
+        
         let expanded_state = "";
         let expanded_reason = expandGameOverReason(reason);
 
