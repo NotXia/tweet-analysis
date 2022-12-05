@@ -6,7 +6,8 @@ const Jimp = require("jimp");
 module.exports = {
     generateBoardImage: generateBoardImage,
     parseMoveString: parseMoveString,
-    normalizePromotionString: normalizePromotionString
+    normalizePromotionString: normalizePromotionString,
+    expandGameOverReason: expandGameOverReason
 }
 
 
@@ -103,5 +104,18 @@ function normalizePromotionString(promotion) {
         case "r":
         case "rook":    return "r";
         default:        return "";
+    }
+}
+
+function expandGameOverReason(reason) {
+    switch (reason) {
+        case "checkmate":               return "Scacco matto";
+        case "stalemate":               return "Stallo";
+        case "threefold_repetition":    return "Tre ripetizioni";
+        case "insufficient_material":   return "Materiale insufficiente";
+        case "50_move":                 return "Cinquanta mosse catture";
+        case "invalid_move":            return "Mossa invalida";
+        case "timeout":                 return "Tempo scaduto";
+        default: return "";
     }
 }

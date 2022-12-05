@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { generateBoardImage, normalizePromotionString, parseMoveString } = require("../../../modules/chess/utilities.js");
+const { generateBoardImage, normalizePromotionString, parseMoveString, expandGameOverReason } = require("../../../modules/chess/utilities.js");
 
 
 describe("Parsing stringa con mossa", function () {
@@ -51,11 +51,24 @@ describe("Parsing stringa con mossa", function () {
 describe("Generazione immagine scacchiera", function () {
     test("Generazione con FEN", async function () {
         const image = await generateBoardImage("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-        expect( image instanceof Buffer).toBeTruthy();
+        expect( image instanceof Buffer ).toBeTruthy();
     }, 15000);
 
     test("Generazione con FEN e scacchiera invertita", async function () {
         const image = await generateBoardImage("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", true)
-        expect( image instanceof Buffer).toBeTruthy();
+        expect( image instanceof Buffer ).toBeTruthy();
     }, 15000);
+});
+
+describe("Parsing motivo game over", function () {
+    test("Parsing stringhe con motivo game over", async function () {
+        expect( expandGameOverReason("checkmate") ).toEqual("Scacco matto");
+        expect( expandGameOverReason("stalemate") ).toEqual("Stallo");
+        expect( expandGameOverReason("threefold_repetition") ).toEqual("Tre ripetizioni");
+        expect( expandGameOverReason("insufficient_material") ).toEqual("Materiale insufficiente");
+        expect( expandGameOverReason("50_move") ).toEqual("Cinquanta mosse catture");
+        expect( expandGameOverReason("invalid_move") ).toEqual("Mossa invalida");
+        expect( expandGameOverReason("timeout") ).toEqual("Tempo scaduto");
+        expect( expandGameOverReason("non_lo_so") ).toEqual("");
+    });
 });

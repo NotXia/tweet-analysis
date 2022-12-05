@@ -2,6 +2,8 @@ require("dotenv").config();
 const ChessGame = require("../../modules/chess/ChessGame.js");
 const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
 const ChessOpponent = require("../../modules/chess/ChessOpponent");
+const { sendTweet } = require("../../modules/tweet/send.js");
+const { generateBoardImage, expandGameOverReason } = require("../../modules/chess/utilities.js");
 
 
 const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0    : 500;
@@ -57,6 +59,7 @@ class GameSession {
             // Partita terminata per timeout del giocatore
             this.endGame();
             this.socket.emit("chess.game_over", { state: "loss", reason: "timeout" });
+            this.sendGameOverTweet("loss", "timeout");
         }, PLAYER_TIMEOUT + TIMER_TOLLERANCE);
     }
 
@@ -108,6 +111,7 @@ class GameSession {
                 if (err instanceof InvalidChessMove) {
                     this.endGame();
                     this.socket.emit("chess.game_over", { state: "win", reason: "invalid_move" });
+                    this.sendGameOverTweet("win", "invalid_move");
                 }
             }
         }, OPPONENT_DELAY + TIMER_TOLLERANCE);
@@ -137,13 +141,35 @@ class GameSession {
                 state: result.winner === this.player_color ? "win" : "loss", 
                 reason: "checkmate" 
             });
+            this.sendGameOverTweet(result.winner === this.player_color ? "win" : "loss", "checkmate");
         }
         else if (result.state === "draw") {
             this.socket.emit("chess.game_over", { state: "draw", reason: result.reason });
+            this.sendGameOverTweet(state, result.reason);
         }
         else {
             this.socket.emit("chess.game_over", { state: "undefined" });
         }
+    }
+
+    /**
+     * Gestisce l'invio di un tweet con l'esito della partita
+     * @param {string} state    Stato della partita rispetto al giocatore
+     * @param {string} reason   Motivo game over
+     */
+    async sendGameOverTweet(state, reason) {
+        let expanded_state = "";
+        let expanded_reason = expandGameOverReason(reason);
+
+        switch (state) {
+            case "win":  expanded_state = "Sconfitta"; break;
+            case "draw": expanded_state = "Pareggio"; break;
+            case "loss": expanded_state = "Vittoria"; break;
+        }
+
+        const tweet_content = expanded_reason ? `${expanded_state} per ${expanded_reason}` : `${expanded_state}`;
+        const board_image = await generateBoardImage(this.controller.getFEN(), this.player_color === "w");
+        await sendTweet(`${expanded_state} per ${expanded_reason}`, [ board_image ]);
     }
 
     /**
@@ -222,6 +248,7 @@ function onPlayerMove(socket, data, response) {
             if (err instanceof InvalidChessMove) {
                 game.endGame();
                 return socket.emit("chess.game_over", { state: "loss", reason: "invalid_move" });
+                this.sendGameOverTweet("loss", "invalid_move");
             }
 
             throw err;
