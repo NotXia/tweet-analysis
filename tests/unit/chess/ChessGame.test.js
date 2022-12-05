@@ -1,6 +1,6 @@
 require("dotenv").config();
-const ChessGame = require("../../modules/chess/ChessGame.js");
-const InvalidChessMove = require("../../modules/chess/errors/InvalidChessMove.js");
+const ChessGame = require("../../../modules/chess/ChessGame.js");
+const InvalidChessMove = require("../../../modules/chess/errors/InvalidChessMove.js");
 
 
 describe("Test gestore partita scacchi", function () {

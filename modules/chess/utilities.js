@@ -66,7 +66,7 @@ function parseMoveString(move_string, current_fen) {
  * @returns {string} La promozione in un formato normalizzato
  */
 function normalizePromotionString(promotion) {
-    promotion = promotion.toLowerCase();
+    promotion = promotion.replace(/\s/g, "").toLowerCase();
 
     switch(promotion) {
         case "q":
