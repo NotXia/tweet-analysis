@@ -7,8 +7,8 @@ const { generateBoardImage, expandGameOverReason } = require("../../modules/ches
 
 
 const TIMER_TOLLERANCE =    process.env.NODE_ENV.includes("testing") ? 0    : 500;
-const PLAYER_TIMEOUT =      process.env.NODE_ENV.includes("testing") ? 1000 : 30000;
-const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100  : 20000;
+const PLAYER_TIMEOUT =      process.env.NODE_ENV.includes("testing") ? 1000 : 45000;
+const OPPONENT_DELAY =      process.env.NODE_ENV.includes("testing") ? 100  : 35000;
 const OPPONENT_SYNC_DELAY = process.env.NODE_ENV.includes("testing") ? 0    : 10000; // Tempo di attesa della sincronizzazione di Twitter
 const NEW_GAME_TIMEOUT =    process.env.NODE_ENV.includes("testing") ? 1000 : 60000;
 
