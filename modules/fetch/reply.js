@@ -33,12 +33,18 @@ async function getRepliesOf(tweet_id, next_token, quantity=100) {
     let replies = tweet_data?.data?.map((data) => {
         const author = tweet_data.includes.users.find(user => user.id === data.author_id);
         
+        let tweet_text = data.text;
+        // Le risposte hanno automaticamente la menzione all'autore
+        if (tweet_text.startsWith(`@${process.env.TWITTER_USER_NAME}`)) {
+            tweet_text = tweet_text.substring((`@${process.env.TWITTER_USER_NAME} `).length);
+        }
+
         return {
             id: data.id,
             name: author.name,
             username: author.username,
             pfp: author.profile_image_url,
-            text: data.text,
+            text: tweet_text,
             time: data.created_at
         };
     });
