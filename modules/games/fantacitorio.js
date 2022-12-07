@@ -38,27 +38,32 @@ async function _parsePoints(text) {
         if (_isNumber(word)) {                  // Se è un numero
             pointsBuffer = parseInt(word);
             i++;
-        } else {                                // Altrimenti
+        } else if (["malus"].includes(word)){     // Se è un malus
+            isMalus = true;
+            i++;
+        } else {
             let nextNames = _getSubstring(words, i);
             const nextNames_size = nextNames.length;
             politiciansBuffer = politiciansBuffer.concat(await _getPoliticians(nextNames));
             i += nextNames_size;
         }
-
+        
         if (pointsBuffer && politiciansBuffer.length > 0) {
             for (const politician of politiciansBuffer) {
                 if (!points[politician]) { points[politician] = 0; }
-                points[politician] += pointsBuffer;
+                if (isMalus) { points[politician] -= pointsBuffer; }
+                else { points[politician] += pointsBuffer; }
             }
             pointsBuffer = null;
             politiciansBuffer = [];
+            isMalus = false;
         }
     }
 
     return points;
 }
 
-// TODO: Gestire somma di punti, malus e O al posto di 0
+// TODO: Gestire somma di punti e O al posto di 0
 function _removeStopWords(text) {
     text = text.toLowerCase().trim();
     text = text.replace(/([-,:]|\b(per|punti|a|altri)\b)+/g, " ");
@@ -114,4 +119,4 @@ async function _getPoliticians(names) {
 }
 
 mongoose.connect(process.env.MONGO_URL);
-getPointsByWeek("2022-12-01T12:00:01.123Z").then((res) => {console.log(res)})
+getPointsByWeek("2022-11-26T12:00:01.123Z").then((res) => {console.log(res)})
