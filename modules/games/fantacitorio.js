@@ -64,7 +64,7 @@ function _removeStopWords(text) {
     return text;
 }
 
-function _isNumber(text) { return (/[0-9]+/).test(text); }
+function _isNumber(text) { return (/\d+/).test(text); }
 
 function _getSubstring(words, begin_index) {
     let end_index = words.length;
