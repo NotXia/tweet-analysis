@@ -108,3 +108,6 @@ async function _getPoliticians(names) {
     
     return found_names;
 }
+
+mongoose.connect(process.env.MONGO_URL);
+getPointsByWeek("2022-12-01T12:00:01.123Z").then((res) => {console.log(res)})
