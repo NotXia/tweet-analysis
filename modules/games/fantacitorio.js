@@ -27,18 +27,22 @@ async function _parsePoints(text) {
     let points = {};
     text = _removeStopWords(text);
     let words = text.split(" ");
+    let isMalus = false;
     
     let pointsBuffer = null;
     let politiciansBuffer = [];
-    for (let i = 0; i < words.length; i++) {
+
+    let i = 0;
+    while (i < words.length) {
         const word = words[i];
         if (_isNumber(word)) {                  // Se è un numero
             pointsBuffer = parseInt(word);
+            i++;
         } else {                                // Altrimenti
             let nextNames = _getSubstring(words, i);
             const nextNames_size = nextNames.length;
             politiciansBuffer = politiciansBuffer.concat(await _getPoliticians(nextNames));
-            i += nextNames_size-1;
+            i += nextNames_size;
         }
 
         if (pointsBuffer && politiciansBuffer.length > 0) {
