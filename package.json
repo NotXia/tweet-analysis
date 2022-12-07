@@ -7,13 +7,11 @@
     "start": "node index.js",
     "build": "npm run build --prefix ./frontend",
     "test": "npm run test:unit && npm run test:api && npm run test:socket && npm run test:react",
-    
     "jest:unit": "jest --passWithNoTests --globalSetup ./tests/utils/unit.global_init.js",
     "jest:api": "jest --passWithNoTests --globalSetup ./tests/utils/api.global_init.js",
     "jest:react": "jest --passWithNoTests --globalSetup ./tests/utils/react.global_init.js --env=jsdom",
     "jest:socket": "jest --passWithNoTests --globalSetup ./tests/utils/socket.global_init.js --runInBand --no-cache --forceExit",
     "jest:integration": "jest --passWithNoTests --globalSetup ./tests/utils/integration.global_init.js",
-    
     "test:unit": "npm run jest:unit -- --coverage --coverageDirectory ./coverage/unit ./tests/unit/.*.test.js",
     "test:api": "npm run jest:api -- --coverage --coverageDirectory ./coverage/api ./tests/api/.*.test.js",
     "test:react": "npm run jest:react -- --coverage --coverageDirectory ./coverage/react ./frontend/src/.*.test.jsx && npm run jest:api -- --coverage --coverageDirectory ./coverage/react_modules ./frontend/src/modules/.*.test.js",
@@ -33,6 +31,7 @@
     "axios": "^1.1.3",
     "bootstrap": "^5.2.2",
     "chart.js": "^3.9.1",
+    "chess-image-generator": "^1.0.9",
     "chess.js": "^1.0.0-alpha.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -41,6 +40,7 @@
     "express": "~4.16.1",
     "he": "^1.2.0",
     "http-errors": "^2.0.0",
+    "jimp": "^0.16.2",
     "jquery": "^3.6.1",
     "languagedetect": "^2.0.0",
     "leaflet": "^1.9.2",
@@ -49,6 +49,7 @@
     "modules": "file:modules",
     "moment": "^2.29.4",
     "mongoose": "^6.7.3",
+    "nanoid": "^3.3.4",
     "node-nlp": "^4.24.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",
@@ -65,6 +66,7 @@
     "socket.io-client": "^4.5.3",
     "stopword": "^2.0.5",
     "stopwords-iso": "^1.1.0",
+    "twitter-api-v2": "^1.12.9",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
