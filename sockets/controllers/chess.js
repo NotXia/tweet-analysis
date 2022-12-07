@@ -171,7 +171,7 @@ class GameSession {
 
         const tweet_content = expanded_reason ? `${expanded_state} per ${expanded_reason}` : `${expanded_state}`;
         const board_image = await generateBoardImage(this.controller.getFEN(), this.player_color === "w");
-        await sendTweet(`${expanded_state} per ${expanded_reason}`, [ board_image ]);
+        await sendTweet(`${tweet_content}`, [ board_image ]);
     }
 
     /**
@@ -249,8 +249,8 @@ function onPlayerMove(socket, data, response) {
         catch (err) {
             if (err instanceof InvalidChessMove) {
                 game.endGame();
-                return socket.emit("chess.game_over", { state: "loss", reason: "invalid_move" });
                 this.sendGameOverTweet("loss", "invalid_move");
+                return socket.emit("chess.game_over", { state: "loss", reason: "invalid_move" });
             }
 
             throw err;

@@ -1,4 +1,4 @@
-var ChessImageGenerator = require("chess-image-generator");
+const ChessImageGenerator = require("chess-image-generator");
 const { Chess } = require("chess.js");
 const Jimp = require("jimp");
 
@@ -61,7 +61,7 @@ async function generateBoardImage(fen, flip=false) {
     for (let i=0; i<8; i++) { board_image = board_image.print(font, 100*i+78, 833, board_x_axis[i]); }
     for (let i=0; i<8; i++) { board_image = board_image.print(font, 100*i+78, 0, board_x_axis[i]); }
 
-    return await board_image.getBufferAsync(Jimp.MIME_PNG);
+    return board_image.getBufferAsync(Jimp.MIME_PNG);
 }
 
 
