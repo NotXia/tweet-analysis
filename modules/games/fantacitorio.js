@@ -15,9 +15,17 @@ async function getPointsByWeek(date) {
 
     try {
         const tweets = await getTweetsByUser("Fanta_citorio", "", 500, start_date.toISOString(), end_date.toISOString());
+        let totalPoints = {};
         for (const tweet of tweets.tweets) {
             let points = await _parsePoints(tweet.text);
+            for (const row in points) {
+                if (!totalPoints[row]) {
+                    totalPoints[row] = 0;
+                }
+                totalPoints[row] += points[row];
+            }
         }
+        return totalPoints;
     } catch (err) {
         throw new Error("Tweet non trovati");
     }
