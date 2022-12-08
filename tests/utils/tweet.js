@@ -58,7 +58,7 @@ function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=u
     return out;
 }
 
-function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe2122 https://t.co/LS655lKPU3") {
+function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe2122 https://t.co/LS655lKPU3", username="SWETeam12") {
     let tweetId = _generateTweetId();
     let authorId = _generateTweetId();
     let mediaId1 = _generateMediaId();
@@ -85,7 +85,7 @@ function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe212
             "text": text
         },
         user: {
-            "username": "SWETeam12",
+            "username": username,
             "id": authorId,
             "profile_image_url": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
             "name": "SWE Team 12"
