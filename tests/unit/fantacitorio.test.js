@@ -70,7 +70,7 @@ describe("Test funzione getPointsByWeek", function() {
                 
         nockTwitterUsersByUsername(username);
         nock("https://api.twitter.com")
-        .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("week").toISOString(), date.endOf("week").toISOString()))
+        .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("isoWeek").toISOString(), date.endOf("isoWeek").toISOString()))
         .reply(200, batch);
 
         const result = await(getPointsByWeek(date));
@@ -94,11 +94,11 @@ describe("Test funzione getPointsByWeek", function() {
         SABRINA LICHERI
         ALESSANDRA MAIORINO
         `
-        let batch = generateTweets(2, true, date.startOf("day").toISOString(), date.endOf("day").toISOString(), tweetText, username);
+        let batch = generateTweets(2, true, moment().startOf("day").utc().toISOString(), moment().subtract(15, "seconds").utc().toISOString(), tweetText, username);
                 
         nockTwitterUsersByUsername(username);
         nock("https://api.twitter.com")
-        .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("week").toISOString(), date.endOf("week").toISOString()))
+        .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("isoWeek").toISOString(), moment().subtract(15, "seconds").utc().toISOString()))
         .reply(200, batch);
 
         const result = await(getPointsByWeek(date));
