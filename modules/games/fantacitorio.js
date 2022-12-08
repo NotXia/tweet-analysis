@@ -20,7 +20,7 @@ async function getPointsByWeek(date) {
     let end_date = moment(date).utc().endOf("week");
 
     if (end_date > moment().utc()) {
-        end_date = moment().utc();
+        end_date = moment().subtract(15, "seconds").utc();
     }
 
     try {
