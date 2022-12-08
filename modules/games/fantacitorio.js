@@ -72,10 +72,9 @@ async function _parsePoints(text) {
     return points;
 }
 
-// TODO: Gestire somma di punti
 function _removeStopWords(text) {
     text = text.toLowerCase().trim();
-    text = text.replace(/([-,:]|\b(per|punti|a|altri)\b)+/g, " ");
+    text = text.replace(/([-,:()]|\b(per|punti|a|altri)\b)+/g, " ");
     text = text.replace(/\n/g, " ");
     text = text.replace(/\s\s+/g, " ");
 
@@ -128,4 +127,5 @@ async function _getPoliticians(names) {
 }
 
 mongoose.connect(process.env.MONGO_URL);
-getPointsByWeek("2022-11-26T12:00:01.123Z").then((res) => {console.log(res)})
+getPointsByWeek("2022-11-19T12:00:01.123Z").then((res) => {console.log(res)})
+_parsePoints("100 + 220 PUNTI (320) - RONZULLI").then((res) => {console.log(res);})
