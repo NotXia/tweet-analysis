@@ -42,11 +42,12 @@ async function _parsePoints(text) {
 
     let i = 0;
     while (i < words.length) {
-        const word = words[i];
-        if (_isNumber(word)) {                  // Se è un numero
+        let word = words[i];
+        if (_isNumber(word)) {                      // Se è un numero
+            word = word.replaceAll("o", "0");
             pointsBuffer = parseInt(word);
             i++;
-        } else if (["malus"].includes(word)){     // Se è un malus
+        } else if (["malus"].includes(word)){       // Se è un malus
             isMalus = true;
             i++;
         } else {
@@ -71,7 +72,7 @@ async function _parsePoints(text) {
     return points;
 }
 
-// TODO: Gestire somma di punti e O al posto di 0
+// TODO: Gestire somma di punti
 function _removeStopWords(text) {
     text = text.toLowerCase().trim();
     text = text.replace(/([-,:]|\b(per|punti|a|altri)\b)+/g, " ");
@@ -81,7 +82,7 @@ function _removeStopWords(text) {
     return text;
 }
 
-function _isNumber(text) { return (/\d+/).test(text); }
+function _isNumber(text) { return (/\d(\d|o)+/).test(text); }
 
 function _getSubstring(words, begin_index) {
     let end_index = words.length;
