@@ -1,10 +1,14 @@
 const { getTweetsByUser } = require("../fetch/user.js");
 const PoliticanModel = require("../../models/Politicians.js");
 const moment = require('moment');
-const mongoose = require("mongoose");
 
 module.exports = { getPointsByWeek: getPointsByWeek }
 
+/**
+ * Scelta una data, vengono ricercati tutti i punteggi assegnati durante quella settimana e viene restituita un oggetto contenente il complessivo settimanale dei punteggi per ogni politico coinvolto.
+ * @param {String} date             Data scelta
+ * @returns {Promise<Object>}       Oggetto con politico e punteggio durante la settimana
+ */
 async function getPointsByWeek(date) {
     let start_date = moment(date).utc().startOf("week");
     let end_date = moment(date).utc().endOf("week");
@@ -31,9 +35,14 @@ async function getPointsByWeek(date) {
     }
 }
 
+/**
+ * Dato un testo di un tweet con punti e politici, restituisce un oggetto con tutti i punti assegnati a tutti i politici citati.
+ * @param {String} text         Testo del tweet
+ * @returns {Promise<Object>}   Oggetto con i punti e i politici citati nel testo
+ */
 async function _parsePoints(text) {
     let points = {};
-    text = _removeStopWords(text);
+    text = _normalizeString(text);
     let words = text.split(" ");
     let isMalus = false;
     
@@ -71,7 +80,12 @@ async function _parsePoints(text) {
     return points;
 }
 
-function _removeStopWords(text) {
+/**
+ * Data una stringa, la restituisce normalizzata, rimuovendo eventuali paroli "inutili" e segni di punteggiatura
+ * @param {String} text     Testo del tweet
+ * @returns {String}        Testo normalizzato
+ */
+function _normalizeString(text) {
     text = text.toLowerCase().trim();
     text = text.replace(/([-,:()]|\b(per|punti|a|altri)\b)+/g, " ");
     text = text.replace(/\n/g, " ");
@@ -80,8 +94,19 @@ function _removeStopWords(text) {
     return text;
 }
 
+/**
+ * Verifica se una data stringa è un numero o se inizia per una cifra nel caso il numero abbia (ad esempio) delle "o" al posto di 0
+ * @param {String} text     Parola da verificare
+ * @returns {Boolean}       True se è un numero, false altrimenti.
+ */
 function _isNumber(text) { return (/\d(\d|o)+/).test(text); }
 
+/**
+ * Dato un array di parole (derivanti dal tweet) e un indice d'inizio, cerca la prima occorrenza numerica e restituisce il sottoarray fino a quel punto
+ * @param {String[]} words          Array di parole 
+ * @param {Integer} begin_index     Indice di inizio
+ * @returns {String[]}              Parte ricercata dell'array di input
+ */
 function _getSubstring(words, begin_index) {
     let end_index = words.length;
 
@@ -96,7 +121,11 @@ function _getSubstring(words, begin_index) {
     return words.slice(begin_index, end_index);
 }
 
-
+/**
+ * Dato un vettore di possibili nomi di politici, prova a ricercare il politico ricercandone il nome nel database.
+ * @param {String[]} names      Array di possibili nomi di politici
+ * @returns {String[]}          Array di nomi di politici riconosciuti
+ */
 async function _getPoliticians(names) {
     /**
      * Dato un vettore di nomi di politici, prova a riconoscere il nome a partire dalla stringa più grande possibile, riducendola man mano partendo dal fondo.
@@ -124,7 +153,3 @@ async function _getPoliticians(names) {
     
     return found_names;
 }
-
-mongoose.connect(process.env.MONGO_URL);
-getPointsByWeek("2022-11-19T12:00:01.123Z").then((res) => {console.log(res)})
-_parsePoints("100 + 220 PUNTI (320) - RONZULLI").then((res) => {console.log(res);})
