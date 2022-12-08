@@ -57,16 +57,15 @@ async function _parsePoints(text) {
             i += nextNames_size;
         }
         
-        if (pointsBuffer && politiciansBuffer.length > 0) {
-            for (const politician of politiciansBuffer) {
-                if (!points[politician]) { points[politician] = 0; }
-                if (isMalus) { points[politician] -= pointsBuffer; }
-                else { points[politician] += pointsBuffer; }
-            }
-            pointsBuffer = null;
-            politiciansBuffer = [];
-            isMalus = false;
-        }
+        if (!(pointsBuffer && politiciansBuffer.length > 0)) { continue; }
+        politiciansBuffer.forEach((politician) => {
+            if (!points[politician]) { points[politician] = 0; }
+            if (isMalus) { points[politician] -= pointsBuffer; }
+            else { points[politician] += pointsBuffer; }
+        })
+        pointsBuffer = null;
+        politiciansBuffer = [];
+        isMalus = false;
     }
 
     return points;
