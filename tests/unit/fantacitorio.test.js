@@ -92,6 +92,7 @@ describe("Test funzione getPointsByWeek", function() {
             await(getPointsByWeek(date));
         } catch (err) {
             expect(err).toBeDefined();
+            return;
         }
         throw new Error("Eccezione non lanciata");
     });
@@ -108,6 +109,7 @@ describe("Test funzione getPointsByWeek", function() {
             await(getPointsByWeek(date));
         } catch (err) {
             expect(err).toBeDefined();
+            return;
         }
         throw new Error("Eccezione non lanciata");
     });
