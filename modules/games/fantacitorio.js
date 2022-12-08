@@ -2,7 +2,13 @@ const { getTweetsByUser } = require("../fetch/user.js");
 const PoliticanModel = require("../../models/Politicians.js");
 const moment = require('moment');
 
-module.exports = { getPointsByWeek: getPointsByWeek }
+module.exports = { 
+    getPointsByWeek: getPointsByWeek,
+
+    testing : {
+        parsePoints: _parsePoints
+    }
+}
 
 /**
  * Scelta una data, vengono ricercati tutti i punteggi assegnati durante quella settimana e viene restituita un oggetto contenente il complessivo settimanale dei punteggi per ogni politico coinvolto.
