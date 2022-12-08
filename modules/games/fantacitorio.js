@@ -16,8 +16,8 @@ module.exports = {
  * @returns {Promise<Object>}       Oggetto con politico e punteggio durante la settimana
  */
 async function getPointsByWeek(date) {
-    let start_date = moment(date).utc().startOf("week");
-    let end_date = moment(date).utc().endOf("week");
+    let start_date = moment(date).utc().startOf("isoWeek");
+    let end_date = moment(date).utc().endOf("isoWeek");
 
     if (end_date > moment().utc()) {
         end_date = moment().subtract(15, "seconds").utc();
