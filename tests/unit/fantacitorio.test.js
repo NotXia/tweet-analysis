@@ -81,29 +81,34 @@ describe("Test funzione getPointsByWeek", function() {
 
     test("Ricerca punteggi con una data nel futuro", async function () {
         const username = "Fanta_citorio";
-        const date = moment().add(2, "days").utc();
+        const date = moment("9999-11-30T00:00:01Z").utc();
 
-        const tweetText = `
-        400 PUNTI - BARBARA FLORIDIA 
-        
-        800 PUNTI A:
-        LUIGI NAVE
-        ADA LOPREIATO 
-        CONCETTA DAMANTE
-        GABRIELLA DI GIROLAMO
-        SABRINA LICHERI
-        ALESSANDRA MAIORINO
-        `
-        let batch = generateTweets(2, true, moment().startOf("day").utc().toISOString(), moment().subtract(15, "seconds").utc().toISOString(), tweetText, username);
-                
-        nockTwitterUsersByUsername(username);
-        nock("https://api.twitter.com")
-        .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("isoWeek").toISOString(), moment().subtract(15, "seconds").utc().toISOString()))
-        .reply(200, batch);
 
-        const result = await(getPointsByWeek(date));
-        expect( result['FLORIDIA BARBARA'] ).toEqual(800);
-        expect( result['NAVE LUIGI'] ).toEqual(1600);
-        expect( result['MAIORINO ALESSANDRA'] ).toEqual(1600);
+        try {
+            nockTwitterUsersByUsername(username);
+            nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("isoWeek").toISOString(), date.endOf("isoWeek").toISOString()))
+            .reply(200, null);
+            await(getPointsByWeek(date));
+        } catch (err) {
+            expect(err).toBeDefined();
+        }
+        throw new Error("Eccezione non lanciata");
+    });
+
+    test("Ricerca punteggi con ricerca fallita", async function () {
+        const username = "Fanta_citorio";
+        const date = moment("2022-11-30T00:00:01Z").utc();
+
+        try {
+            nockTwitterUsersByUsername(username);
+            nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams(`from:${username}`, "", 500, date.startOf("isoWeek").toISOString(), date.endOf("isoWeek").toISOString()))
+            .reply(200, null);
+            await(getPointsByWeek(date));
+        } catch (err) {
+            expect(err).toBeDefined();
+        }
+        throw new Error("Eccezione non lanciata");
     });
 })
