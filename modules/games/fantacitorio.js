@@ -19,6 +19,8 @@ async function getPointsByWeek(date) {
     let start_date = moment(date).utc().startOf("isoWeek");
     let end_date = moment(date).utc().endOf("isoWeek");
 
+    if (start_date > moment().utc()) { throw new Error("Data nel futuro"); }
+
     if (end_date > moment().utc()) {
         end_date = moment().subtract(15, "seconds").utc();
     }
