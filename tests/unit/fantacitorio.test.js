@@ -1,6 +1,6 @@
 require("dotenv").config();
 const moment = require('moment');
-const { generateParams, generateTweets, generateCustomTweet, nockTwitterUsersByUsername } = require("../utils/tweet.js");
+const { generateParams, generateTweets, nockTwitterUsersByUsername } = require("../utils/tweet.js");
 import mongoose from "mongoose"
 import nock from "nock";
 
