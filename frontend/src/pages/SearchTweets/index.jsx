@@ -376,7 +376,7 @@ class SearchTweets extends React.Component {
             tweets.unshift(tweet);
             this.setState({ tweets: tweets });
         };
-        const onConnect = () => { this.setState({ stream_state: "on" }) };
+        const onConnect = () => { this.setState({ stream_state: "on", error_message: "" }) };
         const onDisconnect = () => { this.disconnectStream() };
         const onError = () => {
             this.setState({ error_message: "Si è verificato un errore durante la connessione" });
