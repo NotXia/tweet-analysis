@@ -126,7 +126,7 @@ class SearchTweets extends React.Component {
                                                     {/* Numero di ricerche */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
-                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }}
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }} required
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
