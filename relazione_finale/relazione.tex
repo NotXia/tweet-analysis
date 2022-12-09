@@ -17,11 +17,46 @@
     linkcolor=black,
     urlcolor=black
 }
+\usepackage{array}
+\usepackage{makecell}
 
 \tolerance=1
 \emergencystretch=\maxdimen
 \hyphenpenalty=10000
 \hbadness=10000
+
+
+
+% --- MACRO ---
+
+% Box user story
+\newcommand{\userstory}[4]{%
+    \begin{center}
+        \fbox{\parbox{15cm}{%
+        \begin{minipage}{9.8cm}
+            \textbf{US}: #1
+        \end{minipage}
+        \hfill
+        \begin{minipage}{5cm}
+            \begin{flushright}
+                \textbf{Punti}: #2
+            \end{flushright}
+        \end{minipage}
+        \vspace*{6pt}
+
+        \textbf{DOD}: #3\\
+
+        \def\temp{#4}\ifx\temp\empty
+            %
+        \else
+            \textbf{Test}: #4\\
+        \fi
+
+    }}
+    \end{center}
+}
+
+
 
 \begin{document}
 \begin{titlepage}
@@ -84,11 +119,60 @@
 
 \newpage
 \section{Descrizione degli sprint}
+Sono stati svolti quattro sprint della durata di 14 giorni ciascuno.\\
+La stima dei punti delle user stories è stata effettuata con una scala da 0 a 10, valutando separatamente il frontend dal backend. 
+Il punteggio complessivo è quindi ottenuto dalla somma di quest'ultimi.
 
 \subsection{Sprint 1}
 \subsubsection{Sprint goal}
+Lo sprint è stato principalmente dedicato a studiare le API di Twitter e produrre le prime funzionalità per la visualizzazione e l'analisi dei tweet.\\
+In particolare le feature pianificate per lo sprint sono state:
+\begin{itemize}
+    \item Ricerca di tweet per username
+    \item Ricerca di tweet per hashtag
+    \item Analisi dei tweet tramite componenti grafiche (grafico a torta per il sentiment analysis, grafico a barre per la frequenza dei tweet e word cloud)
+\end{itemize}
+
 
 \subsubsection{Backlog}
+\userstory%
+{Come utente interessato ai tweet,\\voglio poter cercare dei tweet per hashtag\\per leggerli.}%
+{8\\(3 frontend + 5 backend)}%
+{L'utente, cercando un hashtag in un apposito textbox, è in grado di leggere tutti i tweet correlati visualizzando:
+nome account Twitter, username, immagine profilo, contenuto Tweet (testo + foto e video), data e ora, luogo (se applicabile), numero like, numero commenti, numero retweet}%
+{Richiamare l'API implementata, verificare che il formato sia corretto e che il contenuti dei tweet contenga l'hashtag ricercato}
+
+\userstory%
+{Come utente interessato ai tweet,\\voglio poter cercare dei tweet per nome utente\\per leggerli.}%
+{8\\(3 frontend + 5 backend)}%
+{L'utente, cercando un nome utente in un apposito textbox, è in grado di leggere tutti i tweet correlati visualizzando:
+nome account Twitter, username, immagine profilo, contenuto Tweet (testo + foto e video), data e ora, luogo (se applicabile), numero like, numero commenti, numero retweet}%
+{Richiamare l'API implementata, verificare che il formato sia corretto e che l'autore dei tweet sia quello ricercato}
+
+\userstory%
+{Come analista,\\voglio poter analizzare il sentimento\\per stabilire se un tweet è positivo o meno.}%
+{9\\(2 frontend + 7 backend)}%
+{L'utente, dato un tweet, vede se è positivo, negativo o neutro tramite immagine o testo.}%
+{Analizzare frasi di cui è noto il sentimento}
+
+\userstory%
+{Come analista,\\voglio vedere un grafico a barre\\per vedere il numero di tweet nell'unità di tempo.}%
+{2\\(2 frontend)}%
+{L'utente apre una pagina web contenente il grafico a barre con il numero di tweet nell'unità di tempo.}%
+{Manualmente verificare che il grafico sia corretto}
+
+\userstory%
+{Come analista,\\voglio vedere un grafico a torta\\per vedere il rapporto di sentiment positivi, negativi e neutri.}%
+{2\\(2 frontend)}%
+{L'utente apre una pagina web contenente il grafico a torta con sentiment positivi, negativi e neutri.}%
+{Manualmente verificare che il grafico sia corretto}
+
+\userstory%
+{Come analista,\\voglio vedere una term cloud\\per vedere le parole più utilizzate nei tweet.}%
+{4\\(2 frontend + 2 backend)}%
+{L'utente apre una pagina web contenente una term cloud con le parole più utilizzate.}%
+{Manualmente verificare che il grafico sia corretto}
+
 
 \subsubsection{Burndown}
 \begin{figure}[H]
