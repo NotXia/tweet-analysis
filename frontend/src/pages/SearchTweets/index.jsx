@@ -160,17 +160,17 @@ class SearchTweets extends React.Component {
                                 
                                 {/* Grafici */}
                                 <div className={`${this.state.tweets.length === 0 ? "invisible" : "mt-3 p-2 border border-light rounded-4"}`}>
-                                    <div className="d-flex justify-content-center w-100 p-2">
-                                        <div className="px-2" style={{ height: "30vh", width: "100%" }}>
-                                            <TweetsTimeChart tweets={this.state.tweets} />
-                                        </div>
-                                    </div>
                                     <div className="d-flex justify-content-center w-100">
                                         <div className="px-2" style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
                                         <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <WordCloud tweets={this.state.tweets} />
+                                        </div>
+                                    </div>
+                                    <div className={`d-flex justify-content-center w-100 p-2 ${this.isAllSameDayTweets() ? "invisible" : ""}`}>
+                                        <div className="px-2" style={{ height: "25vh", width: "100%" }}>
+                                            <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                 </div>
@@ -394,6 +394,18 @@ class SearchTweets extends React.Component {
         this.setState({ stream_state: "off" });
     }
     
+
+    isAllSameDayTweets() {
+        const tweets = this.state.tweets;
+ 
+        for (let i=0; i<tweets.length-1; i++) {
+            if ( !moment(tweets[i].time).startOf("day").isSame(moment(tweets[i+1].time).startOf("day")) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 export default SearchTweets;
