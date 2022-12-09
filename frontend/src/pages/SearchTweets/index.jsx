@@ -101,7 +101,7 @@ class SearchTweets extends React.Component {
                                             <div className="input-group flex">
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" required />
                                                 {/* Bottone per avviare stream di tweet */}
-                                                <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
+                                                <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading" || this.state.fetching} type="button">
                                                     {
                                                         (() => {
                                                             switch (this.state.stream_state) {
@@ -115,7 +115,10 @@ class SearchTweets extends React.Component {
                                                     }
                                                 </button>
                                                 {/* Bottone per la ricerca */}
-                                                <button className="btn btn-outline-secondary" disabled={this.state.stream_state === "on"} type="submit" id="button-addon1">Cerca</button>
+                                                <button className="btn btn-outline-secondary" disabled={(this.state.stream_state) === "on" || this.state.fetching} type="submit" id="button-addon1">
+                                                    Cerca
+                                                    <span className={`spinner-grow spinner-grow-sm ms-2 ${this.state.fetching ? "" : "d-none"}`} role="status" aria-hidden="true"></span>
+                                                </button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
@@ -206,12 +209,12 @@ class SearchTweets extends React.Component {
 
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
-            const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
-            let end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
+            const start_date = this.input.start_date.current.value ? moment.utc(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").toISOString() : "2006-03-26T00:00:02.000Z";
+            let end_date = this.input.end_date.current.value ? moment.utc(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").toISOString() : "";
             this.tweets_buffer = [];
 
             // Se la data di fine supera la data odierna, viene impostata la data odierna (10 secondi sottratti per necessità delle API di Twitter)
-            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().format(); } 
+            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().toISOString(); } 
 
             let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
