@@ -17,16 +17,17 @@ module.exports = {
 
 /**
  * Organizza i tweet interrogati.
- * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
- * @param {string} pagination_token Token della prossima pagina
- * @param {number} quantity Numero di tweet da ricercare
- * @param {number} start_time Data minima dei tweet da ottenere
- * @param {number} end_time Data massima dei tweet da ottenere
+ * @param {string}  keyword Parola chiave da ricercare (può essere anche un hashtag)
+ * @param {string}  pagination_token Token della prossima pagina
+ * @param {number}  quantity Numero di tweet da ricercare
+ * @param {number}  start_time Data minima dei tweet da ottenere
+ * @param {number}  end_time Data massima dei tweet da ottenere
+ * @param {boolean} getReplies Indica se ricercare o no anche i tweet di risposta
  * @returns L'oggetto page che contiene un array di tweet e l'indicatore per la pagina successiva
  */
-async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, start_time = '', end_time = '', getReplies = false) {
     if (!keyword) { throw new Error("Parola chiave mancante"); }
-    let fetchedTweets = await _keywordFetch(keyword, pagination_token, quantity, start_time, end_time);
+    let fetchedTweets = await _keywordFetch(keyword, pagination_token, quantity, start_time, end_time, getReplies);
     if (!fetchedTweets?.data.data) { throw new Error("Pagination token non esistente o errore nel recuperare i tweet"); }
 
     // Pagina di dimensione max_results che contiene l'array di tweet
@@ -81,17 +82,19 @@ async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, sta
  * @param {number} end_time Data massima dei tweet da ottenere
  * @returns Lista di dimensione richiesta tweet se possibile, altrimenti restituisce il massimo numero disponibile.
  */
-async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '') {
+async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '', getReplies = false) {
     keyword = _normalizeQuery(keyword);
 
     // Controlla che le date siano nel range limite di twitter
     let limit = new Date("2006-03-26T00:00:00Z");
     const date = _normalizeDate(limit, start_time, end_time);
+    let replies = "";
+    if (!getReplies) { replies = "-is:reply"; }
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `${keyword} -is:reply -is:retweet`,                          // Filtra per parola chiave e rimuove i retweet e le risposte
+            query: `${keyword} ${replies} -is:retweet`,                         // Filtra per parola chiave e rimuove i retweet e le risposte
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
