@@ -59,6 +59,7 @@ class WordCloud extends React.Component {
                 value: globalWordCount[word]
             }));
 
+            out.sort((w1, w2) => w2.value - w1.value);
             out = out.slice(0, 80); // Limita le parole considerate
 
             if(JSON.stringify(out) !== JSON.stringify(this.state.words)) { 
