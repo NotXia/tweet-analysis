@@ -85,7 +85,7 @@ class SearchTweets extends React.Component {
                                                     <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "1.2rem" }} htmlFor="date">Data</label>
                                                     <input className="form-control" id="date" type="date" style={{ fontSize: "1.6rem" }}
                                                         min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { this.searchTweets(e.target.value) }}
-                                                        disabled={this.state.fetching} />
+                                                        disabled={this.state.fetching || this.state.fetching_most_winning} />
                                                 </div>
                                             </div>
                                         </div>
