@@ -7,7 +7,7 @@ import TweetGame from "../../components/TweetGame";
 import TweetUser from "../../components/TweetUser";
 import GeolocationMap from "../../components/maps/GeolocationMap";
 import moment from "moment";
-import { getWinners } from "../../modules/games/tvgameWinners";
+import { getWinners, getMostWinningFrom } from "../../modules/games/tvgameWinners";
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -27,6 +27,8 @@ class SearchTweets extends React.Component {
             date: "",                               // Data da cercare
             winning_word: "",                       // Parola vincente
             fetching: false,                        // Indica se attualmente si sta richiedendo dei tweet
+
+            most_winning: [],
 
             select_min_date: __min_date_limit,      // Limite minimo attuale della data (a init: "2010-11-06")
             select_max_date: __max_date_limit,      // Limite massimo attuale della data (a init: data di oggi)
@@ -141,7 +143,46 @@ class SearchTweets extends React.Component {
 
                                         {/* Vincitori di sempre */}
                                         <div className="col-12 col-md-6">
+                                            {
+                                                (this.state.most_winning && this.state.date !== "") &&
+                                                <div>
+                                                    <div className="d-flex align-items-center justify-content-center w-100 fs-5 fw-bold text-center mb-0">
+                                                        I più vincenti - 
+                                                        Ultimi 
+                                                        <select className="mx-1 form-select w-auto" defaultValue={7} disabled={this.state.fetching_most_winning}
+                                                                onChange={(e) => { this.fetchMostWinning(this.state.date, parseInt(e.target.value)) }}>
+                                                            <option value={7}>7</option>
+                                                            <option value={14}>14</option>
+                                                            <option value={30}>30</option>
+                                                        </select>
+                                                        giorni
+                                                    </div>
 
+                                                    <div className="overflow-auto border rounded border-opacity-100" style={{ height: "50vh" }}>
+                                                    {
+                                                        (() => {
+                                                            if (this.state.fetching_most_winning) { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100"><span className={`spinner-grow`} role="status" /></div>; }
+                                                            if (this.state.most_winning.length === 0) { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Nessuno ha indovinato ultimamente</div>; }
+
+                                                            return (
+                                                                <ul className="list-group list-group-flush">
+                                                                {
+                                                                    this.state.most_winning.map((winner_data) => (
+                                                                        <li key={`winner-tweet-${winner_data.tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
+                                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                                <TweetUser tweet={winner_data.tweet} time_format="" />
+                                                                                <span className="me-2 fw-semibold fs-5">{winner_data.times}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    ))
+                                                                }
+                                                                </ul>
+                                                            )
+                                                        })()
+                                                    }
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -176,6 +217,7 @@ class SearchTweets extends React.Component {
             tweets: [],
             date: "",
             winning_word: "",
+            most_winning: []
         });
 
         // Ricerca tentativi
@@ -196,7 +238,7 @@ class SearchTweets extends React.Component {
 
         // Ricerca parola vincente
         try {
-            const winning_word = await this.props.getWinningWordFunction(date);
+            const winning_word = await this.props.getWinningWordFunction(date, 7);
 
             this.setState({ 
                 winning_word: winning_word.word,
@@ -208,7 +250,25 @@ class SearchTweets extends React.Component {
             }
         }
 
+        // Ricerca più vincenti
+        this.fetchMostWinning(date, );
+
         this.setState({ fetching: false });
+    }
+
+    async fetchMostWinning(start_date, number_of_days=7) {
+        this.setState({ 
+            most_winning: [],
+            fetching_most_winning: true 
+        });
+
+        const most_winning = await getMostWinningFrom(start_date, moment(start_date).subtract(number_of_days, "days"), this.props.getAttemptsFunction, this.props.getWinningWordFunction);
+
+        this.setState({ 
+            most_winning: most_winning, 
+            winning_range: number_of_days,
+            fetching_most_winning: false 
+        });
     }
 }
 
