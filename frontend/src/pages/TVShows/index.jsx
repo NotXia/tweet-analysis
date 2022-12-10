@@ -127,7 +127,7 @@ class SearchTweets extends React.Component {
                                                                     {
                                                                         winners.map((tweet) => (
                                                                             <li key={`winner-tweet-${tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
-                                                                                <TweetUser tweet={tweet} />
+                                                                                <TweetUser tweet={tweet} time_format="HH:mm" />
                                                                             </li>
                                                                         ))
                                                                     }
@@ -170,7 +170,7 @@ class SearchTweets extends React.Component {
                                                                     this.state.most_winning.map((winner_data) => (
                                                                         <li key={`winner-tweet-${winner_data.tweet.id}`} className="list-group-item border-opacity-50 border-bottom">
                                                                             <div className="d-flex align-items-center justify-content-center">
-                                                                                <TweetUser tweet={winner_data.tweet} time_format="" />
+                                                                                <TweetUser tweet={winner_data.tweet} time_format=" " />
                                                                                 <span className="me-2 fw-semibold fs-5">{winner_data.times}</span>
                                                                             </div>
                                                                         </li>
