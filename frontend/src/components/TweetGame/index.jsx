@@ -33,7 +33,7 @@ class TweetGame extends React.Component {
 
         return (<>
             <div className="list-group-item list-group-item-action px-4 pt-4">
-                <TweetUser tweet={tweet} />
+                <TweetUser tweet={tweet} time_format="HH:mm" />
                 
                 <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{word?.toUpperCase()}</p>
                 
