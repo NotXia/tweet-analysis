@@ -81,6 +81,11 @@ class Test extends React.Component {
                                             </div>
                                         </div>
 
+                                        <div className={`text-center ${this.state.end_state ? "d-none" : ""}`}>
+                                            <p className={`${this.state.current_color === this.state.player_color ? "" : "d-none"} fs-5`}>È il tuo turno</p>
+                                            <p className={`${this.state.current_color === this.state.player_color ? "d-none" : ""} fs-5`}>È il turno degli utenti di Twitter</p>
+                                        </div>
+
                                         {/* Esito */}
                                         {
                                             this.state.end_state &&

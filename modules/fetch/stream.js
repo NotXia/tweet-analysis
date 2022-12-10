@@ -85,7 +85,7 @@ async function _getStream(reconnect_attemps=0) {
     try {
         const res = await axios({
             method: "GET", url: "https://api.twitter.com/2/tweets/search/stream",
-            headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+            headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN_STANDARD}` },
             params: {
                 "expansions": "geo.place_id,author_id,attachments.media_keys",
                 "tweet.fields": "created_at,text,public_metrics",
@@ -140,7 +140,7 @@ async function addRule(username="", keyword="") {
         // Creazione della regola
         const res = await axios({
             method: "POST", url: "https://api.twitter.com/2/tweets/search/stream/rules",
-            headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+            headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN_STANDARD}` },
             data: {
                 add: [{ value: rule }]
             }
@@ -170,7 +170,7 @@ async function addRule(username="", keyword="") {
 async function deleteRuleById(rule_id) {
     await axios({
         method: "POST", url: "https://api.twitter.com/2/tweets/search/stream/rules",
-        headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+        headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN_STANDARD}` },
         data: {
             delete: { ids: [rule_id] }
         }
@@ -185,7 +185,7 @@ async function deleteRuleById(rule_id) {
 async function _getRules() {
     const res = await axios({
         method: "GET", url: "https://api.twitter.com/2/tweets/search/stream/rules",
-        headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
+        headers: { "Authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN_STANDARD}` },
     });
 
     return res.data.data;

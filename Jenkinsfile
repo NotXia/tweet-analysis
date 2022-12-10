@@ -13,6 +13,8 @@ pipeline {
             environment {
                 NODE_ENV = "testing"
                 TWITTER_BEARER_TOKEN = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
+                TWITTER_BEARER_TOKEN_STANDARD = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
+                MONGO_URL = credentials("b79ec51e-28cd-4615-9b75-803dc32daec7")
             }
 
             stages {
