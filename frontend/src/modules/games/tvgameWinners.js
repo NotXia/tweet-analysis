@@ -26,12 +26,20 @@ export function getWinners(tweets, winning_word) {
     return winners;
 }
 
+/**
+ * Restituisce i giocatori più vincenti (almeno 2 indovinate) di una dato intervallo temporale
+ * @param {string} curr_date            Data di inizio
+ * @param {string} end_date             Data di fine
+ * @param {function} tweet_fetcher             Funzione per estrarre i tentativi
+ * @param {function} winning_word_fetcher      Funzione per estrarre la parola vincente 
+ * @returns {Promise<[{tweet: Object, times: number}]>} Il numero di volte che l'utente ha vinto e un tweet di quell'utente
+ */
 export async function getMostWinningFrom(curr_date, end_date, tweet_fetcher, winning_word_fetcher) {
     curr_date = moment.utc(curr_date).startOf("day");
     end_date = moment.utc(end_date).startOf("day");
 
-    let all_winners = {};
-    let winner_reference_tweet = {};
+    let all_winners = {};               // Associa username al numero di vittorie
+    let winner_reference_tweet = {};    // Associa username a un tweet di quell'utente
 
     while (curr_date.isAfter(end_date)) {
         try {
@@ -46,11 +54,11 @@ export async function getMostWinningFrom(curr_date, end_date, tweet_fetcher, win
                 winner_reference_tweet[winner_tweet.username] = winner_tweet;
             })
         }
-        catch (err) {  }
-        curr_date = curr_date.subtract(1, "days")
+        catch (err) { /* Volutamente vuoto */ }
+        curr_date = curr_date.subtract(1, "days");
     }
 
-    let most_winning = Object.keys(all_winners).filter((winner_username) => all_winners[winner_username] > 1);
+    let most_winning = Object.keys(all_winners).filter((winner_username) => all_winners[winner_username] > 1); // Estrae chi ha vinto più volte
     most_winning = most_winning.map((winner_username) => ({
         tweet: winner_reference_tweet[winner_username],
         times: all_winners[winner_username]
