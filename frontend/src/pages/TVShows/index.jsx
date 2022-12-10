@@ -150,7 +150,7 @@ class SearchTweets extends React.Component {
                                                         I più vincenti - 
                                                         Ultimi 
                                                         <select className="mx-1 form-select w-auto" defaultValue={7} disabled={this.state.fetching_most_winning}
-                                                                onChange={(e) => { this.fetchMostWinning(this.state.date, parseInt(e.target.value)) }}>
+                                                                onChange={(e) => { this.fetchMostWinning(this.state.date, parseInt(e.target.value)-1) }}>
                                                             <option value={7}>7</option>
                                                             <option value={14}>14</option>
                                                             <option value={30}>30</option>

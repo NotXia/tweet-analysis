@@ -12,7 +12,8 @@ export function getWinners(tweets, winning_word) {
 
     let winners = [];
     let winner_username = {}; // Per tenere traccia di chi è già nella lista dei vincitori
-    
+    tweets = tweets.slice().reverse();
+
     tweets.forEach((tweet) => {
         if (tweet.word.toUpperCase() === winning_word.toUpperCase()) {
             if (!winner_username[tweet.tweet.username]) {
@@ -22,7 +23,6 @@ export function getWinners(tweets, winning_word) {
         }
     });
 
-    winners.reverse();
     return winners;
 }
 
@@ -41,7 +41,7 @@ export async function getMostWinningFrom(curr_date, end_date, tweet_fetcher, win
     let all_winners = {};               // Associa username al numero di vittorie
     let winner_reference_tweet = {};    // Associa username a un tweet di quell'utente
 
-    while (curr_date.isAfter(end_date)) {
+    while (curr_date.isSameOrAfter(end_date)) {
         try {
             const tweets_data = await tweet_fetcher(curr_date);
             const winning_word = await winning_word_fetcher(curr_date);
