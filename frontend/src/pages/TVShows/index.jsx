@@ -7,6 +7,7 @@ import TweetGame from "../../components/TweetGame";
 import TweetUser from "../../components/TweetUser";
 import GeolocationMap from "../../components/maps/GeolocationMap";
 import moment from "moment";
+import { getWinners } from "../../modules/games/tvgameWinners";
 
 /**
  * A inizializzazione pagina imposta le costanti per la data attuale e la data minima
@@ -115,7 +116,7 @@ class SearchTweets extends React.Component {
                                                         (() => {
                                                             if (this.state.winning_word === "") { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Non è ancora stata annunciata la parola vincente</div>; }
 
-                                                            const winners = this.getWinners().reverse();
+                                                            const winners = getWinners(this.state.tweets, this.state.winning_word);
 
                                                             if (winners.length === 0) { return <div className="fs-5 d-flex justify-content-center align-items-center text-center h-100 w-100">Nessuno ha indovinato la parola di oggi</div>; }
                                                             else {
@@ -209,25 +210,6 @@ class SearchTweets extends React.Component {
 
         this.setState({ fetching: false });
     }
-
-    getWinners() {
-        if (this.state.winning_word === "") { return []; }
-
-        let winners = [];
-        let winner_username = {};
-        
-        this.state.tweets.forEach((tweet) => {
-            if (tweet.word.toUpperCase() === this.state.winning_word.toUpperCase()) {
-                if (!winner_username[tweet.tweet.username]) {
-                    winners.push(tweet.tweet);
-                    winner_username[tweet.tweet.username] = true;
-                }
-            }
-        });
-
-        return winners;
-    }
-    
 }
 
 export default SearchTweets;
