@@ -4,7 +4,8 @@
 
 
     Proprietà:
-    - tweet:Object      Dati del tweet
+    - tweet:Object          Dati del tweet
+    - time_format:String    Formato dell'orario da visualizzare
 
 */
 
@@ -41,7 +42,7 @@ class TweetUser extends React.Component {
                 </div>
 
                 <div className="d-flex align-items-center h-100">
-                    <p className="small">{moment(tweet.time).format("HH:mm")}</p>
+                    <p className="small">{moment(tweet.time).format(this.props.time_format)}</p>
                 </div>
             </div>
         </>);

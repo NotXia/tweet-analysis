@@ -47,7 +47,7 @@ class Tweet extends React.Component {
         return (<>
             {/* <a href={"https://twitter.com/twitter/status/" + tweet.id} target="_blank" rel="noreferrer" className="list-group-item list-group-item-action px-4 pt-4" aria-current="true"> */}
             <div className="list-group-item list-group-item-action px-4 pt-4">
-                <TweetUser tweet={tweet} />
+                <TweetUser tweet={tweet} time_format="DD-MM-YYYY HH:mm" />
 
                 <p className="m-0 mt-2" style={{fontSize: "0.95rem", overflowWrap: "break-word"}}>{he.decode(tweet.text)}</p>
                 <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
