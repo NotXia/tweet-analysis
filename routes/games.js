@@ -13,4 +13,7 @@ router.get("/ghigliottina", middlewareGames.gamesValidation, controllerGames.use
 router.get("/catenafinale/winning_word", middlewareGames.gamesWinningWordValidation, controllerGames.winningWord("reazione a catena", "La #parola della #catena finale per #reazioneacatena di oggi è:", "quizzettone"));
 router.get("/catenaFinale", middlewareGames.gamesValidation, controllerGames.userAttempts(catenaFinale, "reazione a catena"));
 
+router.get("/fantacitorio/recap", middlewareGames.fantacitorioRecapValidation, controllerGames.fantacitorioRecap);
+
+
 module.exports = router;
