@@ -90,6 +90,6 @@ describe("Richieste errate a /games/fantacitorio/recap ", function () {
             .reply(200, null);
 
         const res = await curr_session.get("/games/fantacitorio/recap").query({ date: date.startOf("day").toISOString() }).expect(400);
-        expect( res.body ).not.toBeDefined();
+        expect( res.body ).toBeDefined();
     });
 });
