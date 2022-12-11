@@ -1,6 +1,8 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
+const { getPointsByWeek } = require("../modules/games/fantacitorio.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
+const FantacitorioModel = require("../models/Fantacitorio.js");
 const moment = require("moment");
 
 
@@ -71,7 +73,30 @@ function userAttempts(tweet_fetcher, game_name) {
     }
 }
 
+async function fantacitorioRecap(req, res) {
+    let points;
+
+    try {
+        points = await FantacitorioModel.getPointsOfWeek(req.query.date);
+
+        if (!points) {
+            points = await getPointsByWeek(req.query.date);
+        }
+    } catch (error) {
+        res.sendStatus(500);
+        return;
+    }
+
+    res.status(200).json(points);
+
+    if (!process.env.NODE_ENV.includes("testing")) {
+        // Caching punteggi
+        await FantacitorioModel.cachePoints(points, req.query.date);
+    }
+}
+
 module.exports = {
     userAttempts: userAttempts,
-    winningWord: winningWord
+    winningWord: winningWord,
+    fantacitorioRecap: fantacitorioRecap
 };
