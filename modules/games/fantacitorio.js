@@ -13,44 +13,38 @@ module.exports = {
     }
 }
 
-getSquads().then((res) => {
-    console.log(res);
-});
-
 /**
  * Funzione che recupera i giocatori che si sono registrati al fantacitorio, insieme alla propria squadra
- * @return {Promise<[{tweet:Object, squad:string}]>} I tweet recuperati e il relativo link all'immagine con la propria squadra
+ * @param {String} pagination_token pagination token della pagina di immagini da visualizzare
+ * @return {Promise<tweets:[{tweet:Object, squad:string, next_token:string}], next_token:string>} I tweet recuperati con il relativo link all'immagine con la propria squadra e token per la prossima pagina
  */
-async function getSquads() {
-    let pagination_token = "";
-    let out = {};
+async function getSquads(pagination_token = "") {
     // Immagine di riferimento che verrà comparata con quelle nei tweet, per verificare quali immagini sono effettivamente squadre per il fantacitorio
     const img_sample = await Jimp.read('https://pbs.twimg.com/media/FgJ1OUDWQAEn9JT?format=jpg&name=medium');
 
-    //do {
-        try {
-            let currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token, 100, '', '', true);
+    try {
+        let currentFetch;
+        let out = {
+            tweets: []
+        };
+        do {
+            currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token = '', 10, '', '', true);
+            
 
             for(const tweet of currentFetch.tweets) {
-                let player = tweet.username;
                 if (tweet.media.length > 0) {
                     for (const md of tweet.media) {
-
-                        // Se il media è una foto, e il giocatore non ha ancora squadre registrate (considera quindi solo la prima squadra in un post, nel caso ce ne fosse
-                        // più di una), esegue i controlli sulla foto
-                        if (md.type === 'photo' && !out[player]) {
+                        if (md.type === 'photo') {
                             await Jimp.read(md.url)
                                 .then(image => {
                                     image.autocrop(false);  //Rimuove eventuali bordi esterni nell'immagine
 
-                                    // Se l'immagine nel tweet e l'immagine di riferimento sono estremamente simili, registra l'immagine come squadra sotto il nome del giocatore
-                                    // che l'ha tweettata (essendo che la ricerca di tweet va da oggi verso il passato, verrà registrata solo l'ultima squadra trovata, ovvero
-                                    // la prima pubblicata dal giocatore)
+                                    // Se l'immagine nel tweet e l'immagine di riferimento sono estremamente simili, registra l'immagine come squadra
                                     if (Jimp.distance(image, img_sample) == 0) {    
-                                        out[player] = {
+                                        out.tweets.push({
                                             tweet: tweet,
                                             squad: md.url
-                                        };
+                                        });
                                     }
                                 })
                                 .catch(err => {
@@ -60,15 +54,14 @@ async function getSquads() {
                     }
                 }
             }
-
             pagination_token = currentFetch.next_token;
-        }catch(err){
-            console.log(err);
-            //break;
-        }
-    //}while(pagination_token !== "");
+        } while(out.tweets.length == 0 && pagination_token !== "");  // Se nella pagina di tweet richiesta non è stata trovata nessuna squadra e ci sono altri tweet disponibili, passa alla prossima
 
-    return Object.values(out);
+        out.next_token = currentFetch.next_token;
+        return out;
+    }catch(err){
+        console.log(err);
+    }
 }
 
 /**
