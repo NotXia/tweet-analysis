@@ -73,6 +73,9 @@ function userAttempts(tweet_fetcher, game_name) {
     }
 }
 
+/**
+ * Prende la data inserita e, per ogni politico citato, estrae i punteggi assegnati in quella settimana e li accumula
+ */
 async function fantacitorioRecap(req, res) {
     let points;
 
