@@ -20,8 +20,13 @@ function winningWord(game_name, query_phrase, query_user) {
             if (!winning_word) {
                 winning_word = await getWinningWord(req.query.date, query_phrase, query_user);
             }
+
+            if (winning_word.word === "") { throw new Error("Tweet non trovato"); }
         } catch (error) {
-            if (error.message === "Tweet non trovato") { return res.sendStatus(404); }
+            if (error.message === "Tweet non trovato") { 
+                await WordModel.setNoWordDay(req.query.date, game_name);
+                return res.sendStatus(404); 
+            }
             res.sendStatus(500);
             return;
         }
