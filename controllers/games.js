@@ -51,7 +51,7 @@ function userAttempts(tweet_fetcher, game_name) {
         try {
             tweets_response = await TVGameModel.getCache(game_name, req.query.date);
     
-            if (!tweets_response || tweets_response.length === 0) {
+            if (!tweets_response) {
                 should_cache = true;
                 tweets_response = await tweet_fetcher(req.query.date);
             }
@@ -65,7 +65,12 @@ function userAttempts(tweet_fetcher, game_name) {
         if (!process.env.NODE_ENV.includes("testing")) {
             // Caching tweet
             if (should_cache || moment(req.query.date).isSame(moment(), "day")) { // Prova sempre a fare caching dei tweet di oggi
-                await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                if (tweets_response.length === 0 && !moment(req.query.date).isSame(moment(), "day")) { // Giorno senza tentativi
+                    await TVGameModel.setNoGameDay(game_name, req.query.date) 
+                }
+                else {
+                    await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                }
             }
         }
     }
