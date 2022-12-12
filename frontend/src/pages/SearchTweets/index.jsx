@@ -96,24 +96,15 @@ class SearchTweets extends React.Component {
                                         <div className={`text-center mb-1 ${this.state.stream_state === "on" ? "d-block" : "d-none"}`}>
                                             <div className={`${live_dot_css["live-dot"]} me-2`}></div><span className="fw-semibold">Live</span>
                                         </div>
+                                        
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
-                                            {/* Barra primaria - Query */}
                                             <div className="input-group flex">
+                                                {/* Barra primaria - Query */}
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" required />
+                                                
                                                 {/* Bottone per avviare stream di tweet */}
-                                                <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading" || this.state.fetching} type="button">
-                                                    {
-                                                        (() => {
-                                                            switch (this.state.stream_state) {
-                                                                case "on": return (<span>Ferma</span>);
-                                                                case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
-                                                                case "off": 
-                                                                default:
-                                                                    return (<span>Live</span>);
-                                                            }
-                                                        })()
-                                                    }
-                                                </button>
+                                                { this.renderStreamButton() }
+                                                
                                                 {/* Bottone per la ricerca */}
                                                 <button className="btn btn-outline-secondary" disabled={(this.state.stream_state) === "on" || this.state.fetching} type="submit" id="button-addon1">
                                                     Cerca
@@ -122,6 +113,7 @@ class SearchTweets extends React.Component {
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
+                                            
                                             {/* Opzioni avanzate */}
                                             <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} style={{ cursor: "pointer" }} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className={`collapse ${this.state.stream_state === "on" ? "d-none" : ""}`} id="advancedOptions">
@@ -196,6 +188,24 @@ class SearchTweets extends React.Component {
                 </div>
             </main>
         </>);
+    }
+
+    renderStreamButton() {
+        return (
+            <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading" || this.state.fetching} type="button">
+            {
+                (() => {
+                    switch (this.state.stream_state) {
+                        case "on": return (<span>Ferma</span>);
+                        case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
+                        case "off": 
+                        default:
+                            return (<span>Live</span>);
+                    }
+                })()
+            }
+            </button>
+        );
     }
 
     /**

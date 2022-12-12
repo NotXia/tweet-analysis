@@ -1,6 +1,8 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
+const { getPointsByWeek } = require("../modules/games/fantacitorio.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
+const FantacitorioModel = require("../models/Fantacitorio.js");
 const moment = require("moment");
 
 
@@ -20,8 +22,15 @@ function winningWord(game_name, query_phrase, query_user) {
             if (!winning_word) {
                 winning_word = await getWinningWord(req.query.date, query_phrase, query_user);
             }
+
+            if (winning_word.word === "") { throw new Error("Tweet non trovato"); }
         } catch (error) {
-            if (error.message === "Tweet non trovato") { return res.sendStatus(404); }
+            if (error.message === "Tweet non trovato") {
+                if (!moment(req.query.date).isSame(moment(), "day")) { // Se non è oggi, marca il giorno come senza parola del giorno
+                    await WordModel.setNoWordDay(req.query.date, game_name);
+                }
+                return res.sendStatus(404); 
+            }
             res.sendStatus(500);
             return;
         }
@@ -51,7 +60,7 @@ function userAttempts(tweet_fetcher, game_name) {
         try {
             tweets_response = await TVGameModel.getCache(game_name, req.query.date);
     
-            if (!tweets_response || tweets_response.length === 0) {
+            if (!tweets_response) {
                 should_cache = true;
                 tweets_response = await tweet_fetcher(req.query.date);
             }
@@ -65,13 +74,44 @@ function userAttempts(tweet_fetcher, game_name) {
         if (!process.env.NODE_ENV.includes("testing")) {
             // Caching tweet
             if (should_cache || moment(req.query.date).isSame(moment(), "day")) { // Prova sempre a fare caching dei tweet di oggi
-                await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                if (tweets_response.length === 0 && !moment(req.query.date).isSame(moment(), "day")) { // Giorno senza tentativi
+                    await TVGameModel.setNoGameDay(game_name, req.query.date) 
+                }
+                else {
+                    await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                }
             }
         }
     }
 }
 
+/**
+ * Prende la data inserita e, per ogni politico citato, estrae i punteggi assegnati in quella settimana e li accumula
+ */
+async function fantacitorioRecap(req, res) {
+    let points;
+
+    try {
+        points = await FantacitorioModel.getPointsOfWeek(req.query.date);
+
+        if (!points) {
+            points = await getPointsByWeek(req.query.date);
+        }
+    } catch (error) {
+        res.sendStatus(500);
+        return;
+    }
+
+    res.status(200).json(points);
+
+    if (!process.env.NODE_ENV.includes("testing")) {
+        // Caching punteggi
+        await FantacitorioModel.cachePoints(points, req.query.date);
+    }
+}
+
 module.exports = {
     userAttempts: userAttempts,
-    winningWord: winningWord
+    winningWord: winningWord,
+    fantacitorioRecap: fantacitorioRecap
 };

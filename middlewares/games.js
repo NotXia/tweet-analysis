@@ -16,7 +16,10 @@ const games = [
     }
 ];
 
-const gamesWinningWord = [
+/**
+ * Controlla se la data inserita è valida
+ */
+const gamesCheckDate = [
     function (req, _, next) {       //Validazione dell'input
         let errors = {};
 
@@ -32,5 +35,6 @@ const gamesWinningWord = [
 
 module.exports = {
     gamesValidation: games,
-    gamesWinningWordValidation: gamesWinningWord
+    gamesWinningWordValidation: gamesCheckDate,
+    fantacitorioRecapValidation: gamesCheckDate
 };
