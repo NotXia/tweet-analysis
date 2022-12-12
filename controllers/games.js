@@ -23,8 +23,10 @@ function winningWord(game_name, query_phrase, query_user) {
 
             if (winning_word.word === "") { throw new Error("Tweet non trovato"); }
         } catch (error) {
-            if (error.message === "Tweet non trovato") { 
-                await WordModel.setNoWordDay(req.query.date, game_name);
+            if (error.message === "Tweet non trovato") {
+                if (!moment(req.query.date).isSame(moment(), "day")) { // Se non è oggi, marca il giorno come senza parola del giorno
+                    await WordModel.setNoWordDay(req.query.date, game_name);
+                }
                 return res.sendStatus(404); 
             }
             res.sendStatus(500);
