@@ -30,10 +30,34 @@ word_scheme.statics.cacheWord = async function(winning_word, game) {
     }
 };
 
+
+/**
+ * Marca un giorno come senza parola vincente
+ * @param {string} date    Giorno da marcare (formato ISO)
+ * @param {string} game    Gioco di riferimento
+ */
+word_scheme.statics.setNoWordDay = async function(date, game) {
+    if (process.env.NODE_ENV.includes("testing")) { return; }
+
+    try {
+        if (await this.getWordOfDay(moment.utc(date).startOf("day").toISOString(), game)) { return; } // Parola già in cache
+        
+        await new this({
+            word: "",
+            date: moment.utc(date).startOf("day").toISOString(),
+            game: game
+        }).save();
+    } catch (err) {
+        if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Parola già in cache
+        throw err;
+    }
+};
+
+
 /**
  * Restituisce la parola del giorno cercato, se esiste.
  * @param {String} date         Data da ricercare
- * @returns {Promise<string>}   Parola del giorno 
+ * @returns {Promise<Object|null>}   Parola del giorno, null se cache miss
  */
 word_scheme.statics.getWordOfDay = async function(date, game) {
     if (process.env.NODE_ENV.includes("testing")) { return null; }

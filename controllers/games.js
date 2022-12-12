@@ -20,8 +20,15 @@ function winningWord(game_name, query_phrase, query_user) {
             if (!winning_word) {
                 winning_word = await getWinningWord(req.query.date, query_phrase, query_user);
             }
+
+            if (winning_word.word === "") { throw new Error("Tweet non trovato"); }
         } catch (error) {
-            if (error.message === "Tweet non trovato") { return res.sendStatus(404); }
+            if (error.message === "Tweet non trovato") {
+                if (!moment(req.query.date).isSame(moment(), "day")) { // Se non è oggi, marca il giorno come senza parola del giorno
+                    await WordModel.setNoWordDay(req.query.date, game_name);
+                }
+                return res.sendStatus(404); 
+            }
             res.sendStatus(500);
             return;
         }
@@ -51,7 +58,7 @@ function userAttempts(tweet_fetcher, game_name) {
         try {
             tweets_response = await TVGameModel.getCache(game_name, req.query.date);
     
-            if (!tweets_response || tweets_response.length === 0) {
+            if (!tweets_response) {
                 should_cache = true;
                 tweets_response = await tweet_fetcher(req.query.date);
             }
@@ -65,7 +72,12 @@ function userAttempts(tweet_fetcher, game_name) {
         if (!process.env.NODE_ENV.includes("testing")) {
             // Caching tweet
             if (should_cache || moment(req.query.date).isSame(moment(), "day")) { // Prova sempre a fare caching dei tweet di oggi
-                await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                if (tweets_response.length === 0 && !moment(req.query.date).isSame(moment(), "day")) { // Giorno senza tentativi
+                    await TVGameModel.setNoGameDay(game_name, req.query.date) 
+                }
+                else {
+                    await Promise.all(tweets_response.map(async (tweet) => TVGameModel.cacheTweet(tweet, game_name, req.query.date)));
+                }
             }
         }
     }
