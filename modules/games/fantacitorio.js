@@ -95,7 +95,7 @@ async function _parsePoints(text) {
  */
 function _normalizeString(text) {
     text = text.toLowerCase().trim();
-    text = text.replace(/([-,:()]|\b(per|punti|a|altri)\b)+/g, " ");
+    text = text.replace(/([-,:()]|\b(per|punti|a|altri|di)\b)+/g, " ");
     text = text.replace(/\n/g, " ");
     text = text.replace(/\s\s+/g, " ");
 
