@@ -4,7 +4,7 @@ import mongoose from "mongoose"
 
 moment().format();
 
-const { getPointsByWeek } = require("../../modules/games/fantacitorio");
+const { getPointsByWeek, getSquads } = require("../../modules/games/fantacitorio");
 
 jest.setTimeout(120000);
 afterEach(async () => { await new Promise(r => setTimeout(r, 1000)); });
@@ -26,5 +26,17 @@ describe("Test funzione getPointsByWeek", function() {
         expect( result['BERLUSCONI SILVIO'] ).toEqual(100);
         expect( result['ZINZI GIANPIERO'] ).toEqual(-30);
         expect( result['SOUMAHORO ABOUBAKAR'] ).toEqual(3000);
+    });
+})
+
+describe("Test funzione getSquads", function() {
+    test("Ricerca squadre senza pagination token", async function () {
+        const result = await(getSquads());
+        expect( result.tweets ).toBeDefined();
+        expect( result.next_token ).toBeDefined();
+        for (const tweet of result.tweets) {
+            expect( tweet.tweet ).toBeDefined();
+            expect( tweet.squad ).toBeDefined();
+        }
     });
 })

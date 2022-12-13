@@ -28,8 +28,7 @@ async function getSquads(pagination_token = "") {
             tweets: []
         };
         do {
-            currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token = '', 10, '', '', true);
-            
+            currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token, 10, '', '', true);
 
             for(const tweet of currentFetch.tweets) {
                 if (tweet.media.length > 0) {
@@ -60,7 +59,7 @@ async function getSquads(pagination_token = "") {
         out.next_token = currentFetch.next_token;
         return out;
     }catch(err){
-        console.log(err);
+        throw new Error("Pagination token errato o errore nel recuperare le squadre");
     }
 }
 

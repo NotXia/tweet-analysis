@@ -6,7 +6,7 @@ import nock from "nock";
 
 moment().format();
 
-const { getPointsByWeek, testing } = require("../../modules/games/fantacitorio");
+const { getPointsByWeek, getSquads, testing } = require("../../modules/games/fantacitorio");
 
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URL);
@@ -114,3 +114,69 @@ describe("Test funzione getPointsByWeek", function() {
         throw new Error("Eccezione non lanciata");
     });
 })
+
+describe("Test funzione getSquads", function() {
+    test("Ricerca squadre senza pagination token e con prima pagina senza squadre trovate", async function () {
+        let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
+        let batch2 = generateTweets(5, true, undefined, undefined, "#fantacitorio test");
+        batch2.data[2].attachments.media_keys[0] = '3_1111122222333334444';
+        batch2.data[4].attachments.media_keys[0] = '3_2222233333444411111';
+        batch2.includes.media[0].media_key = '3_1111122222333334444';
+        batch2.includes.media[0].url = 'https://pbs.twimg.com/media/Fi6jtjhXgBswzlx.jpg';
+        batch2.includes.media[1].media_key = '3_2222233333444411111';
+        batch2.includes.media[1].url = 'https://pbs.twimg.com/media/Fi60YlyXgAAZX7C.jpg';
+
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "", "", true))
+            .reply(200, batch1);
+        
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", batch1.meta.next_token, 10, "", "", true))
+            .reply(200, batch2);
+
+        const result = await(getSquads());
+        expect( result.tweets.length ).toEqual(2);
+        expect( result.next_token ).toBeDefined();
+        for (const tweet of result.tweets) {
+            expect( tweet.tweet ).toBeDefined();
+            expect( tweet.squad ).toBeDefined();
+        }
+    }, 80000);
+
+    test("Ricerca squadre con pagination token", async function () {
+        let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
+        let batch2 = generateTweets(3, true, undefined, undefined, "#fantacitorio test");
+        batch2.data[2].attachments.media_keys[0] = '3_1111122222333334444';
+        batch2.includes.media[0].media_key = '3_1111122222333334444';
+        batch2.includes.media[0].url = 'https://pbs.twimg.com/media/Fi6jtjhXgBswzlx.jpg';
+
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "", "", true))
+            .reply(200, batch1);
+        
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", batch1.meta.next_token, 10, "", "", true))
+            .reply(200, batch2);
+
+        const result = await(getSquads(batch1.meta.next_token));
+        expect( result.tweets.length ).toEqual(1);
+        expect( result.next_token ).toBeDefined();
+        for (const tweet of result.tweets) {
+            expect( tweet.tweet ).toBeDefined();
+            expect( tweet.squad ).toBeDefined();
+        }
+    }, 15000);
+
+    test("Ricerca squadre con pagination token errato", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "asfasgfdg", 10, "", "", true))
+            .reply(500);
+        try {
+            await(getSquads("asfasgfdg"));
+            fail("Eccezione non lanciata");
+        } catch (error) {
+            expect( error ).toBeDefined();
+        }
+    });
+})
+
