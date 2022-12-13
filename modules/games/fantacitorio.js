@@ -131,8 +131,8 @@ function _getSubstring(words, begin_index) {
 
 /**
  * Dato un vettore di possibili nomi di politici, prova a ricercare il politico ricercandone il nome nel database.
- * @param {String[]} names      Array di possibili nomi di politici
- * @returns {String[]}          Array di nomi di politici riconosciuti
+ * @param {String[]} names          Array di possibili nomi di politici
+ * @returns {Promise<String[]>}     Array di nomi di politici riconosciuti
  */
 async function _getPoliticians(names) {
     /**
