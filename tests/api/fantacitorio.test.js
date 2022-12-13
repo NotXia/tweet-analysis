@@ -113,7 +113,7 @@ describe("Richieste corrette a /games/fantacitorio/squads ", function () {
             expect( tweet.tweet ).toBeDefined();
             expect( tweet.squad ).toBeDefined();
         }
-    }, 20000);
+    }, 30000);
 
     test("Ricerca squadre con pagination token", async function () {
         let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
@@ -141,7 +141,7 @@ describe("Richieste corrette a /games/fantacitorio/squads ", function () {
             expect( tweet.tweet ).toBeDefined();
             expect( tweet.squad ).toBeDefined();
         }
-    }, 20000);
+    }, 30000);
 });
 
 describe("Richieste errate a /games/fantacitorio/squads ", function () {

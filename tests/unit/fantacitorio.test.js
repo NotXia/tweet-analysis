@@ -141,7 +141,7 @@ describe("Test funzione getSquads", function() {
             expect( tweet.tweet ).toBeDefined();
             expect( tweet.squad ).toBeDefined();
         }
-    }, 80000);
+    }, 90000);
 
     test("Ricerca squadre con pagination token", async function () {
         let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
@@ -165,7 +165,7 @@ describe("Test funzione getSquads", function() {
             expect( tweet.tweet ).toBeDefined();
             expect( tweet.squad ).toBeDefined();
         }
-    }, 15000);
+    }, 25000);
 
     test("Ricerca squadre con pagination token errato", async function () {
         nock("https://api.twitter.com")
