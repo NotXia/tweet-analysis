@@ -1,9 +1,11 @@
 const nock = require('nock');
 const moment = require('moment');
 
-function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '') {
+function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '', getReplies = false) {
+    let replies = "";
+    if (!getReplies) { replies = " -is:reply"; }
     let params = {
-        query: `${query} -is:reply -is:retweet`,                            // Filtra per parola chiave e rimuove i retweet e le risposte
+        query: `${query}${replies} -is:retweet`,                            // Filtra per parola chiave e rimuove i retweet e le risposte
         "max_results": quantity,                                            // Numero massimo Tweet per pagina
         "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
         "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet

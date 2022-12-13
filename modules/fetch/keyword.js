@@ -75,11 +75,12 @@ async function getTweetsByKeyword(keyword, pagination_token="", quantity=10, sta
 
 /**
  * Interroga le API di Twitter per ottenere una lista di tweet data una parola chiave con i parametri indicati
- * @param {string} keyword Parola chiave da ricercare (può essere anche un hashtag)
- * @param {string} pagination_token Token della prossima pagina
- * @param {number} quantity Numero di tweet da ricercare
- * @param {number} start_time Data minima dei tweet da ottenere
- * @param {number} end_time Data massima dei tweet da ottenere
+ * @param {string}  keyword Parola chiave da ricercare (può essere anche un hashtag)
+ * @param {string}  pagination_token Token della prossima pagina
+ * @param {number}  quantity Numero di tweet da ricercare
+ * @param {number}  start_time Data minima dei tweet da ottenere
+ * @param {number}  end_time Data massima dei tweet da ottenere
+ * @param {boolean} getReplies Indica se ricercare o no anche i tweet di risposta
  * @returns Lista di dimensione richiesta tweet se possibile, altrimenti restituisce il massimo numero disponibile.
  */
 async function _keywordFetch(keyword, pagination_token="", quantity=10, start_time = '', end_time = '', getReplies = false) {
@@ -89,12 +90,12 @@ async function _keywordFetch(keyword, pagination_token="", quantity=10, start_ti
     let limit = new Date("2006-03-26T00:00:00Z");
     const date = _normalizeDate(limit, start_time, end_time);
     let replies = "";
-    if (!getReplies) { replies = "-is:reply"; }
+    if (!getReplies) { replies = " -is:reply"; }
 
     let options = {
         headers: { Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}` },
         params: {
-            query: `${keyword} ${replies} -is:retweet`,                         // Filtra per parola chiave e rimuove i retweet e le risposte
+            query: `${keyword}${replies} -is:retweet`,                         // Filtra per parola chiave e rimuove i retweet e le risposte
             "max_results": quantity,                                            // Numero massimo Tweet per pagina
             "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
             "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
