@@ -145,7 +145,9 @@ describe("Test funzione getSquads", function() {
 
     test("Ricerca squadre con pagination token", async function () {
         let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
+        for (let i=0; i<10; i++) { batch1.data[i].attachments.media_keys = []; } // Rimuove le immagini già presenti ai tweet (per velocizzare)
         let batch2 = generateTweets(3, true, undefined, undefined, "#fantacitorio test");
+        for (let i=0; i<3; i++) { batch2.data[i].attachments.media_keys = []; } // Rimuove le immagini già presenti ai tweet (per velocizzare)
         batch2.data[2].attachments.media_keys[0] = '3_1111122222333334444';
         batch2.includes.media[0].media_key = '3_1111122222333334444';
         batch2.includes.media[0].url = 'https://pbs.twimg.com/media/Fi6jtjhXgBswzlx.jpg';
