@@ -118,7 +118,9 @@ describe("Test funzione getPointsByWeek", function() {
 describe("Test funzione getSquads", function() {
     test("Ricerca squadre senza pagination token e con prima pagina senza squadre trovate", async function () {
         let batch1 = generateTweets(10, false, undefined, undefined, "#fantacitorio test");
+        for (let i=1; i<10; i++) { batch1.data[i].attachments.media_keys = []; } // Rimuove le immagini già presenti ai tweet (per velocizzare)
         let batch2 = generateTweets(5, true, undefined, undefined, "#fantacitorio test");
+        for (let i=0; i<5; i++) { batch2.data[i].attachments.media_keys = []; } // Rimuove le immagini già presenti ai tweet (per velocizzare)
         batch2.data[2].attachments.media_keys[0] = '3_1111122222333334444';
         batch2.data[4].attachments.media_keys[0] = '3_2222233333444411111';
         batch2.includes.media[0].media_key = '3_1111122222333334444';
