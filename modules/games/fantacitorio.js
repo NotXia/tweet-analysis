@@ -39,7 +39,7 @@ async function getSquads(pagination_token = "") {
                                     image.autocrop(false);  //Rimuove eventuali bordi esterni nell'immagine
 
                                     // Se l'immagine nel tweet e l'immagine di riferimento sono estremamente simili, registra l'immagine come squadra
-                                    if (Jimp.distance(image, img_sample) == 0) {    
+                                    if (Jimp.distance(image, img_sample) <= 0.01) {    
                                         out.tweets.push({
                                             tweet: tweet,
                                             squad: md.url
