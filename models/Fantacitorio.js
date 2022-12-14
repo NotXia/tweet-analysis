@@ -15,19 +15,24 @@ fantacitorio_scheme.statics.cachePoints = async function(points, date) {
     if (process.env.NODE_ENV.includes("testing")) { return; }
 
     try {
-        if (await this.getPointsOfWeek(date)) { return; } // Punteggio già in cache
-
         points = Object.keys(points).map((politician) => ({
             politician: politician,
             points: points[politician]
         }));
 
-        await new this({
-            points: points,
-            date: moment.utc(date).startOf("isoweek").toISOString(),
-        }).save();
+        let cached_data = await this.findOne({ date: moment.utc(date).startOf("isoweek").toISOString() });
+
+        if (cached_data) { // Dati già salvati in precendeza, aggiorno con la versione più recente
+            cached_data.points = points;
+            await cached_data.save();
+        }
+        else {
+            await new this({
+                points: points,
+                date: moment.utc(date).startOf("isoweek").toISOString(),
+            }).save();
+        }
     } catch (err) {
-        if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Punteggio già inserito
         throw err;
     }
 };
