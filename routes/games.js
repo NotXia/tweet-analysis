@@ -14,6 +14,7 @@ router.get("/catenafinale/winning_word", middlewareGames.gamesWinningWordValidat
 router.get("/catenaFinale", middlewareGames.gamesValidation, controllerGames.userAttempts(catenaFinale, "reazione a catena"));
 
 router.get("/fantacitorio/recap", middlewareGames.fantacitorioRecapValidation, controllerGames.fantacitorioRecap);
-
+router.get("/fantacitorio/squads", controllerGames.fantacitorioSquads);
+router.get("/fantacitorio/ranking", controllerGames.fantacitorioRanking);
 
 module.exports = router;
