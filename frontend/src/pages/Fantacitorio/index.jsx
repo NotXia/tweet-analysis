@@ -39,7 +39,8 @@ class Fantacitorio extends React.Component {
             select_min_date: __min_date_limit,          // Limite minimo attuale della data (a init: "2006-03-23")
             select_max_date: __max_date_limit,          // Limite minimo attuale della data (a init: data di oggi)
 
-            error_message: ""                           // Messaggio d'errore
+            error_message: "",                          // Messaggio d'errore
+            error_message_squad: ""                     // Messaggio d'errore della ricerca utente / visualizzazione squadre
         }
         this.input = {
             query: React.createRef(),                   // Input barra di ricerca per utente
@@ -62,17 +63,26 @@ class Fantacitorio extends React.Component {
         // Caricamento immagini squadre
         try {
             this.setState({ fetching_squads: true });
-            const squads = await getSquads();
+            let squads_list = [];
+            let curr_next_token = "";
+            
+            while (squads_list.length < 2) {
+                const curr_squads = await getSquads(curr_next_token);
+                squads_list = squads_list.concat(curr_squads.tweets);
+
+                curr_next_token = curr_squads.next_token;
+            } 
+
             const stats = await getRankingStatistics();
             this.setState({ 
-                squads: this.state.squads.concat(squads.tweets), 
-                next_token: squads.next_token, 
+                squads: squads_list, 
+                next_token: curr_next_token, 
                 fetching_squads: false, 
                 statistics: stats 
             });
         }
         catch (err) {
-            this.setState({ error_message: "Non è stato possibile caricare la le immagini delle squadre" });
+            this.setState({ error_message_squad: "Non è stato possibile caricare la le immagini delle squadre" });
         }
     }
 
@@ -200,6 +210,7 @@ class Fantacitorio extends React.Component {
                                         <div className="border border-grey rounded-4 p-2" style={{ height: "39vh" }}>
                                             <div className="d-flex justify-content-between w-100 h-100">
                                                 <div className="w-100 h-100 align-items-start pe-2 mt-3">
+                                                    <p className="text-danger m-0 fw-semibold text-center">{ this.state.error_message_squad }</p>
 
                                                     {/* Barra di ricerca immagine per utente */}
                                                     <form onSubmit={(e) => this.searchUserTeam(e)}>
@@ -369,7 +380,7 @@ class Fantacitorio extends React.Component {
      */
     carouselPrev() {
         if (this.state.carousel_index > 0) {
-            this.setState({ carousel_index: this.state.carousel_index - 1 });
+            this.setState({ carousel_index: this.state.carousel_index - 1, error_message_squad: "" });
         }
     }
 
@@ -378,7 +389,7 @@ class Fantacitorio extends React.Component {
      */
     async carouselNext() {
         if (this.state.carousel_index < this.state.squads.length) {
-            this.setState({ carousel_index: this.state.carousel_index + 1 });
+            this.setState({ carousel_index: this.state.carousel_index + 1, error_message_squad: "" });
 
             if (this.state.carousel_index >= this.state.squads.length-3) {
                 try {
@@ -399,7 +410,7 @@ class Fantacitorio extends React.Component {
                     await this.current_request;
                 }
                 catch (err) {
-                    this.setState({ error_message: "Non è stato possibile trovare altre squadre" });
+                    this.setState({ error_message_squad: "Non è stato possibile trovare altre squadre" });
                 }
             }
         }
@@ -413,10 +424,10 @@ class Fantacitorio extends React.Component {
         e.preventDefault();
 
         this.setState({
-            fetching_user: true
+            fetching_user: true,
+            error_message_squad: ""
         })
         try {
-            
             const query = this.input.query.current.value;
             let res = await getSquadByUsername(query);
 
@@ -427,7 +438,8 @@ class Fantacitorio extends React.Component {
         }
         catch(err) {
             this.setState({
-                error_message: "Errore nella ricerca dell'utente",
+                error_message_squad: "Errore nella ricerca dell'utente",
+                displayed_user_squad: null,
                 fetching_user: false
             });
         }
