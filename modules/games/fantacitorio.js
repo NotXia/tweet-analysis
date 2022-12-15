@@ -10,6 +10,7 @@ module.exports = {
     getPointsByWeek: getPointsByWeek,
     getRanking: getRanking,
     updateScoreOfPolitician: updateScoreOfPolitician,
+    getRankingStatistics: getRankingStatistics,
 
     testing : {
         parsePoints: _parsePoints
@@ -18,13 +19,15 @@ module.exports = {
 
 /**
  * Genera la classifica dei punteggi dei politici complessiva.
+ * @params {string} date            Data della settimana in cui considerare la fine della classifica (formato ISO)
  * @returns {Promise<Object>}       Classifica dei punteggi dei politici in ordine crescente.
  */
-async function getRanking() {
+async function getRanking(date=undefined) {
     try {
         let totalPoints = {};
         let points = await FantacitorioModel.find({});
         if (!points) { return []; }
+        if (date) { points = points.filter((score) => moment(score.date).isSameOrBefore(date)); } // Esclude i giorni successivi alla data selezionata
 
         for(const batch of points) {
             for(const row of batch.points) {
@@ -282,4 +285,107 @@ async function _getPoliticians(names) {
     }
     
     return found_names;
+}
+
+
+/**
+ * Calcola statistiche sulla classifica del Fantacitorio
+ * @returns {Promise<{best_single_score:Object, best_average:Object, best_climber:Object}>} Statistiche della classifica
+ */
+async function getRankingStatistics() {
+    let allScores = await FantacitorioModel.find({});
+    allScores.sort((s1, s2) => moment(s2.date).diff(s1.date));
+
+    return {
+        best_single_score: _bestSingleScore(allScores),
+        best_average: _bestAverage(allScores),
+        best_climber: await _bestClimber(allScores)
+    };
+}
+
+/**
+ * Calcola il best single score: il politico che in una settimana ha guadagnato il maggior numero di punti
+ * @param {{points: [{politician:string, points:number}, date:string]}} scores  Punteggi settimanali
+ * @returns {politician:string, points:number} Il politico best single score
+ */
+function _bestSingleScore(scores) {
+    let best_single_score = { politician: "", points: Number.MIN_VALUE };
+
+    // Calcolo best single score
+    for (const week_score of scores) {
+        week_score.points.forEach((score) => {
+            if (score.points > best_single_score.points) {
+                best_single_score.politician = score.politician;
+                best_single_score.points = score.points;
+            }
+        });
+    }
+
+    return best_single_score;
+}
+
+/**
+ * Calcola il best average: il politico che ha la media dei punti maggiore
+ * @param {{points: [{politician:string, points:number}, date:string]}} scores  Punteggi settimanali
+ * @returns {politician:string, points:number} Il politico best average
+ */
+function _bestAverage(scores) {
+    let best_average = { politician: "", points: Number.MIN_VALUE };
+    let politicians_scores = {}; // Tracciare per ogni politico la somma dei punti e il numero di volte in cui compare
+
+    // Calcolo somma punti e numero apparizioni per politico
+    for (const week_score of scores) {
+        week_score.points.forEach((score) => {
+            if (!politicians_scores[score.politician]) { politicians_scores[score.politician] = { points: 0, times: 0 }; }
+            politicians_scores[score.politician].points += score.points;
+            politicians_scores[score.politician].times++;
+        });
+    }
+
+    // Calcolo best average
+    Object.keys(politicians_scores).map((politician) => {
+        let average = politicians_scores[politician].points / politicians_scores[politician].times;
+        if (average > best_average.points) {
+            best_average.politician = politician;
+            best_average.points = average;
+        }
+    })
+
+    return best_average;
+}
+
+/**
+ * Calcola il best climber: il politico che tra questa settimana e la precedente ha scalato il numero maggiore di posizioni
+ * @param {{points: [{politician:string, points:number}, date:string]}} scores  Punteggi settimanali
+ * @returns {politician:string, points:number} Il politico best climber
+ */
+async function _bestClimber(scores) {
+    let best_climber = { politician: "", rank: Number.MIN_VALUE };
+
+    // Calcolo delle settimane di riferimento
+    let rank_reference_date = scores[0].date;
+    let rank_previous_date = scores[1].date;
+    if (scores[0].points.length == 0) { // Non ci sono ancora punti per questa settimana, si considera quella precedente
+        rank_reference_date = scores[1].date;
+        rank_previous_date = scores[2].date;
+    }
+    
+    // Calcolo delle posizioni
+    let ranking_reference = await getRanking(rank_reference_date);
+    let ranking_previous = await getRanking(rank_previous_date);
+    ranking_reference = ranking_reference.map((score, index) => ({ politician: score.politician, rank: index+1 }));
+    ranking_previous = ranking_previous.map((score, index) => ({ politician: score.politician, rank: index+1 }));
+
+    // Calcolo best climber
+    ranking_reference.forEach((score) => {
+        let previous_rank = ranking_previous.find((prev_score) => prev_score.politician === score.politician)?.rank ?? ranking_previous.length;
+        let diff = previous_rank - score.rank;
+
+        if (diff > best_climber.rank) {
+            best_climber.politician = score.politician;
+            best_climber.rank = diff;
+        }
+    });
+
+    return best_climber;
 }
