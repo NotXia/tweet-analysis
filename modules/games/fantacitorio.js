@@ -9,6 +9,7 @@ module.exports = {
     getSquads: getSquads,
     getPointsByWeek: getPointsByWeek,
     getRanking: getRanking,
+    updateScoreOfPolitician: updateScoreOfPolitician,
 
     testing : {
         parsePoints: _parsePoints
@@ -125,6 +126,25 @@ async function getPointsByWeek(date) {
         throw new Error("Tweet non trovati");
     }
 }
+
+
+/**
+ * Sovrascrive il punteggio di un politico di una data settimana
+ * @param {string} politician_name      Nome del politico
+ * @param {number} new_score            Punteggio da inserire
+ * @param {string} date                 Giorno della settimana di riferimenti (formato ISO)
+ */
+async function updateScoreOfPolitician(politician_name, new_score, date) {
+    let curr_points = await FantacitorioModel.getPointsOfWeek(date); // Estrae punteggio attuale
+    if (!curr_points) { curr_points = {}; }
+    const politician = await PoliticanModel.get(politician_name);
+    if (!politician) { return; }
+
+    curr_points[politician] = new_score;
+
+    await FantacitorioModel.cachePoints(curr_points, date); // Aggiorna il punteggio
+}
+
 
 /**
  * Dato un testo di un tweet con punti e politici, restituisce un oggetto con tutti i punti assegnati a tutti i politici citati.
