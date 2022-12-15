@@ -120,6 +120,8 @@ describe("Test funzione getRanking", function() {
         let ranking = await getRanking();
 
         expect( ranking ).toBeDefined();
-        expect( ranking[0].politician ).toEqual("SOUMAHORO ABOUBAKAR");
+        for (let i = 0; i < ranking.length-1; i++) {
+            expect( ranking[i].points ).toBeGreaterThanOrEqual(ranking[i+1].points);
+        }
     });
 })
