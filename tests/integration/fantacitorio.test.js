@@ -39,4 +39,15 @@ describe("Test funzione getSquads", function() {
             expect( tweet.squad ).toBeDefined();
         }
     });
+
+    test("Ricerca squadre per nome utente", async function () {
+        let username = "Letizia62352469";
+        const result = await(getSquads('', username));
+        expect( result.tweets ).toBeDefined();
+        expect( result.next_token ).toBeUndefined();
+        for (const tweet of result.tweets) {
+            expect( tweet.tweet ).toBeDefined();
+            expect( tweet.squad ).toBeDefined();
+        }
+    });
 })
