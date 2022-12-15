@@ -25,6 +25,8 @@ class Fantacitorio extends React.Component {
             ranking_result: [],                         // Risultato della classifica attuale
             query_result: [],                           // Risultato della ricerca utente
 
+            statistics: null,                           // Risultato statistiche
+
             squads: [],                                 // Vettore delle immagini squadre
             next_token: "",                             // Token alla prossima pagina delle squadre
             carousel_index: 0,                          // Indice dell'immagine nel carosello
@@ -56,7 +58,13 @@ class Fantacitorio extends React.Component {
         try {
             this.setState({ fetching_squads: true });
             const squads = await getSquads();
-            this.setState({ squads: this.state.squads.concat(squads.tweets), next_token: squads.next_token, fetching_squads: false });
+            const stats = await getRankingStatistics();
+            this.setState({ 
+                squads: this.state.squads.concat(squads.tweets), 
+                next_token: squads.next_token, 
+                fetching_squads: false, 
+                statistics: stats 
+            });
         }
         catch (err) {
             this.setState({ error_message: "Non è stato possibile caricare la le immagini delle squadre" });
@@ -152,9 +160,30 @@ class Fantacitorio extends React.Component {
                                         </div>
                                     </div>
 
+                                    {/* Statistiche interessanti */}
                                     <div className="col-6">
-                                        <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4">
-                                            <h2>Statistiche</h2>
+                                        <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4" style={{ height: "48vh" }}>
+                                            <h2 data-bs-toggle="collapse" data-bs-target="#statistics">Statistiche ▾</h2>
+                                        
+                                            <div className="collapse w-100" id="statistics">
+                                                <div className="border rounded-4 mt-3 mb-4">
+                                                    <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best single score</h3>
+                                                    <p className="m-0 text-center fs-6 text-muted">Miglior punteggio ottenuto in una singola puntata</p>
+                                                    <p className="text-center m-0 mt-2 fs-5"><span className="fw-semibold">{this.state.statistics?.best_single_score.politician}</span> {this.state.statistics?.best_single_score.points} punti</p>
+                                                </div>
+
+                                                <div className="border rounded-4 my-4">
+                                                    <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best average</h3>
+                                                    <p className="m-0 text-center fs-6 text-muted">Miglior punteggio medio ottenuto</p>
+                                                    <p className="text-center m-0 mt-2 fs-5"><span className="fw-semibold">{this.state.statistics?.best_average.politician}</span> {this.state.statistics?.best_average.points} punti in media</p>
+                                                </div>
+
+                                                <div className="border rounded-4 mt-4">
+                                                    <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best climber</h3>
+                                                    <p className="m-0 text-center fs-6 text-muted">Maggior numero di posizioni scalate dall'ultima classifica</p>
+                                                    <p className="text-center m-0 mt-2 fs-5"><span className="fw-semibold">{this.state.statistics?.best_climber.politician}</span> {this.state.statistics?.best_climber.rank} posizioni scalate</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
