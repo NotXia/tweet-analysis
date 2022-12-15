@@ -68,7 +68,7 @@ export async function getSquadByUsername(username) {
  * @param {String} date                     Settimana del punteggio da aggiornare
  */
 export async function updateWeekPoints(politician_name, points, date) {
-    const res = await axios({
+    await axios({
         method: "PUT", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/recap`,
         data: {
             politician: politician_name,

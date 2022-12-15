@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
 import Rank from './components/Rank'
 import Navbar from "../../components/Navbar";
-import moment from "moment";
 import { getPointsByWeek, getRankings, getSquads, getSquadByUsername, updateWeekPoints, getRankingStatistics } from "../../modules/games/fantacitorio";
 import TweetUser from '../../components/TweetUser';
 

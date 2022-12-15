@@ -32,7 +32,6 @@ class Rank extends React.Component {
             case 1:     color = "#d1b500"; break;
             case 2:     color = "#8c8c8c"; break;
             case 3:     color = "#73402c"; break;
-            default:    color = null; break;
         }
 
         const politician_fs =   !this.props.small ? "fs-4" : "fs-5";
