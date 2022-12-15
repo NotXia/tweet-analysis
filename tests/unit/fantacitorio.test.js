@@ -6,7 +6,7 @@ import nock from "nock";
 
 moment().format();
 
-const { getPointsByWeek, getRanking, getSquads, updateScoreOfPolitician, testing } = require("../../modules/games/fantacitorio.js");
+const { getPointsByWeek, getRanking, getSquads, updateScoreOfPolitician, getRankingStatistics, testing } = require("../../modules/games/fantacitorio.js");
 const FantacitorioModel = require("../../models/Fantacitorio.js");
 
 
@@ -135,6 +135,15 @@ describe("Test funzione getRanking", function() {
             expect( ranking[i].points ).toBeGreaterThanOrEqual(ranking[i+1].points);
         }
     });
+
+    test("Generazione classifica con data di fine", async function () {
+        let ranking = await getRanking("2022-12-08T00:00:00.000Z");
+
+        expect( ranking ).toBeDefined();
+        for (let i = 0; i < ranking.length-1; i++) {
+            expect( ranking[i].points ).toBeGreaterThanOrEqual(ranking[i+1].points);
+        }
+    });
 })
 
 describe("Test funzione getSquads", function() {
@@ -222,5 +231,16 @@ describe("Test funzione aggiornamento punteggi politici", function() {
         expect( data["MELONI GIORGIA"] ).toEqual(2);
         expect( data["BERLUSCONI SILVIO"] ).toEqual(1);
         expect( data["RENZI MATTEO"] ).toEqual(2);
+    });
+});
+
+
+describe("Test generazione statistiche", function() {
+    test("Generazione statistiche", async function () {
+        const statistics = await getRankingStatistics();
+
+        expect( statistics.best_single_score ).toBeDefined();
+        expect( statistics.best_average ).toBeDefined();
+        expect( statistics.best_climber ).toBeDefined();
     });
 });
