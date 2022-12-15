@@ -94,6 +94,17 @@ describe("Richieste errate a /games/fantacitorio/recap ", function () {
     });
 });
 
+describe("Richieste corrette a /games/fantacitorio/ranking ", function () {
+    test("Ricerca classifica", async function () {        
+        const res = await curr_session.get("/games/fantacitorio/ranking").expect(200);
+
+        expect( res.body ).toBeDefined();
+        for (let i = 0; i < res.body.length-1; i++) {
+            expect( res.body[i].points ).toBeGreaterThanOrEqual( res.body[i+1].points );
+        }
+    });
+});
+
 describe("Richieste corrette a /games/fantacitorio/squads ", function () {
     test("Ricerca squadre senza pagination token", async function () {
         let batch = generateTweets(3, true, undefined, undefined, "#fantacitorio test");

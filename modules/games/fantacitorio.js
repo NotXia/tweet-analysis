@@ -1,15 +1,45 @@
 const { getTweetsByUser } = require("../fetch/user.js");
 const { getTweetsByKeyword } = require("../fetch/keyword.js");
 const PoliticanModel = require("../../models/Politicians.js");
+const FantacitorioModel = require("../../models/Fantacitorio.js");
 const moment = require('moment');
 const Jimp = require('jimp');
 
 module.exports = { 
     getSquads: getSquads,
     getPointsByWeek: getPointsByWeek,
+    getRanking: getRanking,
 
     testing : {
         parsePoints: _parsePoints
+    }
+}
+
+/**
+ * Genera la classifica dei punteggi dei politici complessiva.
+ * @returns {Promise<Object>}       Classifica dei punteggi dei politici in ordine crescente.
+ */
+async function getRanking() {
+    try {
+        let totalPoints = {};
+        let points = await FantacitorioModel.find({});
+        if (!points) { return []; }
+
+        for(const batch of points) {
+            for(const row of batch.points) {
+                if (!totalPoints[row.politician]) {
+                    totalPoints[row.politician] = 0;
+                }
+                totalPoints[row.politician] += row.points;
+            }
+        }
+
+        let sortedRanking = Object.keys(totalPoints).map((politician) => ({ politician: politician, points: totalPoints[politician] }));
+        sortedRanking.sort((p1, p2) => p2.points - p1.points);
+
+        return sortedRanking;
+    } catch (err) {
+        return null;
     }
 }
 

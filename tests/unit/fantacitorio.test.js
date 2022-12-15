@@ -6,7 +6,7 @@ import nock from "nock";
 
 moment().format();
 
-const { getPointsByWeek, getSquads, testing } = require("../../modules/games/fantacitorio");
+const { getPointsByWeek, getRanking, getSquads, testing } = require("../../modules/games/fantacitorio.js");
 
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URL);
@@ -112,6 +112,17 @@ describe("Test funzione getPointsByWeek", function() {
             return;
         }
         throw new Error("Eccezione non lanciata");
+    });
+})
+
+describe("Test funzione getRanking", function() {
+    test("Generazione classifica", async function () {
+        let ranking = await getRanking();
+
+        expect( ranking ).toBeDefined();
+        for (let i = 0; i < ranking.length-1; i++) {
+            expect( ranking[i].points ).toBeGreaterThanOrEqual(ranking[i+1].points);
+        }
     });
 })
 

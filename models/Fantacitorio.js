@@ -14,26 +14,22 @@ const fantacitorio_scheme = mongoose.Schema ({
 fantacitorio_scheme.statics.cachePoints = async function(points, date) {
     if (process.env.NODE_ENV.includes("testing")) { return; }
 
-    try {
-        points = Object.keys(points).map((politician) => ({
-            politician: politician,
-            points: points[politician]
-        }));
+    points = Object.keys(points).map((politician) => ({
+        politician: politician,
+        points: points[politician]
+    }));
 
-        let cached_data = await this.findOne({ date: moment.utc(date).startOf("isoweek").toISOString() });
+    let cached_data = await this.findOne({ date: moment.utc(date).startOf("isoweek").toISOString() });
 
-        if (cached_data) { // Dati già salvati in precendeza, aggiorno con la versione più recente
-            cached_data.points = points;
-            await cached_data.save();
-        }
-        else {
-            await new this({
-                points: points,
-                date: moment.utc(date).startOf("isoweek").toISOString(),
-            }).save();
-        }
-    } catch (err) {
-        throw err;
+    if (cached_data) { // Dati già salvati in precendeza, aggiorno con la versione più recente
+        cached_data.points = points;
+        await cached_data.save();
+    }
+    else {
+        await new this({
+            points: points,
+            date: moment.utc(date).startOf("isoweek").toISOString(),
+        }).save();
     }
 };
 
