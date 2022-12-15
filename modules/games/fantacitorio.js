@@ -1,10 +1,12 @@
 const { getTweetsByUser } = require("../fetch/user.js");
+const { getTweetsByKeyword } = require("../fetch/keyword.js");
 const PoliticanModel = require("../../models/Politicians.js");
 const FantacitorioModel = require("../../models/Fantacitorio.js");
 const moment = require('moment');
-const mongoose = require('mongoose');
+const Jimp = require('jimp');
 
 module.exports = { 
+    getSquads: getSquads,
     getPointsByWeek: getPointsByWeek,
     getRanking: getRanking,
 
@@ -39,7 +41,56 @@ async function getRanking() {
     } catch (err) {
         return null;
     }
+}
 
+/**
+ * Funzione che recupera i giocatori che si sono registrati al fantacitorio, insieme alla propria squadra
+ * @param {String} pagination_token pagination token della pagina di immagini da visualizzare
+ * @return {Promise<tweets:[{tweet:Object, squad:string, next_token:string}], next_token:string>} I tweet recuperati con il relativo link all'immagine con la propria squadra e token per la prossima pagina
+ */
+async function getSquads(pagination_token = "") {
+    // Immagine di riferimento che verrà comparata con quelle nei tweet, per verificare quali immagini sono effettivamente squadre per il fantacitorio
+    const img_sample = await Jimp.read('https://pbs.twimg.com/media/FgJ1OUDWQAEn9JT?format=jpg&name=medium');
+
+    try {
+        let currentFetch;
+        let out = {
+            tweets: []
+        };
+        do {
+            currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token, 10, '', '', true);
+
+            for(const tweet of currentFetch.tweets) {
+                if (tweet.media.length > 0) {
+                    for (const md of tweet.media) {
+                        if (md.type === 'photo') {
+                            await Jimp.read(md.url)
+                                .then(image => {
+                                    image.autocrop(false);  //Rimuove eventuali bordi esterni nell'immagine
+
+                                    // Se l'immagine nel tweet e l'immagine di riferimento sono estremamente simili, registra l'immagine come squadra
+                                    if (Jimp.distance(image, img_sample) <= 0.01) {    
+                                        out.tweets.push({
+                                            tweet: tweet,
+                                            squad: md.url
+                                        });
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
+                        }   
+                    }
+                }
+            }
+            pagination_token = currentFetch.next_token;
+        } while(out.tweets.length == 0 && pagination_token !== "");  // Se nella pagina di tweet richiesta non è stata trovata nessuna squadra e ci sono altri tweet disponibili, passa alla prossima
+
+        out.next_token = currentFetch.next_token;
+        return out;
+    }catch(err){
+        throw new Error("Pagination token errato o errore nel recuperare le squadre");
+    }
 }
 
 /**
