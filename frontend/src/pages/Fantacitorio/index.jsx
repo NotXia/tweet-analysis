@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import Rank from './components/Rank'
 import Navbar from "../../components/Navbar";
 import moment from "moment";
-import { getPointsByWeek, getRankings, getSquads } from "../../modules/games/fantacitorio";
+import { getPointsByWeek, getRankings, getSquads, updateWeekPoints } from "../../modules/games/fantacitorio";
 import TweetUser from '../../components/TweetUser';
 
 //Costanti limite date
@@ -37,7 +37,12 @@ class Fantacitorio extends React.Component {
             error_message: ""                           // Messaggio d'errore
         }
         this.input = {
-            query: React.createRef()
+            query: React.createRef(),
+            date: React.createRef(),
+            update: {
+                politician: React.createRef(),
+                points: React.createRef()
+            }
         }
     }
 
@@ -100,8 +105,8 @@ class Fantacitorio extends React.Component {
                                 <div className="row mb-3">
                                     <div className="col-6">
                                         {/* Risultato settimanale */}
-                                        <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4">
-                                            <h2 className="text-center">Risultati settimanali</h2>
+                                        <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4" style={{ height: "48vh" }}>
+                                            <h3 className="text-center">Risultati settimanali</h3>
                                             {/* Selettore data */}
                                             <form className="align-items-start">
                                                 <div>
@@ -113,7 +118,7 @@ class Fantacitorio extends React.Component {
                                                         </div>
                                                         <div>
                                                             <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "1.2rem" }} htmlFor="date">Data</label>
-                                                            <input className="form-control" id="date" type="date" style={{ fontSize: "1.6rem" }}
+                                                            <input ref={this.input.date} className="form-control" id="date" type="date" style={{ fontSize: "1.3rem" }}
                                                                 min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { this.searchWeekPoints(e.target.value)}}
                                                                 disabled={this.state.fetching_date} />
                                                         </div>
@@ -129,6 +134,24 @@ class Fantacitorio extends React.Component {
                                                     ))
                                                 }
                                             </div>
+
+                                            {
+                                                this.state.date_result.length > 0 &&
+                                                <div className="mt-3">
+                                                    <p className="my-1-0 h1 text-center" style={{ fontSize: "0.9rem" }} data-bs-toggle="collapse" data-bs-target="#editPoliticianScore">Modifica il punteggio di un politico ▾</p>
+                                                    <div className="collapse" id="editPoliticianScore">
+                                                        <form className="align-items-start" onSubmit={(e) => this.updatePoliticianPoints(e)}>
+                                                            <div className="d-flex">
+                                                                <input ref={this.input.update.politician} type="text" className="form-control mx-1" placeholder="Politico" required />
+                                                                <input ref={this.input.update.points} type="number" className="form-control mx-1" placeholder="Punti" required />
+                                                                <div className="d-flex align-items-center">
+                                                                    <button className="btn btn-outline-success btn-sm" type="submit">Salva</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
 
@@ -150,7 +173,7 @@ class Fantacitorio extends React.Component {
                                                         <div className="collapse" id="userSearch">
                                                             <div className="input-group flex">
                                                                 <span className="input-group-text" id="addon-wrapping">@</span>
-                                                                <input ref={this.state.date} className="form-control" style={{ fontSize: "0.9rem" }} id="date" type="text"/>
+                                                                <input ref={this.input.query} className="form-control" style={{ fontSize: "0.9rem" }} id="date" type="text"/>
                                                                 <button className="btn btn-outline-secondary" disabled={ this.state.fetching_user } type="submit" id="button-addon1">
                                                                     Cerca
                                                                     <span className={`spinner-grow spinner-grow-sm ms-2 ${this.state.fetching_user ? "" : "d-none"}`} role="status" aria-hidden="true" />
@@ -249,6 +272,18 @@ class Fantacitorio extends React.Component {
         this.setState({ fetching_date: false });
     }
 
+    async updatePoliticianPoints(e) {
+        e.preventDefault();
+        try {
+            updateWeekPoints(this.input.update.politician.current.value, this.input.update.points.current.value, `${this.input.date.current.value}T00:00:00.000Z`);
+        }
+        catch(err) {
+            this.setState({
+                error_message: "Errore nell'aggiornamento dei punteggi"
+            });
+        }
+    }
+
     carouselPrev() {
         if (this.state.carousel_index > 0) {
             this.setState({ carousel_index: this.state.carousel_index - 1 });
@@ -287,6 +322,7 @@ class Fantacitorio extends React.Component {
     async searchUserTeam() {
         
     }
+
 }
 
 export default Fantacitorio;

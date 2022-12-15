@@ -30,3 +30,16 @@ export async function getSquads(pag_token=undefined) {
 
     return res.data;
 }
+
+export async function updateWeekPoints(politician_name, points, date) {
+    const res = await axios({
+        method: "PUT", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/recap`,
+        data: {
+            politician: politician_name,
+            score: points,
+            date: date
+        }
+    });
+
+    return res.data;
+}
