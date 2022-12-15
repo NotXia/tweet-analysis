@@ -128,6 +128,7 @@ class Fantacitorio extends React.Component {
                                                 }
                                             </div>
 
+                                            {/* Risultato ricerca settimanale e form modifica punteggio */}
                                             {
                                                 this.state.date_result.length > 0 &&
                                                 <div className="mt-3">
@@ -155,12 +156,15 @@ class Fantacitorio extends React.Component {
                                     </div>
                                 </div>
                                 
+                                {/* Box immagini squadre */}
                                 <div className="row">
                                     <div className="col-12">
-
+                        
                                         <div className="border border-grey rounded-4 p-2" style={{ height: "39vh" }}>
                                             <div className="d-flex justify-content-between w-100 h-100">
                                                 <div className="w-100 h-100 align-items-start pe-2 mt-3">
+
+                                                    {/* Barra di ricerca immagine per utente */}
                                                     <form>
                                                         <p className="mb-3 h1" style={{ fontSize: "0.9rem" }} data-bs-toggle="collapse" data-bs-target="#userSearch">Ricerca per utente ▾</p>
                                                         <div className="collapse" id="userSearch">
@@ -172,20 +176,21 @@ class Fantacitorio extends React.Component {
                                                                     <span className={`spinner-grow spinner-grow-sm ms-2 ${this.state.fetching_user ? "" : "d-none"}`} role="status" aria-hidden="true" />
                                                                 </button>
                                                             </div>
-                                                            <p className="small mt-0 mb-1" style={{ fontSize: "0.75rem"}}>Inserisci il nome utente da cui vuoi vedere la squadra</p>
+                                                            <p className="small mt-0 mb-1" style={{ fontSize: "0.75rem"}}>Inserisci il nome utente di cui vuoi vedere la squadra</p>
                                                         </div>
                                                     </form>
 
+                                                    {/* Descrizione immagine corrente */}
                                                     <div className="mt-2">
                                                         <hr className="divider col-12 col-md-6 col-lg-4" />
-                                                        <p className="fw-semibold mb-0 mt-4" style={{ fontSize: "0.9rem" }}>Squadra di:</p>
+                                                        <p className="fw-semibold mb-1 mt-4" style={{ fontSize: "0.9rem" }}>Squadra di:</p>
                                                         {
                                                             this.state.squads[this.state.carousel_index] &&
                                                             <TweetUser tweet={this.state.squads[this.state.carousel_index].tweet} time_format="[Pubblicato il] DD-MM-YYYY HH:mm" />
                                                         }
                                                     </div>
                                                 
-                                                    
+                                                    {/* Spinner fetching squadre */}
                                                     <div className={`${this.state.fetching_squads ? "" : "d-none"} mt-5`}>
                                                         <div className="d-flex justify-content-center">
                                                             <span className="text-muted" style={{ fontSize: "0.8rem" }}>
@@ -195,6 +200,7 @@ class Fantacitorio extends React.Component {
                                                     </div>
                                                 </div>
 
+                                                {/* Carosello immagini squadre */}
                                                 <div id="carousel-fantacitorio" className="carousel slide" style={{ width: "fit-content" }}>
                                                     <div className="carousel-inner" style={{ width: "fit-content" }}>
                                                         <div className="carousel-item active" style={{ width: "fit-content" }}>
@@ -232,6 +238,9 @@ class Fantacitorio extends React.Component {
         </>)
     }
 
+    /**
+     * Funzione per ricavare la classifica complessiva
+     */
     async loadLeaderboard() {
         // Caricamento classifica generale
         try {
@@ -243,6 +252,10 @@ class Fantacitorio extends React.Component {
         }
     }
 
+    /**
+     * Funzione di ricerca per i punteggi della settimana richiesta
+     * @param date la data da dove cercare i punteggi
+     */
     async searchWeekPoints(date) {
         if (date === "") { return this.setState({ error_message: "", date_result: [], date: "" }); }
 
@@ -269,13 +282,16 @@ class Fantacitorio extends React.Component {
             });
         }
         catch (err) {
-            console.log(err);
             this.setState({ error_message: "Si è verificato un errore durante la ricerca"});
         }
 
         this.setState({ fetching_date: false });
     }
 
+    /**
+     * Funzione per aggiornare il punteggio del politico richiesto
+     * @param e nome del politico e il nuovo punteggio 
+     */
     async updatePoliticianPoints(e) {
         e.preventDefault();
         try {
@@ -289,7 +305,7 @@ class Fantacitorio extends React.Component {
             });
         }
     }
-
+    
     carouselPrev() {
         if (this.state.carousel_index > 0) {
             this.setState({ carousel_index: this.state.carousel_index - 1 });

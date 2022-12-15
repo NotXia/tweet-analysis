@@ -1,6 +1,11 @@
 import axios from "axios";
 import moment from "moment";
 
+/**
+ * Restituisce i punteggi della settimana della data ricevuta
+ * @param {String} date         Data da cercare in formato ISO 8601
+ * @returns {Promise<Object>}   Chiavi dei politici e i loro punteggi
+ */
 export async function getPointsByWeek(date=moment().utc().startOf("day").toISOString()) {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/recap`,
@@ -12,6 +17,10 @@ export async function getPointsByWeek(date=moment().utc().startOf("day").toISOSt
     return res.data;
 }
 
+/**
+ * Restituisce la classifica complessiva attuale
+ * @returns {Promise<{[politician:String, points:Number]}>} un dizionario che contiene il nome dei politici e i loro punteggi
+ */
 export async function getRankings() {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/ranking`,
@@ -20,6 +29,11 @@ export async function getRankings() {
     return res.data;
 }
 
+/**
+ * Restituisce i tweet di coloro che hanno una squadra di fantacitorio
+ * @param {String} pag_token                            Punto di partenza della ricerca
+ * @returns {Promise<[{tweet:Object, squad:string}]>}   L'array delle squadre
+ */
 export async function getSquads(pag_token=undefined) {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/squads`,
@@ -31,6 +45,12 @@ export async function getSquads(pag_token=undefined) {
     return res.data;
 }
 
+/**
+ * Aggiorna il punteggio settimanale del politico
+ * @param {String} politician_name          Punto di partenza della ricerca
+ * @param {Number} points                   Punteggio nuovo
+ * @param {String} date                     Settimana del punteggio da aggiornare
+ */
 export async function updateWeekPoints(politician_name, points, date) {
     const res = await axios({
         method: "PUT", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/recap`,
