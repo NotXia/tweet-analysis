@@ -47,14 +47,7 @@ class Fantacitorio extends React.Component {
     }
 
     async componentDidMount() {
-        // Caricamento classifica generale
-        try {
-            const rankings = await getRankings();
-            this.setState({ ranking_result: rankings });
-        }
-        catch (err) {
-            this.setState({ error_message: "Non è stato possibile caricare la classifica" });
-        }
+        this.loadLeaderboard();
 
         // Caricamento immagini squadre
         try {
@@ -239,6 +232,17 @@ class Fantacitorio extends React.Component {
         </>)
     }
 
+    async loadLeaderboard() {
+        // Caricamento classifica generale
+        try {
+            const rankings = await getRankings();
+            this.setState({ ranking_result: rankings });
+        }
+        catch (err) {
+            this.setState({ error_message: "Non è stato possibile caricare la classifica" });
+        }
+    }
+
     async searchWeekPoints(date) {
         if (date === "") { return this.setState({ error_message: "", date_result: [], date: "" }); }
 
@@ -275,7 +279,9 @@ class Fantacitorio extends React.Component {
     async updatePoliticianPoints(e) {
         e.preventDefault();
         try {
-            updateWeekPoints(this.input.update.politician.current.value, this.input.update.points.current.value, `${this.input.date.current.value}T00:00:00.000Z`);
+            await updateWeekPoints(this.input.update.politician.current.value, this.input.update.points.current.value, `${this.input.date.current.value}T00:00:00.000Z`);
+            await this.searchWeekPoints(this.input.date.current.value);
+            await this.loadLeaderboard();
         }
         catch(err) {
             this.setState({
