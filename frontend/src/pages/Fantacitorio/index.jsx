@@ -3,6 +3,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
 import Navbar from "../../components/Navbar";
+import { getPointsByWeek } from "../../modules/games/fantacitorio";
 
 //Costanti limite date
 const today = new Date();
@@ -16,6 +17,7 @@ class Fantacitorio extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            date: "",
             date_result: [],                            // Risultato della ricerca per data
             query_result: [],                           // Risultato della ricerca utente
             fetching_date: false,                       // Indica se attualmente si sta ricercando per data
@@ -49,11 +51,17 @@ class Fantacitorio extends React.Component {
                         </div>
                     </div>
 
-                    <div className="row my-2">
+                    <div className="row justify-content-center my-2">
                         {/* Lista dei politici con punteggi */}
                         <div className="col-12 col-lg-4">
-                            <div className="d-flex justify-content-center w-100 p-2">
-                                
+                            <div className="list-group border border-white rounded-4">
+                                {   
+                                    (() => {
+                                        for(const key in this.state.date_result) {
+                                            console.log(key)
+                                        }
+                                    })
+                                }
                             </div>
                         </div>
 
@@ -74,7 +82,7 @@ class Fantacitorio extends React.Component {
                                                 <div>
                                                     <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "1.2rem" }} htmlFor="date">Data</label>
                                                     <input className="form-control" id="date" type="date" style={{ fontSize: "1.6rem" }}
-                                                        min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { }}
+                                                        min={this.state.select_min_date} max={this.state.select_max_date} onChange={(e) => { this.searchWeekPoints(e.target.value)}}
                                                         disabled={this.state.fetching_date} />
                                                 </div>
                                             </div>
@@ -92,7 +100,7 @@ class Fantacitorio extends React.Component {
                                         <form className="align-items-start">
                                             <p className="ms-1 mb-3 h1" style={{ fontSize: "0.9rem" }}>Ricerca per utente</p>
                                             <div className="input-group flex">
-                                                <span class="input-group-text" id="addon-wrapping">@</span>
+                                                <span className="input-group-text" id="addon-wrapping">@</span>
                                                 <input ref={this.state.date} className="form-control" style={{ fontSize: "0.9rem" }} id="date" type="text"/>
                                                 <button className="btn btn-outline-secondary" disabled={ this.state.fetching_user } type="submit" id="button-addon1">
                                                     Cerca
@@ -109,6 +117,43 @@ class Fantacitorio extends React.Component {
                 </div>
             </main>
         </>)
+    }
+
+    async searchWeekPoints(date) {
+        if (date === "") { return this.setState({ error_message: "", date_result: [], date: "" }); }
+
+        date = `${date}T00:00:00Z`;
+
+        // Inizio fetching
+        this.setState({ 
+            fetching_date: true, error_message: "",
+            date_result: [],
+            date: "",
+        });
+
+        try {
+            let weeklyStats = await getPointsByWeek(date);
+
+            this.setState({
+                date_result: weeklyStats,
+                date: date
+            });
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({ error_message: "Si è verificato un errore durante la ricerca"});
+        }
+
+        this.setState({ fetching_date: false });
+    }
+
+    politicianPrinter(name, points) {
+        return (
+            <div className="list-group-item list-group-item-action px-4 pt-4">
+                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{name.toUpperCase()}</p>
+                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{points.toUpperCase()} Punti</p>
+            </div>
+        )
     }
 }
 
