@@ -17,5 +17,6 @@ router.get("/fantacitorio/recap", middlewareGames.fantacitorioRecapValidation, c
 router.put("/fantacitorio/recap", middlewareGames.fantacitorioValidateUpdatePoliticianScore , controllerGames.fantacitorioUpdatePoliticianScore);
 router.get("/fantacitorio/squads", controllerGames.fantacitorioSquads);
 router.get("/fantacitorio/ranking", controllerGames.fantacitorioRanking);
+router.get("/fantacitorio/statistics", controllerGames.fantacitorioStatistics);
 
 module.exports = router;
