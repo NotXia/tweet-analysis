@@ -33,8 +33,23 @@ const gamesCheckDate = [
     }
 ];
 
+const fantacitorioValidateUpdatePoliticianScore = [
+    function (req, _, next) {       // Validazione dell'input
+        let errors = {};
+
+        // Se la data è nel futuro
+        if (!req.body.politician) { errors["politician"] = "Nominativo del politico mancante"; }
+        if (!req.body.score) { errors["score"] = "Punteggio mancante"; }
+        if (!req.body.date) { errors["date"] = "Data mancante"; }
+
+        if (Object.keys(errors).length !== 0) { return next( httpError(400, JSON.stringify(errors)) ); }
+        return next();
+    }
+]
+
 module.exports = {
     gamesValidation: games,
     gamesWinningWordValidation: gamesCheckDate,
-    fantacitorioRecapValidation: gamesCheckDate
+    fantacitorioRecapValidation: gamesCheckDate,
+    fantacitorioValidateUpdatePoliticianScore: fantacitorioValidateUpdatePoliticianScore
 };

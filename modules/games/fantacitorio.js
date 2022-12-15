@@ -9,6 +9,7 @@ module.exports = {
     getSquads: getSquads,
     getPointsByWeek: getPointsByWeek,
     getRanking: getRanking,
+    updateScoreOfPolitician: updateScoreOfPolitician,
 
     testing : {
         parsePoints: _parsePoints
@@ -45,8 +46,8 @@ async function getRanking() {
 
 /**
  * Funzione che recupera i giocatori che si sono registrati al fantacitorio, insieme alla propria squadra
- * @param {String} pagination_token pagination token della pagina di immagini da visualizzare
- * @return {Promise<tweets:[{tweet:Object, squad:string, next_token:string}], next_token:string>} I tweet recuperati con il relativo link all'immagine con la propria squadra e token per la prossima pagina
+ * @param {String} pagination_token Pagination token della pagina di immagini da visualizzare
+ * @return {Promise<tweets:[{tweet:Object, squad:string}], next_token:string>} I tweet recuperati con il relativo link all'immagine con la propria squadra e token per la prossima pagina
  */
 async function getSquads(pagination_token = "") {
     // Immagine di riferimento che verrà comparata con quelle nei tweet, per verificare quali immagini sono effettivamente squadre per il fantacitorio
@@ -60,28 +61,9 @@ async function getSquads(pagination_token = "") {
         do {
             currentFetch = await getTweetsByKeyword("#fantacitorio", pagination_token, 10, '', '', true);
 
-            for(const tweet of currentFetch.tweets) {
-                if (tweet.media.length > 0) {
-                    for (const md of tweet.media) {
-                        if (md.type === 'photo') {
-                            await Jimp.read(md.url)
-                                .then(image => {
-                                    image.autocrop(false);  //Rimuove eventuali bordi esterni nell'immagine
-
-                                    // Se l'immagine nel tweet e l'immagine di riferimento sono estremamente simili, registra l'immagine come squadra
-                                    if (Jimp.distance(image, img_sample) <= 0.01) {    
-                                        out.tweets.push({
-                                            tweet: tweet,
-                                            squad: md.url
-                                        });
-                                    }
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                });
-                        }   
-                    }
-                }
+            for(const tweet of currentFetch.tweets) { 
+                // Se nel tweet ci sono dei media, controlla se nei media c'è una squadra e la aggiunge alle squadre
+                if (tweet.media.length > 0) { out.tweets = await _addSquad(tweet, out.tweets, img_sample); }
             }
             pagination_token = currentFetch.next_token;
         } while(out.tweets.length == 0 && pagination_token !== "");  // Se nella pagina di tweet richiesta non è stata trovata nessuna squadra e ci sono altri tweet disponibili, passa alla prossima
@@ -89,6 +71,7 @@ async function getSquads(pagination_token = "") {
         out.next_token = currentFetch.next_token;
         return out;
     }catch(err){
+        console.log(err);
         throw new Error("Pagination token errato o errore nel recuperare le squadre");
     }
 }
@@ -124,6 +107,62 @@ async function getPointsByWeek(date) {
     } catch (err) {
         throw new Error("Tweet non trovati");
     }
+}
+
+
+/**
+ * Sovrascrive il punteggio di un politico di una data settimana
+ * @param {string} politician_name      Nome del politico
+ * @param {number} new_score            Punteggio da inserire
+ * @param {string} date                 Giorno della settimana di riferimenti (formato ISO)
+ */
+async function updateScoreOfPolitician(politician_name, new_score, date) {
+    let curr_points = await FantacitorioModel.getPointsOfWeek(date); // Estrae punteggio attuale
+    if (!curr_points) { curr_points = {}; }
+    const politician = await PoliticanModel.get(politician_name);
+    if (!politician) { return; }
+
+    curr_points[politician] = new_score;
+
+    await FantacitorioModel.cachePoints(curr_points, date); // Aggiorna il punteggio
+}
+
+
+/**
+ * Funzione che controlla se nei media di un tweet è presente una squadra, e se si la aggiunge alle squadre
+ * @param {Object} tweet        Tweet da controllare
+ * @param {Object[]} squads     Array di squadre a cui eventualmente aggiungere quella trovata
+ * @param {String} img_sample   Immagine di riferimento con il template di una squadra a cui paragonare i media del tweet
+ * @return {Promise<[{tweet:Object, squad:string}]>} L'array delle squadre con eventualmente aggiunta quella trovata
+ */
+async function _addSquad(tweet, squads, img_sample) {
+    for (const md of tweet.media) {
+        if (await _isSquad(md, img_sample)) {  
+            squads.push({
+                tweet: tweet,
+                squad: md.url
+            });
+        }   
+    }
+
+    return squads;
+}
+
+/**
+ * Funzione che controlla se un media è una squadra
+ * @param {Object} media        Media da controllare
+ * @param {String} img_sample   Immagine di riferimento con il template di una squadra a cui paragonare i media del tweet
+ * @return {Boolean} true se l'immagine è una squadra, false altrimenti
+ */
+async function _isSquad(media, img_sample) {
+    if (media.type === 'photo') {
+        let img = await Jimp.read(media.url);
+        img.autocrop(false);   //Rimuove eventuali bordi esterni nell'immagine
+
+        // Restituisce true se l'immagine è estremamente simile all'immagine di riferimento
+        return Jimp.distance(img, img_sample) <= 0.01;
+    }
+    return false;
 }
 
 /**

@@ -1,5 +1,5 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
-const { getPointsByWeek, getSquads, getRanking } = require("../modules/games/fantacitorio.js");
+const { getPointsByWeek, getSquads, getRanking, updateScoreOfPolitician } = require("../modules/games/fantacitorio.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
 const FantacitorioModel = require("../models/Fantacitorio.js");
@@ -144,10 +144,23 @@ async function fantacitorioRanking(_, res) {
     res.status(200).json(ranking);
 }
 
+async function fantacitorioUpdatePoliticianScore(req, res) {
+    try {
+        await updateScoreOfPolitician(req.body.politician, req.body.score, req.body.date);
+    }
+    catch (err) {
+        return res.sendStatus(500);
+    }
+
+    return res.sendStatus(204);
+}
+
+
 module.exports = {
     userAttempts: userAttempts,
     winningWord: winningWord,
     fantacitorioRecap: fantacitorioRecap,
     fantacitorioSquads: fantacitorioSquads,
-    fantacitorioRanking: fantacitorioRanking
+    fantacitorioRanking: fantacitorioRanking,
+    fantacitorioUpdatePoliticianScore: fantacitorioUpdatePoliticianScore
 };
