@@ -1,5 +1,5 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
-const { getPointsByWeek } = require("../modules/games/fantacitorio.js");
+const { getPointsByWeek, getSquads } = require("../modules/games/fantacitorio.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
 const FantacitorioModel = require("../models/Fantacitorio.js");
@@ -110,8 +110,27 @@ async function fantacitorioRecap(req, res) {
     }
 }
 
+/**
+ * Genera il controller per estrarre le squadre dei partecipanti al fantacitorio
+ */
+async function fantacitorioSquads(req, res) {
+    let tweets_response;
+    let pagination_token = req.query.pag_token ? req.query.pag_token : "";
+
+    try {
+        tweets_response = await getSquads(pagination_token);
+
+    } catch (error) {
+        res.sendStatus(500);
+        return;
+    }
+
+    res.status(200).json(tweets_response);
+}
+
 module.exports = {
     userAttempts: userAttempts,
     winningWord: winningWord,
-    fantacitorioRecap: fantacitorioRecap
+    fantacitorioRecap: fantacitorioRecap,
+    fantacitorioSquads: fantacitorioSquads
 };
