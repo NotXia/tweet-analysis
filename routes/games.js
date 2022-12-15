@@ -15,6 +15,6 @@ router.get("/catenaFinale", middlewareGames.gamesValidation, controllerGames.use
 
 router.get("/fantacitorio/recap", middlewareGames.fantacitorioRecapValidation, controllerGames.fantacitorioRecap);
 router.get("/fantacitorio/squads", controllerGames.fantacitorioSquads);
-
+router.get("/fantacitorio/ranking", controllerGames.fantacitorioRanking);
 
 module.exports = router;

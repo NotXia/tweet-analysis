@@ -1,5 +1,5 @@
 const { getWinningWord } = require("../modules/games/winningWord.js");
-const { getPointsByWeek, getSquads } = require("../modules/games/fantacitorio.js");
+const { getPointsByWeek, getSquads, getRanking } = require("../modules/games/fantacitorio.js");
 const WordModel = require("../models/WinningWord.js");
 const TVGameModel = require("../models/TVGame.js");
 const FantacitorioModel = require("../models/Fantacitorio.js");
@@ -128,9 +128,26 @@ async function fantacitorioSquads(req, res) {
     res.status(200).json(tweets_response);
 }
 
+/**
+ * Genera il controller per restituire la classifica dei politici complessiva
+ */
+async function fantacitorioRanking(_, res) {
+    let ranking;
+
+    try {
+        ranking = await getRanking(); 
+    } catch (error) {
+        res.sendStatus(500);
+        return;
+    }
+
+    res.status(200).json(ranking);
+}
+
 module.exports = {
     userAttempts: userAttempts,
     winningWord: winningWord,
     fantacitorioRecap: fantacitorioRecap,
-    fantacitorioSquads: fantacitorioSquads
+    fantacitorioSquads: fantacitorioSquads,
+    fantacitorioRanking: fantacitorioRanking
 };
