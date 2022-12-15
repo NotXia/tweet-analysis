@@ -346,7 +346,8 @@ class Fantacitorio extends React.Component {
 
             this.setState({
                 date_result: weeklyStats,
-                date: date
+                date: date,
+                error_message: weeklyStats.length === 0 ? "La classifica per la settimana inserita non è disponibile" : ""
             });
         }
         catch (err) {
