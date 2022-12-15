@@ -12,7 +12,7 @@ export async function getPointsByWeek(date=moment().utc().startOf("day").toISOSt
     return res.data;
 }
 
-export async function getRankingsByWeek() {
+export async function getRankings() {
     const res = await axios({
         method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/ranking`,
     });

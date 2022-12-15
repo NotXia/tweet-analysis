@@ -2,8 +2,9 @@ import React from "react";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
+import Rank from './components/Rank'
 import Navbar from "../../components/Navbar";
-import { getPointsByWeek } from "../../modules/games/fantacitorio";
+import { getPointsByWeek, getRankings } from "../../modules/games/fantacitorio";
 
 //Costanti limite date
 const today = new Date();
@@ -19,6 +20,7 @@ class Fantacitorio extends React.Component {
         this.state = {
             date: "",
             date_result: [],                            // Risultato della ricerca per data
+            ranking_result: [],                         // Risultato della classifica attuale
             query_result: [],                           // Risultato della ricerca utente
             fetching_date: false,                       // Indica se attualmente si sta ricercando per data
             fetching_user: false,                       // Indica se attualmente si sta ricercando per utente
@@ -30,6 +32,18 @@ class Fantacitorio extends React.Component {
         }
         this.input = {
             query: React.createRef()
+        }
+    }
+
+    async componentDidMount() {
+        try {
+            const rankings = await getRankings();
+            this.setState({
+                ranking_result: rankings
+            });
+        }
+        catch (err) {
+            this.setState({ error_message: "Non è stato possibile caricare la classifica" });
         }
     }
 
@@ -54,24 +68,26 @@ class Fantacitorio extends React.Component {
                     <div className="row justify-content-center my-2">
                         {/* Lista dei politici con punteggi */}
                         <div className="col-12 col-lg-4">
+                            <h2 className="ms-1">Classifica generale</h2>
                             <div className="list-group border border-white rounded-4">
                                 {   
-                                    (() => {
-                                        for(const key in this.state.date_result) {
-                                            console.log(key)
-                                        }
-                                    })
+                                    this.state.ranking_result.map((rank, index) => (
+                                        <Rank key={`${rank.politician}-all`} politician={rank.politician} points={rank.points} rank={index+1} />
+                                    ))
                                 }
                             </div>
                         </div>
 
-                        {/* Selezione data e statistiche interessanti */}
+                        {/* Selezione data, panoramica settimanale e statistiche interessanti */}
                         <div className="col-12 col-lg-4">
                             <div className="sticky-top">
-                                <div className="d-flex flex-column justify-content-center align-items-center w-100 p-2">
-                                    <h1 className="text-center" style={{ fontSize: "3rem"}}>Fantacitorio<br /></h1>
+                                <h1 className="text-center" style={{ fontSize: "3rem"}}>Fantacitorio<br /></h1>
+
+                                {/* Risultato settimanale */}
+                                <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4">
+                                    <h2 className="text-center">Risultati settimanali</h2>
+                                    {/* Selettore data */}
                                     <form className="align-items-start">
-                                        {/* Data */}
                                         <div>
                                             <div className="d-flex align-items-end justify-content-center">
                                                 <div className={`mb-2 me-2 ${this.state.fetching_date ? "" : "d-none"}`}>
@@ -88,6 +104,19 @@ class Fantacitorio extends React.Component {
                                             </div>
                                         </div>
                                     </form>
+                                    
+                                    {/* Punti settimanali */}
+                                    <div style={{ maxHeight: "30vh" }} className="overflow-auto w-100">
+                                        {
+                                            this.state.date_result.map((rank, index) => (
+                                                <Rank key={`${rank.politician}-weekly`} politician={rank.politician} points={rank.points} rank={index+1} small />
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+
+                                <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4 mt-3">
+                                    <h2>Statistiche</h2>
                                 </div>
                             </div>
                         </div>
@@ -133,6 +162,11 @@ class Fantacitorio extends React.Component {
 
         try {
             let weeklyStats = await getPointsByWeek(date);
+            weeklyStats = Object.keys(weeklyStats).map((politician) => ({
+                politician: politician,
+                points: weeklyStats[politician]
+            }));
+            weeklyStats.sort((p1, p2) => p2.points - p1.points);
 
             this.setState({
                 date_result: weeklyStats,
@@ -145,15 +179,6 @@ class Fantacitorio extends React.Component {
         }
 
         this.setState({ fetching_date: false });
-    }
-
-    politicianPrinter(name, points) {
-        return (
-            <div className="list-group-item list-group-item-action px-4 pt-4">
-                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{name.toUpperCase()}</p>
-                <p className="m-0 mt-2" style={{fontSize: "1.25rem" }}>{points.toUpperCase()} Punti</p>
-            </div>
-        )
     }
 }
 
