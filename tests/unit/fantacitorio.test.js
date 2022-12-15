@@ -6,13 +6,24 @@ import nock from "nock";
 
 moment().format();
 
-const { getPointsByWeek, getRanking, getSquads, testing } = require("../../modules/games/fantacitorio.js");
+const { getPointsByWeek, getRanking, getSquads, updateScoreOfPolitician, testing } = require("../../modules/games/fantacitorio.js");
+const FantacitorioModel = require("../../models/Fantacitorio.js");
+
+
+const safe_date = moment.utc("2999-01-01T00:00:00.000Z").startOf("isoweek").toISOString();
+
 
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URL);
+
+    // Inizializzazione per test modifica punteggi
+    await FantacitorioModel.cachePoints({ "MELONI GIORGIA": 1, "BERLUSCONI SILVIO": 1 }, safe_date);
 });
 
 afterAll(async () => {
+    // Pulizia test modifica punteggi
+    await FantacitorioModel.findOneAndDelete({ date: safe_date });
+
     await mongoose.disconnect();
 });
 
@@ -195,3 +206,21 @@ describe("Test funzione getSquads", function() {
     });
 })
 
+describe("Test funzione aggiornamento punteggi politici", function() {
+    test("Aggiornamento politico già presente", async function () {
+        await updateScoreOfPolitician("G. Meloni", 2, safe_date);
+
+        const data = await FantacitorioModel.getPointsOfWeek(safe_date);
+        expect( data["MELONI GIORGIA"] ).toEqual(2);
+        expect( data["BERLUSCONI SILVIO"] ).toEqual(1);
+    });
+
+    test("Aggiornamento politico non presente originariamente", async function () {
+        await updateScoreOfPolitician("Renzi M.", 2, safe_date);
+
+        const data = await FantacitorioModel.getPointsOfWeek(safe_date);
+        expect( data["MELONI GIORGIA"] ).toEqual(2);
+        expect( data["BERLUSCONI SILVIO"] ).toEqual(1);
+        expect( data["RENZI MATTEO"] ).toEqual(2);
+    });
+});

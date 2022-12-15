@@ -12,7 +12,7 @@ const fantacitorio_scheme = mongoose.Schema ({
 });
 
 fantacitorio_scheme.statics.cachePoints = async function(points, date) {
-    if (process.env.NODE_ENV.includes("testing")) { return; }
+    if (process.env.NODE_ENV.includes("api_testing")) { return; }
 
     points = Object.keys(points).map((politician) => ({
         politician: politician,
@@ -34,7 +34,7 @@ fantacitorio_scheme.statics.cachePoints = async function(points, date) {
 };
 
 fantacitorio_scheme.statics.getPointsOfWeek = async function(date) {
-    if (process.env.NODE_ENV.includes("testing")) { return null; }
+    if (process.env.NODE_ENV.includes("api_testing")) { return null; }
 
     try {
         let points = await this.findOne({ date: moment.utc(date).startOf("isoweek").toISOString() });
