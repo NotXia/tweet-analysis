@@ -113,7 +113,7 @@ describe("Richieste corrette a /games/fantacitorio/squads ", function () {
         batch.includes.media[0].url = 'https://pbs.twimg.com/media/Fi6jtjhXgBswzlx.jpg';
 
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "", "", true))
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "2006-03-26T00:00:02.000Z", "", true))
             .reply(200, batch);
 
         const res = await curr_session.get("/games/fantacitorio/squads").query().expect(200);
@@ -139,11 +139,11 @@ describe("Richieste corrette a /games/fantacitorio/squads ", function () {
         batch2.includes.media[1].url = 'https://pbs.twimg.com/media/Fi60YlyXgAAZX7C.jpg';
 
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "", "", true))
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "", 10, "2006-03-26T00:00:02.000Z", "", true))
             .reply(200, batch1);
         
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", batch1.meta.next_token, 10, "", "", true))
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", batch1.meta.next_token, 10, "2006-03-26T00:00:02.000Z", "", true))
             .reply(200, batch2);
 
         const res = await curr_session.get("/games/fantacitorio/squads").query({ pag_token: batch1.meta.next_token }).expect(200);
@@ -155,15 +155,45 @@ describe("Richieste corrette a /games/fantacitorio/squads ", function () {
             expect( tweet.squad ).toBeDefined();
         }
     }, 30000);
+
+    test("Ricerca squadre per nome utente", async function () {
+        let username = 'SWETeam12';
+        let batch = generateTweets(3, true, undefined, undefined, "#fantacitorio test");
+        batch.data[1].attachments.media_keys[0] = '3_1111122222333334444';
+        batch.includes.media[0].media_key = '3_1111122222333334444';
+        batch.includes.media[0].url = 'https://pbs.twimg.com/media/Fi6jtjhXgBswzlx.jpg';
+
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams(`from:${username} #fantacitorio`, "", 10, "2006-03-26T00:00:02.000Z", "", true))
+            .reply(200, batch);
+
+        const res = await curr_session.get("/games/fantacitorio/squads").query({ username: username }).expect(200);
+        expect( res.body ).toBeDefined();
+        expect( res.body.tweets.length ).toEqual(1);
+        expect( res.body.next_token ).toBeUndefined();
+        for (const tweet of res.body.tweets) {
+            expect( tweet.tweet ).toBeDefined();
+            expect( tweet.squad ).toBeDefined();
+        }
+    }, 30000);
 });
 
 describe("Richieste errate a /games/fantacitorio/squads ", function () {
     test("Ricerca squadre con pagination token errato", async function () {
         nock("https://api.twitter.com")
-            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "asfasgfdg", 10, "", "", true))
+            .get('/2/tweets/search/all').query(generateParams("#fantacitorio", "asfasgfdg", 10, "2006-03-26T00:00:02.000Z", "", true))
             .reply(500);
         
             const res = await curr_session.get("/games/fantacitorio/squads").query({ pag_token: "asfasgfdg" }).expect(500);
+            expect( res.body ).toBeDefined();
+    });
+
+    test("Ricerca squadre con username errato", async function () {
+        nock("https://api.twitter.com")
+            .get('/2/tweets/search/all').query(generateParams("from:dfadfsdfdfsd1212sweteam12 #fantacitorio", "", 10, "2006-03-26T00:00:02.000Z", "", true))
+            .reply(500);
+        
+            const res = await curr_session.get("/games/fantacitorio/squads").query({ username: 'dfadfsdfdfsd1212sweteam12' }).expect(500);
             expect( res.body ).toBeDefined();
     });
 });
