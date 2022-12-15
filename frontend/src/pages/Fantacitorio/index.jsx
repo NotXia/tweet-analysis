@@ -42,15 +42,20 @@ class Fantacitorio extends React.Component {
             error_message: ""                           // Messaggio d'errore
         }
         this.input = {
-            query: React.createRef(),
-            date: React.createRef(),
-            update: {
-                politician: React.createRef(),
+            query: React.createRef(),                   // Input barra di ricerca per utente
+            date: React.createRef(),                    // Input data
+            update: {                                   // Dati presi dal form di modifica punteggio per politico
+                politician: React.createRef(),              
                 points: React.createRef()
             }
         }
     }
 
+    /**
+     * Al caricamento della pagina inizializza:
+     * - Le squadre partecipanti individuate fino ad ora
+     * - Le statistiche interessanti fino ad ora
+     */
     async componentDidMount() {
         this.loadLeaderboard();
 
@@ -359,12 +364,18 @@ class Fantacitorio extends React.Component {
         }
     }
     
+    /**
+     * Funzione gestore del bottone carosello per immagine precedente
+     */
     carouselPrev() {
         if (this.state.carousel_index > 0) {
             this.setState({ carousel_index: this.state.carousel_index - 1 });
         }
     }
 
+    /**
+     * Funzione gestore del bottone carosello per immagine successiva
+     */
     async carouselNext() {
         if (this.state.carousel_index < this.state.squads.length) {
             this.setState({ carousel_index: this.state.carousel_index + 1 });
@@ -394,6 +405,10 @@ class Fantacitorio extends React.Component {
         }
     }
 
+    /**
+     * Funzione per la ricerca di una squadra per nome utente (se esistente)
+     * @param e nome utente
+     */
     async searchUserTeam(e) {
         e.preventDefault();
 
