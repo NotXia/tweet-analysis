@@ -357,7 +357,7 @@ function _bestAverage(scores) {
     }
 
     // Calcolo best average
-    Object.keys(politicians_scores).map((politician) => {
+    Object.keys(politicians_scores).forEach((politician) => {
         let average = politicians_scores[politician].points / politicians_scores[politician].times;
         if (average > best_average.points) {
             best_average.politician = politician;
