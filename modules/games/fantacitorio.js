@@ -23,7 +23,7 @@ async function getRanking() {
     try {
         let totalPoints = {};
         let points = await FantacitorioModel.find({});
-        if (!points) { return; }
+        if (!points) { return []; }
 
         for(const batch of points) {
             for(const row of batch.points) {
