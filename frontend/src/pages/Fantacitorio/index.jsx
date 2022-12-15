@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import Rank from './components/Rank'
 import Navbar from "../../components/Navbar";
 import moment from "moment";
-import { getPointsByWeek, getRankings, getSquads, updateWeekPoints } from "../../modules/games/fantacitorio";
+import { getPointsByWeek, getRankings, getSquads, getSquadByUsername, updateWeekPoints, getRankingStatistics } from "../../modules/games/fantacitorio";
 import TweetUser from '../../components/TweetUser';
 
 //Costanti limite date
@@ -20,16 +20,19 @@ class Fantacitorio extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: "",
+            date: "",                                   // Data di ricerca attuale
             date_result: [],                            // Risultato della ricerca per data
             ranking_result: [],                         // Risultato della classifica attuale
             query_result: [],                           // Risultato della ricerca utente
+
             squads: [],                                 // Vettore delle immagini squadre
             next_token: "",                             // Token alla prossima pagina delle squadre
-            fetching_squads: false,
             carousel_index: 0,                          // Indice dell'immagine nel carosello
+            fetching_squads: false,                     // Indica se attualmente si sta ricercando l'immagine alla prossima squadra
+
             fetching_date: false,                       // Indica se attualmente si sta ricercando per data
             fetching_user: false,                       // Indica se attualmente si sta ricercando per utente
+            displayed_user_squad: null,                 // Indica se attualmente si sta visualizzando per ricerca utente
 
             select_min_date: __min_date_limit,          // Limite minimo attuale della data (a init: "2006-03-23")
             select_max_date: __max_date_limit,          // Limite minimo attuale della data (a init: data di oggi)
@@ -165,7 +168,7 @@ class Fantacitorio extends React.Component {
                                                 <div className="w-100 h-100 align-items-start pe-2 mt-3">
 
                                                     {/* Barra di ricerca immagine per utente */}
-                                                    <form>
+                                                    <form onSubmit={(e) => this.searchUserTeam(e)}>
                                                         <p className="mb-3 h1" style={{ fontSize: "0.9rem" }} data-bs-toggle="collapse" data-bs-target="#userSearch">Ricerca per utente ▾</p>
                                                         <div className="collapse" id="userSearch">
                                                             <div className="input-group flex">
@@ -175,6 +178,12 @@ class Fantacitorio extends React.Component {
                                                                     Cerca
                                                                     <span className={`spinner-grow spinner-grow-sm ms-2 ${this.state.fetching_user ? "" : "d-none"}`} role="status" aria-hidden="true" />
                                                                 </button>
+                                                                {
+                                                                    this.state.displayed_user_squad &&
+                                                                    <button className="btn btn-outline-secondary" type="button" onClick={() => this.setState({ displayed_user_squad: null })}>
+                                                                        Annulla ricerca
+                                                                    </button>
+                                                                }
                                                             </div>
                                                             <p className="small mt-0 mb-1" style={{ fontSize: "0.75rem"}}>Inserisci il nome utente di cui vuoi vedere la squadra</p>
                                                         </div>
@@ -184,9 +193,17 @@ class Fantacitorio extends React.Component {
                                                     <div className="mt-2">
                                                         <hr className="divider col-12 col-md-6 col-lg-4" />
                                                         <p className="fw-semibold mb-1 mt-4" style={{ fontSize: "0.9rem" }}>Squadra di:</p>
-                                                        {
-                                                            this.state.squads[this.state.carousel_index] &&
-                                                            <TweetUser tweet={this.state.squads[this.state.carousel_index].tweet} time_format="[Pubblicato il] DD-MM-YYYY HH:mm" />
+                                                        {   
+                                                            this.state.displayed_user_squad ? 
+                                                                <TweetUser tweet={this.state.displayed_user_squad.tweet} time_format="[Pubblicato il] DD-MM-YYYY HH:mm" />
+                                                            :
+                                                                <>
+                                                                    {
+                                                                        this.state.squads[this.state.carousel_index] &&
+                                                                        <TweetUser tweet={this.state.squads[this.state.carousel_index].tweet} time_format="[Pubblicato il] DD-MM-YYYY HH:mm" />
+                                                                    }
+                                                                </>
+                                                                
                                                         }
                                                     </div>
                                                 
@@ -204,17 +221,24 @@ class Fantacitorio extends React.Component {
                                                 <div id="carousel-fantacitorio" className="carousel slide" style={{ width: "fit-content" }}>
                                                     <div className="carousel-inner" style={{ width: "fit-content" }}>
                                                         <div className="carousel-item active" style={{ width: "fit-content" }}>
-                                                            <img src={this.state.squads[this.state.carousel_index]?.squad} className="d-block" style={{ height: "38vh" }} alt="" />
+                                                            <img src={this.state.displayed_user_squad ? this.state.displayed_user_squad.squad : this.state.squads[this.state.carousel_index]?.squad} 
+                                                                 className="d-block" style={{ height: "38vh" }} alt="" />
                                                         </div>
                                                     </div>
-                                                    <button className={`carousel-control-prev ${this.state.carousel_index === 0 ? "invisible" : ""}`} type="button" onClick={() => this.carouselPrev()}>
-                                                        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                        <span className="visually-hidden">Previous</span>
-                                                    </button>
-                                                    <button className={`carousel-control-next ${this.state.carousel_index === this.state.squads.length-1 ? "invisible" : ""}`} type="button" onClick={() => this.carouselNext()}>
-                                                        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                                                        <span className="visually-hidden">Next</span>
-                                                    </button>
+
+                                                    {
+                                                        !this.state.displayed_user_squad &&
+                                                        <>
+                                                            <button className={`carousel-control-prev ${this.state.carousel_index === 0 ? "invisible" : ""}`} type="button" onClick={() => this.carouselPrev()}>
+                                                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                                <span className="visually-hidden">Previous</span>
+                                                            </button>
+                                                            <button className={`carousel-control-next ${this.state.carousel_index === this.state.squads.length-1 ? "invisible" : ""}`} type="button" onClick={() => this.carouselNext()}>
+                                                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                                                <span className="visually-hidden">Next</span>
+                                                            </button>
+                                                        </>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -341,8 +365,28 @@ class Fantacitorio extends React.Component {
         }
     }
 
-    async searchUserTeam() {
-        
+    async searchUserTeam(e) {
+        e.preventDefault();
+
+        this.setState({
+            fetching_user: true
+        })
+        try {
+            
+            const query = this.input.query.current.value;
+            let res = await getSquadByUsername(query);
+
+            this.setState({
+                displayed_user_squad: res,
+                fetching_user: false
+            })
+        }
+        catch(err) {
+            this.setState({
+                error_message: "Errore nella ricerca dell'utente",
+                fetching_user: false
+            });
+        }
     }
 
 }

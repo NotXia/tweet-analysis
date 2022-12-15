@@ -46,6 +46,22 @@ export async function getSquads(pag_token=undefined) {
 }
 
 /**
+ * Restituisce i tweet di coloro che hanno una squadra di fantacitorio per username
+ * @param {String} username                            Utente per cui cercare
+ * @returns {Promise<{tweet:Object, squad:string}>}    La squadra dell'utente
+ */
+export async function getSquadByUsername(username) {
+    const res = await axios({
+        method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/squads`,
+        params: {
+            username: username
+        }
+    });
+
+    return res.data.tweets[0];
+}
+
+/**
  * Aggiorna il punteggio settimanale del politico
  * @param {String} politician_name          Punto di partenza della ricerca
  * @param {Number} points                   Punteggio nuovo
@@ -60,6 +76,14 @@ export async function updateWeekPoints(politician_name, points, date) {
             date: date
         }
     });
+}
 
+/**
+ * Restituisce le statistiche interessanti della classifica
+ */
+export async function getRankingStatistics() {
+    const res = await axios({
+        method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/statistics`
+    });
     return res.data;
 }
