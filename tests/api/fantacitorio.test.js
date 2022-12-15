@@ -167,3 +167,16 @@ describe("Richieste errate a /games/fantacitorio/squads ", function () {
             expect( res.body ).toBeDefined();
     });
 });
+
+describe("Richieste corrette a PUT /games/fantacitorio/recap ", function () {
+    test("Parametri mancanti", async function () {
+        await curr_session.put("/games/fantacitorio/recap").send({}).expect(400);
+        await curr_session.put("/games/fantacitorio/recap").send({ politician: "Qualcuno", score: 5 }).expect(400);
+        await curr_session.put("/games/fantacitorio/recap").send({ date: "2022-01-01T00:00:00Z", score: 5 }).expect(400);
+    });
+
+    test("Chiamata corretta", async function () {
+        /* Nota la modifica non viene fatta veramente dato che NODE_ENV è api_testing */
+        await curr_session.put("/games/fantacitorio/recap").send({ politician: "Qualcuno", score: 5, date: "2999-01-01T00:00:00Z" }).expect(204);
+    });
+});
