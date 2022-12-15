@@ -19,3 +19,14 @@ export async function getRankings() {
 
     return res.data;
 }
+
+export async function getSquads(pag_token=undefined) {
+    const res = await axios({
+        method: "GET", url: `${process.env.REACT_APP_API_PATH}/games/fantacitorio/squads`,
+        params: {
+            pag_token: pag_token
+        }
+    });
+
+    return res.data;
+}
