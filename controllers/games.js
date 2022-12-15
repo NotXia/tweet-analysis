@@ -118,8 +118,7 @@ async function fantacitorioSquads(req, res) {
     let pagination_token = req.query.pag_token ? req.query.pag_token : "";
 
     try {
-        tweets_response = await getSquads(pagination_token);
-
+        tweets_response = await getSquads(pagination_token, req.query.username);
     } catch (error) {
         res.sendStatus(500);
         return;
