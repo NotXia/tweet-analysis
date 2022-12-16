@@ -367,6 +367,7 @@ class Fantacitorio extends React.Component {
             await updateWeekPoints(this.input.update.politician.current.value, this.input.update.points.current.value, `${this.input.date.current.value}T00:00:00.000Z`);
             await this.searchWeekPoints(this.input.date.current.value);
             await this.loadLeaderboard();
+            this.setState({ statistics: await getRankingStatistics() });
         }
         catch(err) {
             this.setState({
