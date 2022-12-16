@@ -53,7 +53,9 @@ class Test extends React.Component {
 
                     <div className="d-flex justify-content-center align-items-center h-100">
                         {/* Schermata iniziale */}
-                        <div className={`${this.state.game_ready ? "d-none" : ""}`}>
+                        <div className={`${this.state.game_ready ? "d-none" : ""} text-center`}>
+                            <h1 className="mb-1">Scacchi contro Twitter</h1>
+                            <p className="text-muted mb-4">Gioca una partita in cui gli utenti di Twitter scelgono a maggioranza la mossa dell'avversario</p>
                             <button className="btn btn-outline-success btn-lg" onClick={() => this.startGame()}>Inizia una partita</button>
                         </div>
 
