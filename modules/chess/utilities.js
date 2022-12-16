@@ -43,11 +43,12 @@ async function generateBoardImage(fen, flip=false) {
                 let x_coord = 100*i, y_coord = 100*j;
                 let piece = await Jimp.read(board_image);
                 piece.crop(x_coord, y_coord, 100, 100).flip(false, true);
+                piece.flip(true, false);
                 board_image = board_image.composite(piece, x_coord, y_coord);
             }
         }
         // Inverte la scacchiera
-        board_image.flip(false, true);
+        board_image = board_image.rotate(180);
     }
     
     // Aggiunta padding
