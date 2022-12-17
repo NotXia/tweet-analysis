@@ -39,7 +39,8 @@ class Fantacitorio extends React.Component {
             select_max_date: __max_date_limit,          // Limite minimo attuale della data (a init: data di oggi)
 
             error_message: "",                          // Messaggio d'errore
-            error_message_squad: ""                     // Messaggio d'errore della ricerca utente / visualizzazione squadre
+            error_message_squad: "",                    // Messaggio d'errore della ricerca utente / visualizzazione squadre
+            error_message_week_search: ""               // Messaggio d'errore della ricerca settimanale
         }
         this.input = {
             query: React.createRef(),                   // Input barra di ricerca per utente
@@ -125,6 +126,7 @@ class Fantacitorio extends React.Component {
                                         {/* Risultato settimanale */}
                                         <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4" style={{ height: "48vh" }}>
                                             <h3 className="text-center">Risultati settimanali</h3>
+                                            <p className="text-center text-danger fw-semibold m-0">{this.state.error_message_week_search}</p>
                                             {/* Selettore data */}
                                             <form className="align-items-start">
                                                 <div>
@@ -179,7 +181,7 @@ class Fantacitorio extends React.Component {
                                         <div className="d-flex flex-column justify-content-center align-items-center w-100 border rounded-4 p-4" style={{ height: "48vh" }}>
                                             <h2 data-bs-toggle="collapse" data-bs-target="#statistics">Statistiche ▾</h2>
                                         
-                                            <div className="collapse w-100" id="statistics">
+                                            <div className="collapse w-100 overflow-auto" id="statistics">
                                                 <div className="border rounded-4 mt-3 mb-4">
                                                     <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best single score</h3>
                                                     <p className="m-0 text-center fs-6 text-muted">Miglior punteggio ottenuto in una singola puntata</p>
@@ -266,7 +268,7 @@ class Fantacitorio extends React.Component {
                                                     <div className="carousel-inner" style={{ width: "fit-content" }}>
                                                         <div className="carousel-item active" style={{ width: "fit-content" }}>
                                                             <img src={this.state.displayed_user_squad ? this.state.displayed_user_squad.squad : this.state.squads[this.state.carousel_index]?.squad} 
-                                                                 className="d-block" style={{ height: "38vh" }} alt="" />
+                                                                 className="d-block" style={{ height: "37vh" }} alt="" />
                                                         </div>
                                                     </div>
 
@@ -293,13 +295,6 @@ class Fantacitorio extends React.Component {
                             </div>
                         </div>
 
-                        {/* Sezione utente ed immagini squadre */}
-                        <div className="col-12 col-lg-4">
-                            <div className="sticky-top">
-                                
-                            </div>
-                        </div>
-                        
                     </div>
                 </div>
             </main>
@@ -331,7 +326,7 @@ class Fantacitorio extends React.Component {
 
         // Inizio fetching
         this.setState({ 
-            fetching_date: true, error_message: "",
+            fetching_date: true, error_message: "", error_message_week_search: "",
             date_result: [],
             date: "",
         });
@@ -347,7 +342,7 @@ class Fantacitorio extends React.Component {
             this.setState({
                 date_result: weeklyStats,
                 date: date,
-                error_message: weeklyStats.length === 0 ? "La classifica per la settimana inserita non è disponibile" : ""
+                error_message_week_search: weeklyStats.length === 0 ? "La classifica per la settimana inserita non è disponibile" : ""
             });
         }
         catch (err) {
