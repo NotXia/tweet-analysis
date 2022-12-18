@@ -6,10 +6,14 @@
  */
 export function sameTweets(tweet_list1, tweet_list2) {
     if (tweet_list1.length !== tweet_list2.length) { return false; }
+    let is_same = true;
 
     for (let i=tweet_list1.length-1; i>=0; i--) {
-        if (tweet_list1[i].id !== tweet_list2[i].id) { return false; }
+        if (tweet_list1[i].id !== tweet_list2[i].id) { 
+            is_same = false;
+            break;
+        }
     }
 
-    return true;
+    return is_same;
 }

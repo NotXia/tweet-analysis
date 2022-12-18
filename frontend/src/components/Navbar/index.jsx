@@ -19,17 +19,20 @@ class Navbar extends React.Component {
                 </button>
                 <div className="collapse navbar-collapse" id="__navbar">
                     <ul className="navbar-nav">
-                        <li className="nav-item">
+                        <li className="nav-item mx-1">
                             <Link className="nav-link" to="/">Ricerca</Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item mx-1">
                             <Link className="nav-link" to="/ghigliottina">La Ghigliottina</Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item mx-1">
                             <Link className="nav-link" to="/catenafinale">Catena Finale</Link>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item mx-1">
                             <Link className="nav-link" to="/chess">Scacchi</Link>
+                        </li>
+                        <li className="nav-item mx-1">
+                            <Link className="nav-link" to="/fantacitorio">Fantacitorio</Link>
                         </li>
                     </ul>
                 </div>

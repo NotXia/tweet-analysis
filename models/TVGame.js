@@ -1,13 +1,15 @@
 require('dotenv').config();
 const mongoose = require("mongoose");
 const consts = require("./utils/consts.js");
+const moment = require("moment");
 
 
 const tweet_scheme = mongoose.Schema ({
     _id: { type: String, required: true },
     date: String,
+    game: String,
     tweet: {
-        id: { type: String, required: true },
+        id: { type: String },
         name: String,
         username: String,
         pfp: String,
@@ -39,14 +41,17 @@ const tweet_scheme = mongoose.Schema ({
 /**
  * Gestisce il salvataggio di un tweet
  * @param {Object} tweet    Tweet da salvare
+ * @param {String} game     Nome del gioco
+ * @param {String} date     Giorno del tweet (in formato ISO)
  */
-tweet_scheme.statics.cacheTweet = async function(tweet, date) {
+tweet_scheme.statics.cacheTweet = async function(tweet, game, date) {
     if (process.env.NODE_ENV.includes("testing")) { return; }
 
     try {
         await new this({
             _id: tweet.tweet.id,
-            date: date,
+            date: moment(date).utc().startOf("day").toISOString(),
+            game: game,
             tweet: {
                 id: tweet.tweet.id,
                 name: tweet.tweet.name,
@@ -69,11 +74,42 @@ tweet_scheme.statics.cacheTweet = async function(tweet, date) {
     }
 };
 
-tweet_scheme.statics.cacheCatenaFinale = async function(date) {
+/**
+ * Marca un giorno come senza partita
+ * @param {String} game     Nome del gioco
+ * @param {String} date     Giorno del gioco (in formato ISO)
+ */
+tweet_scheme.statics.setNoGameDay = async function(game, date) {
+    if (process.env.NODE_ENV.includes("testing")) { return; }
+
+    try {
+        await new this({
+            _id: moment(date).utc().startOf("day").toISOString(),
+            date: moment(date).utc().startOf("day").toISOString(),
+            game: game,
+            tweet: null,
+            word: null
+        }).save();
+    }
+    catch (err) {
+        if (err.code === consts.MONGO_DUPLICATED_KEY) { return; } // Giorno già marcato come senza tweet
+        throw err;
+    }
+};
+
+/**
+ * Estrae i tweet di un dato gioco in un dato giorno
+ * @param {String} game     Nome del gioco
+ * @param {String} date     Giorno del gioco (in formato ISO)
+ * @returns {Promise<[Object]|null>} Array dei tentativi, null se cache miss
+ */
+tweet_scheme.statics.getCache = async function(game, date) {
     if (process.env.NODE_ENV.includes("testing")) { return null; }
 
     try {
-        let tweets = await this.find({ date: date });
+        let tweets = await this.find({ date: moment(date).utc().startOf("day").toISOString(), game: game });
+        if (tweets.length === 0) { return null; } // Cache miss
+        if (tweets.length === 1 && !tweets[0].word) { return []; } // Giorno senza tentativi
         return tweets;
     }
     catch (err) {
@@ -82,4 +118,4 @@ tweet_scheme.statics.cacheCatenaFinale = async function(date) {
 };
 
 
-module.exports = mongoose.model("tweets_catenaFinale", tweet_scheme);
+module.exports = mongoose.model("tvgame_tweets", tweet_scheme);

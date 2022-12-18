@@ -14,6 +14,7 @@ const cookieParser = require("cookie-parser");
 const error_handler = require("./error_handler.js").error_handler;
 const cors = require("cors");
 const mongoose = require("mongoose");
+const schedule = require("node-schedule");
 
 const analysis_router = require("./routes/analysis.js");
 const user_router = require("./routes/user.js");
@@ -21,6 +22,8 @@ const keyword_router = require("./routes/keyword.js");
 const games_router = require("./routes/games.js");
 
 const { initSocket } = require("./sockets/init.js");
+
+const { fetchCurrentWeekScores } = require("./scripts/fantacitorio.js");
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -48,9 +51,17 @@ initSocket(socketIO);
 if (!process.env.NODE_ENV.includes("testing")) {
     mongoose.connect(process.env.MONGO_URL);
 
+    /*
+        Fetch punteggi settimanali Fantacitorio
+        Ogni sabato alle 5:00
+    */
+    schedule.scheduleJob("0 5 * * 6", () => {
+        fetchCurrentWeekScores();
+    });
+
     server.listen(process.env.PORT, function () {
         console.log(`Server started at http://localhost:${process.env.PORT}`);
     });
 }
 
-module.exports = app;
+module.exports = server;

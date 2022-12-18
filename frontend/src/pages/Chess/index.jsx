@@ -53,7 +53,9 @@ class Test extends React.Component {
 
                     <div className="d-flex justify-content-center align-items-center h-100">
                         {/* Schermata iniziale */}
-                        <div className={`${this.state.game_ready ? "d-none" : ""}`}>
+                        <div className={`${this.state.game_ready ? "d-none" : ""} text-center`}>
+                            <h1 className="mb-1">Scacchi contro Twitter</h1>
+                            <p className="text-muted mb-4">Gioca una partita in cui gli utenti di Twitter scelgono a maggioranza la mossa dell'avversario</p>
                             <button className="btn btn-outline-success btn-lg" onClick={() => this.startGame()}>Inizia una partita</button>
                         </div>
 
@@ -79,6 +81,11 @@ class Test extends React.Component {
                                             <div className={`${this.state.current_color === "black" ? "" : "invisible"}`}>
                                                 <img src={`${process.env.PUBLIC_URL}/icons/chess/king_black.png`} alt="Turno neri" />
                                             </div>
+                                        </div>
+
+                                        <div className={`text-center ${this.state.end_state ? "d-none" : ""}`}>
+                                            <p className={`${this.state.current_color === this.state.player_color ? "" : "d-none"} fs-5`}>È il tuo turno</p>
+                                            <p className={`${this.state.current_color === this.state.player_color ? "d-none" : ""} fs-5`}>È il turno degli utenti di Twitter</p>
                                         </div>
 
                                         {/* Esito */}
