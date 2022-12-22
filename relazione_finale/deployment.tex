@@ -1,0 +1,25 @@
+
+
+\begin{center}
+\begin{tikzpicture}[auto, thick,
+        node distance = 1cm and 1 cm,
+        pipestep/.style = {draw, align=center, minimum width=2.5cm, minimum height=1cm, rounded corners},
+    ]
+    \node[pipestep]                                     (gitlab) {\includegraphics[width=1cm]{./img/icons/firefox.png}\\\textit{Push} su Gitlab};
+    \node[pipestep, below=of gitlab]                    (jenkins) {\includegraphics[width=1cm]{./img/icons/jenkins.png}\\Avvio pipeline\\Jenkins};
+    \node[pipestep, right=of jenkins]                   (testing) {\includegraphics[width=1cm]{./img/icons/jest.png}\\Testing};
+    \coordinate[right=of testing, xshift=3cm]           (padding);
+    \node[pipestep, above=of padding, yshift=0.5cm]     (deploy_prod) {\includegraphics[width=1cm]{./img/icons/docker.png}\\Deploy produzione};
+    \node[pipestep, below=of padding, yshift=-0.5cm]    (sonarqube) {\includegraphics[width=1cm]{./img/icons/sonarqube.png}\\Sonarqube};
+    \node[pipestep, right=of sonarqube]                 (deploy_dev) {\includegraphics[width=1cm]{./img/icons/docker.png}\\Deploy\\ambiente di test};
+    \node[pipestep, below=of testing]                   (mattermost) {\includegraphics[width=1cm]{./img/icons/mattermost.png}\\Segnalazione su\\Mattermost};
+    %
+    \draw[-stealth']  (gitlab) -- (jenkins) node[midway, anchor=east, xshift=0.9cm, yshift=0.1cm, fill=white] {Webhook};
+    \draw[-stealth']  (jenkins) -- (testing) node[midway, anchor=east] {};
+    \draw[-stealth']  (testing.east) -- (deploy_prod.west) node[midway, anchor=east, xshift=1.6cm, yshift=-0.1cm, fill=white] {Branch \texttt{main}};
+    \draw[-stealth']  (testing.east) -- (sonarqube.west) node[midway, anchor=east, xshift=1.2cm, yshift=0.1cm, fill=white] {Branch \texttt{dev}};
+    \draw[-stealth']  (sonarqube) -- (deploy_dev) node[midway] {};
+    \draw[-stealth']  (testing) -- (mattermost) node[midway, anchor=east, xshift=1.1cm, yshift=0.1cm, fill=white] {Fallimento};
+    % 
+\end{tikzpicture}
+\end{center}
