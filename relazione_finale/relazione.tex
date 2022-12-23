@@ -21,6 +21,9 @@
 \usepackage{makecell}
 \usepackage{tikz}
 \usetikzlibrary{arrows, positioning, quotes, shapes.geometric}
+\usepackage{hyperref}
+\usepackage[noabbrev,capitalize,italian]{cleveref}
+\newcommand{\fref}[1]{\hyperref[#1]{\cref{#1}}}
 
 \tolerance=1
 \emergencystretch=\maxdimen
@@ -32,11 +35,13 @@
 % --- MACRO ---
 
 % Box user story
-\newcommand{\userstory}[4]{%
+% {US}{Punti}{DoD}{Test}{Epica}
+\newcommand{\userstory}[5]{%
     \begin{center}
         \fbox{\parbox{15cm}{%
         \begin{minipage}{9.8cm}
-            \textbf{US}: #1
+            \textbf{US}: #1\\
+            \textbf{Epica}: #5
         \end{minipage}
         \hfill
         \begin{minipage}{5cm}
@@ -110,17 +115,39 @@
 
 
 \section{Descrizione del prodotto}
+Il prodotto da realizzare è un client Twitter in grado di fornire analisi e funzionalità specifiche per determinati argomenti.
 
 \subsection{Scope}
+Il backlog è stato partizionato in cinque epiche:
+\begin{center}
+    \begin{tabular}{ | m{8em} | m{11cm} | }
+        \hline
+        {\textbf{Epica}} & {\textbf{Descrizione}} \\
+        \hline
+        Raccolta e analisi di tweet & Prime funzionalità per ricercare e analizzare tweet \\ 
+        \hline
+        Scacchi & Partita a scacchi contro gli utenti di Twitter che scelgono a maggioranza la mossa \\ 
+        \hline
+        Reazione a catena & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{catena finale} \\ 
+        \hline
+        L'Eredità & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{ghigliottina} \\ 
+        \hline
+        Fantacitorio & Raccolta e visualizzazione dei punteggi del Fantacitorio e ricerca delle squadre degli altri utenti \\ 
+        \hline
+    \end{tabular}
+\end{center}
+Le user stories contenute in ciascuna epica sono descritte nella \fref{sprint_description}
 
 \subsection{Casi d'uso}
 
+
 \subsection{Diagramma delle classi}
+
 
 %%%
 
 \newpage
-\section{Descrizione degli sprint}
+\section{Descrizione degli sprint} \label{sprint_description}
 Sono stati svolti quattro sprint della durata di 14 giorni ciascuno.\\
 La stima dei punti delle user stories è stata effettuata con una scala da 0 a 10, valutando separatamente il frontend dal backend. 
 Il punteggio complessivo è quindi ottenuto dalla somma di quest'ultimi.
