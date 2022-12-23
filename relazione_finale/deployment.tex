@@ -1,16 +1,15 @@
-
-
+Il seguente schema rappresenta le fasi della pipeline definita per il progetto:
 \begin{center}
 \begin{tikzpicture}[auto, thick,
         node distance = 1cm and 1 cm,
         pipestep/.style = {draw, align=center, minimum width=2.5cm, minimum height=1cm, rounded corners},
     ]
     \node[pipestep]                                     (gitlab) {\includegraphics[width=1cm]{./img/icons/firefox.png}\\\textit{Push} su Gitlab};
-    \node[pipestep, below=of gitlab]                    (jenkins) {\includegraphics[width=1cm]{./img/icons/jenkins.png}\\Avvio pipeline\\Jenkins};
+    \node[pipestep, below=of gitlab]                    (jenkins) {\includegraphics[width=0.9cm]{./img/icons/jenkins.png}\\Avvio pipeline\\Jenkins};
     \node[pipestep, right=of jenkins]                   (testing) {\includegraphics[width=1cm]{./img/icons/jest.png}\\Testing};
     \coordinate[right=of testing, xshift=3cm]           (padding);
     \node[pipestep, above=of padding, yshift=0.5cm]     (deploy_prod) {\includegraphics[width=1cm]{./img/icons/docker.png}\\Deploy produzione};
-    \node[pipestep, below=of padding, yshift=-0.5cm]    (sonarqube) {\includegraphics[width=1cm]{./img/icons/sonarqube.png}\\Sonarqube};
+    \node[pipestep, below=of padding, yshift=-0.5cm]    (sonarqube) {\includegraphics[width=1cm]{./img/icons/sonarqube.png}\\Scansione\\Sonarqube};
     \node[pipestep, right=of sonarqube]                 (deploy_dev) {\includegraphics[width=1cm]{./img/icons/docker.png}\\Deploy\\ambiente di test};
     \node[pipestep, below=of testing]                   (mattermost) {\includegraphics[width=1cm]{./img/icons/mattermost.png}\\Segnalazione su\\Mattermost};
     %
@@ -23,3 +22,5 @@
     % 
 \end{tikzpicture}
 \end{center}
+Sonarqube è definito solo sul branch di sviluppo (\texttt{dev}) in quanto la versione \textit{community} è limitata alla scansione di un unico branch.\\
+Il deploy avviene su container Docker allineati al codice del branch di riferimento. Il database risiede su un container separato.
