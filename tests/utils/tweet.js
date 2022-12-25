@@ -1,9 +1,11 @@
 const nock = require('nock');
 const moment = require('moment');
 
-function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '') {
+function generateParams(query, pagination_token="", quantity=10, start_time = '', end_time = '', getReplies = false) {
+    let replies = "";
+    if (!getReplies) { replies = " -is:reply"; }
     let params = {
-        query: `${query} -is:reply -is:retweet`,                            // Filtra per parola chiave e rimuove i retweet e le risposte
+        query: `${query}${replies} -is:retweet`,                            // Filtra per parola chiave e rimuove i retweet e le risposte
         "max_results": quantity,                                            // Numero massimo Tweet per pagina
         "tweet.fields": "created_at,geo,text,public_metrics,attachments",   // Campi del Tweet
         "expansions": "geo.place_id,author_id,attachments.media_keys",      // Espansioni del campo Tweet
@@ -58,7 +60,7 @@ function generateTweets(quantity, isLast=false, begin_date=undefined, end_date=u
     return out;
 }
 
-function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe2122 https://t.co/LS655lKPU3") {
+function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe2122 https://t.co/LS655lKPU3", username="SWETeam12") {
     let tweetId = _generateTweetId();
     let authorId = _generateTweetId();
     let mediaId1 = _generateMediaId();
@@ -85,7 +87,7 @@ function _generateTweet(creation_date="2010-11-06T00:00:01Z", text="#uniboswe212
             "text": text
         },
         user: {
-            "username": "SWETeam12",
+            "username": username,
             "id": authorId,
             "profile_image_url": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
             "name": "SWE Team 12"

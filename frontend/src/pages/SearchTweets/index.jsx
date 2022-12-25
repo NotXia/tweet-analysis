@@ -96,29 +96,24 @@ class SearchTweets extends React.Component {
                                         <div className={`text-center mb-1 ${this.state.stream_state === "on" ? "d-block" : "d-none"}`}>
                                             <div className={`${live_dot_css["live-dot"]} me-2`}></div><span className="fw-semibold">Live</span>
                                         </div>
+                                        
                                         <form className="align-items-start" onSubmit={(e) => { this.searchTweets(e) }}>
-                                            {/* Barra primaria - Query */}
                                             <div className="input-group flex">
+                                                {/* Barra primaria - Query */}
                                                 <input ref={this.input.query} className="form-control" id="queryField" type="text" placeholder="Ricerca" aria-label="Username" required />
+                                                
                                                 {/* Bottone per avviare stream di tweet */}
-                                                <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading"} type="button">
-                                                    {
-                                                        (() => {
-                                                            switch (this.state.stream_state) {
-                                                                case "on": return (<span>Ferma</span>);
-                                                                case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
-                                                                case "off": 
-                                                                default:
-                                                                    return (<span>Live</span>);
-                                                            }
-                                                        })()
-                                                    }
-                                                </button>
+                                                { this.renderStreamButton() }
+                                                
                                                 {/* Bottone per la ricerca */}
-                                                <button className="btn btn-outline-secondary" disabled={this.state.stream_state === "on"} type="submit" id="button-addon1">Cerca</button>
+                                                <button className="btn btn-outline-secondary" disabled={(this.state.stream_state) === "on" || this.state.fetching} type="submit" id="button-addon1">
+                                                    Cerca
+                                                    <span className={`spinner-grow spinner-grow-sm ms-2 ${this.state.fetching ? "" : "d-none"}`} role="status" aria-hidden="true"></span>
+                                                </button>
                                             </div>
                                             <p className="ms-1" style={{ fontSize: "0.80rem", color: "grey" }}>Ricerca per parola chiave, hashtag (#) o nome utente (@)</p>
                                             <hr className="divider col-12 col-md-6 col-lg-4 ms-1" />
+                                            
                                             {/* Opzioni avanzate */}
                                             <p className={`button m-0 ms-1 mb-2 small text-decoration-underline ${this.state.stream_state === "on" ? "d-none" : ""}`} style={{ cursor: "pointer" }} data-bs-toggle="collapse" data-bs-target="#advancedOptions">Clicca qui per visualizzare opzioni avanzate</p>
                                             <div className={`collapse ${this.state.stream_state === "on" ? "d-none" : ""}`} id="advancedOptions">
@@ -126,7 +121,7 @@ class SearchTweets extends React.Component {
                                                     {/* Numero di ricerche */}
                                                     <div className="col-12 col-lg-4">
                                                         <label className="form-label small text-muted ms-1 mb-0" style={{ fontSize: "0.75rem" }} htmlFor="SearchAmount">Num. ricerche</label>
-                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }}
+                                                        <input ref={this.input.quantity} id="SearchAmount" className="form-control" type="number" placeholder="Numero" style={{ fontSize: "0.80rem" }} required
                                                                 defaultValue={10} min={1} max={1000} aria-label="SearchAmount" onChange={(e) => { this.setState({ quantity: e.target.value }) }}/>
                                                     </div>
                                                     {/* Data di inizio */}
@@ -160,17 +155,17 @@ class SearchTweets extends React.Component {
                                 
                                 {/* Grafici */}
                                 <div className={`${this.state.tweets.length === 0 ? "invisible" : "mt-3 p-2 border border-light rounded-4"}`}>
-                                    <div className="d-flex justify-content-center w-100 p-2">
-                                        <div className="px-2" style={{ height: "30vh", width: "100%" }}>
-                                            <TweetsTimeChart tweets={this.state.tweets} />
-                                        </div>
-                                    </div>
                                     <div className="d-flex justify-content-center w-100">
                                         <div className="px-2" style={{ height: "30vh", width: "30%" }}>
                                             <SentimentPie tweets={this.state.tweets} />
                                         </div>
                                         <div className="px-2" style={{ height: "30vh", width: "50%" }}>
                                             <WordCloud tweets={this.state.tweets} />
+                                        </div>
+                                    </div>
+                                    <div className={`d-flex justify-content-center w-100 p-2 ${this.isAllSameDayTweets() ? "invisible" : ""}`}>
+                                        <div className="px-2" style={{ height: "25vh", width: "100%" }}>
+                                            <TweetsTimeChart tweets={this.state.tweets} />
                                         </div>
                                     </div>
                                 </div>
@@ -195,6 +190,24 @@ class SearchTweets extends React.Component {
         </>);
     }
 
+    renderStreamButton() {
+        return (
+            <button className="btn btn-outline-secondary" onClick={() => { this.handleTweetStream() }} disabled={this.state.stream_state === "loading" || this.state.fetching} type="button">
+            {
+                (() => {
+                    switch (this.state.stream_state) {
+                        case "on": return (<span>Ferma</span>);
+                        case "loading": return (<span className="spinner-grow spinner-grow-sm mx-2" role="status" aria-hidden="true"></span>)
+                        case "off": 
+                        default:
+                            return (<span>Live</span>);
+                    }
+                })()
+            }
+            </button>
+        );
+    }
+
     /**
      * Funzione richiamata al submit del form
      */
@@ -206,12 +219,12 @@ class SearchTweets extends React.Component {
 
             const query = this.input.query.current.value.trim();
             const quantity = parseInt(this.input.quantity.current.value.trim());
-            const start_date = this.input.start_date.current.value ? moment(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").utc().format() : "";
-            let end_date = this.input.end_date.current.value ? moment(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").utc().format() : "";
+            const start_date = this.input.start_date.current.value ? moment.utc(this.input.start_date.current.value, "YYYY-MM-DD").startOf("day").toISOString() : "2006-03-26T00:00:02.000Z";
+            let end_date = this.input.end_date.current.value ? moment.utc(this.input.end_date.current.value, "YYYY-MM-DD").endOf("day").toISOString() : "";
             this.tweets_buffer = [];
 
             // Se la data di fine supera la data odierna, viene impostata la data odierna (10 secondi sottratti per necessità delle API di Twitter)
-            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().format(); } 
+            if (end_date && moment(end_date).isAfter(moment())) { end_date = moment().subtract(10, "seconds").utc().toISOString(); } 
 
             let tweets_data = await this.fetchTweets(query, "", quantity, start_date, end_date);
 
@@ -376,7 +389,7 @@ class SearchTweets extends React.Component {
             tweets.unshift(tweet);
             this.setState({ tweets: tweets });
         };
-        const onConnect = () => { this.setState({ stream_state: "on" }) };
+        const onConnect = () => { this.setState({ stream_state: "on", error_message: "" }) };
         const onDisconnect = () => { this.disconnectStream() };
         const onError = () => {
             this.setState({ error_message: "Si è verificato un errore durante la connessione" });
@@ -394,6 +407,18 @@ class SearchTweets extends React.Component {
         this.setState({ stream_state: "off" });
     }
     
+
+    isAllSameDayTweets() {
+        const tweets = this.state.tweets;
+ 
+        for (let i=0; i<tweets.length-1; i++) {
+            if ( !moment(tweets[i].time).startOf("day").isSame(moment(tweets[i+1].time).startOf("day")) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 export default SearchTweets;

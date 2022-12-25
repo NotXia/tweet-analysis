@@ -11,7 +11,10 @@ pipeline {
 
         stage("Test") {
             environment {
+                NODE_ENV = "testing"
                 TWITTER_BEARER_TOKEN = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
+                TWITTER_BEARER_TOKEN_STANDARD = credentials("c96b2e95-956e-467e-9d86-d1793f9a0c18")
+                MONGO_URL = credentials("b79ec51e-28cd-4615-9b75-803dc32daec7")
             }
 
             stages {
@@ -41,6 +44,16 @@ pipeline {
                     post {
                         success { updateGitlabCommitStatus name: "API test", state: "success" }
                         failure { updateGitlabCommitStatus name: "API test", state: "failed" }
+                    } 
+                }
+                stage("Socket tests") { 
+                    steps {
+                        updateGitlabCommitStatus name: "Socket test", state: "pending"
+                        sh "npm run test:socket" 
+                    }
+                    post {
+                        success { updateGitlabCommitStatus name: "Socket test", state: "success" }
+                        failure { updateGitlabCommitStatus name: "Socket test", state: "failed" }
                     } 
                 }
                 stage("React tests") { 
@@ -121,9 +134,9 @@ pipeline {
                         sh "npm run test:integration" 
                     }
                     catch (err) {
-                        withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
-                            discordSend title: JOB_NAME, description: "Tranquilli, sono solo falliti gli integration test", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
-                        }
+                        // withCredentials([string(credentialsId: '49d37b1c-b2a1-4632-8401-dfae4e655f19', variable: 'discord_webhook')]) {
+                        //     discordSend title: JOB_NAME, description: "Tranquilli, sono solo falliti gli integration test", link: env.BUILD_URL, result: currentBuild.currentResult, webhookURL: discord_webhook
+                        // }
                     }
                 }
             }

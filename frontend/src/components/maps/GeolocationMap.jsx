@@ -189,10 +189,11 @@ class GeolocationMap extends React.Component {
             const end_tweet = tweets_with_geo[i-1];
 
             lines.push(
-                <ArrowPolyline positions={[ 
-                    [start_tweet.location.coords.lat, start_tweet.location.coords.long], 
-                    [end_tweet.location.coords.lat, end_tweet.location.coords.long] 
-                ]} color="#0d338c50" hoverColor="#0d338c" />
+                <ArrowPolyline key={`${start_tweet.location.coords.lat} ${start_tweet.location.coords.long} ${end_tweet.location.coords.lat} ${end_tweet.location.coords.long}`} 
+                    positions={[ 
+                        [start_tweet.location.coords.lat, start_tweet.location.coords.long], 
+                        [end_tweet.location.coords.lat, end_tweet.location.coords.long] 
+                    ]} color="#0d338c50" hoverColor="#0d338c" />
             )
         }
 

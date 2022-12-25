@@ -5,7 +5,7 @@ import nock from "nock";
 
 moment().format();
 
-const { ghigliottina } = require("../../modules/games/ghigliottina.js");
+const { ghigliottina } = require("../../modules/games/userAttempts.js");
 
 describe("Test modulo ghigliottina", function() {
     test("Ghigliottina di una data del passato", async function () {

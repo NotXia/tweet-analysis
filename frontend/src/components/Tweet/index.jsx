@@ -13,10 +13,11 @@ import $ from "jquery"
 import 'bootstrap';
 import 'bootstrap/js/dist/carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import moment from "moment";
 import Sentiment from "../Sentiment"
 import he from "he"
 import css from "./tweet.module.css"
+import TweetUser from "../TweetUser";
+import TweetLocation from "../TweetLocation";
 
 class Tweet extends React.Component {
     constructor(props) {
@@ -46,18 +47,8 @@ class Tweet extends React.Component {
         return (<>
             {/* <a href={"https://twitter.com/twitter/status/" + tweet.id} target="_blank" rel="noreferrer" className="list-group-item list-group-item-action px-4 pt-4" aria-current="true"> */}
             <div className="list-group-item list-group-item-action px-4 pt-4">
-                <div className="d-flex w-100 justify-content-between">
-                    <div className="d-flex align-items-center mb-2">
-                        <div className="me-2">
-                            <img src={tweet.pfp} alt="" style={{ width: "100%" }} />
-                        </div>
-                        <div>
-                            <p className="m-0">{tweet.name}</p>
-                            <p className="m-0 text-muted" style={{fontSize: "0.8rem"}}>@{tweet.username}</p>
-                        </div>
-                    </div>
-                    <p className="small">{moment(tweet.time).format("DD-MM-YYYY HH:mm")}</p>
-                </div>
+                <TweetUser tweet={tweet} time_format="DD-MM-YYYY HH:mm" />
+
                 <p className="m-0 mt-2" style={{fontSize: "0.95rem", overflowWrap: "break-word"}}>{he.decode(tweet.text)}</p>
                 <div id={`media-carousel-${tweet.id}`} className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-inner">
@@ -110,24 +101,9 @@ class Tweet extends React.Component {
                         <p className="mt-3 small text-muted">{tweet.likes}</p> 
                     </div>
                 </div>
-                <div className={tweet.location ? "" : "d-none"}>
-                    <div className="d-flex mt-2">
-                        <img className="mt-1 mx-2" src={`${process.env.PUBLIC_URL}/icons/Tweet/earth.png`} alt="" style={{ width:"1.2em", height:"1.2em" }} /> 
-                        {
-                            (() => {
-                                if(tweet.location?.full_name) {
-                                    return <p>{tweet.location.full_name} - {
-                                        (() => {
-                                            if(tweet.location?.country)
-                                                return tweet.location.country
-                                        })()
-                                    }
-                                    </p>
-                                }
-                            })()
-                        }
-                    </div>
-                </div>
+                
+                <TweetLocation tweet={tweet} />
+
                 <Sentiment tweet={tweet.text} />
             {/* </a> */}
             </div>

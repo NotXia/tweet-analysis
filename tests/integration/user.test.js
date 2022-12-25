@@ -6,7 +6,8 @@ const { checkTweetFormat } = require("../utils/tweet.js");
 const { getTweetsByUser, testing } = require("../../modules/fetch/user.js");
 
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
+afterEach(async () => { await new Promise(r => setTimeout(r, 1000)); });
 
 
 let userTest;
