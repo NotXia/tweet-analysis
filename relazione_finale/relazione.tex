@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{algorithm2e}
+\usepackage[bottom]{footmisc} 
 \usepackage[italian]{babel}
 \usepackage[document]{ragged2e}
 \justifying
@@ -24,6 +25,7 @@
 \usepackage{hyperref}
 \usepackage[noabbrev,capitalize,italian]{cleveref}
 \newcommand{\fref}[1]{\hyperref[#1]{\cref{#1}}}
+\usepackage{makecell}
 
 \tolerance=1
 \emergencystretch=\maxdimen
@@ -195,6 +197,39 @@ Il punteggio complessivo è quindi ottenuto dalla somma di quest'ultimi.
 
 \newpage
 \section{Descrizione del processo}
+
+\subsection{Flusso di lavoro}
+Le responsabilità di ciascun componente del gruppo nel processo di sviluppo sono stati i 
+seguenti\footnote{Ad eccezione dello sprint 3 durante il quale è stato sperimentato l'inversione dei ruoli del team di sviluppo}:
+\begin{center}
+    \begin{tabular}{ | m{4cm} | m{10cm} | }
+        \hline
+        {\textbf{Membro}} & {\textbf{Responsabilità}} \\
+        \hline
+        \makecell[cl]{Cheikh Ibrahim Zaid\\{\footnotesize PO Operativo}} & Sviluppo backend. Testing e quality assurance. \\ 
+        \hline
+        \makecell[cl]{Lee Qun Hao Henry\\{\footnotesize Developer}} & Sviluppo frontend. \\ 
+        \hline
+        \makecell[cl]{Paris Manuel\\{\footnotesize Developer}} & Sviluppo backend. \\ 
+        \hline
+        \makecell[cl]{Xia Tian Cheng\\{\footnotesize Scrum master}} & Sviluppo backend e frontend (quando necessario). Sistemista. \\ 
+        \hline
+    \end{tabular}
+\end{center}
+
+\subsubsection{Git}
+L'organizzazione del repository git segue la metodologia \textit{gitflow} con un branch principale (\texttt{main}) che dopo ogni sprint viene allineato
+con il branch di sviluppo (\texttt{dev}).\\
+Più nello specifico, il flusso del lavoro ha seguito il seguente schema:
+\input{workflow.tex}
+
+\subsubsection{Bug tracking}
+Per il tracciamento di problemi e bug sono stati usati gli strumenti disponibili in Gitlab e Taiga.
+In particolare è stato utilizzato la funzionalità \textit{Issues} di Gitlab per creare e segnalare bug. 
+Contemporaneamente è stato impostato Taiga in modo tale che venga sincronizzato con Gitlab.\\
+In questo modo sono visibile su entrambi gli strumenti le segnalazioni e il loro stato, permettendo una migliore pianificazione in fase di sprint planning e
+una maggiore organizzazione durante lo sprint.
+
 
 \subsection{Team building}
 \subsubsection{Scrumble}

@@ -1,0 +1,23 @@
+\begin{center}
+\begin{tikzpicture}[auto, thick,
+        node distance = 1cm and 1cm,
+        pipestep/.style = {draw, align=center, minimum width=2cm, minimum height=1cm, rounded corners},
+    ]
+    \node[pipestep]                                     (taiga) {Selezione\\task su Taiga};
+    \node[pipestep, right=of taiga]                     (git_branch) {Sviluppo su\\branch separato};
+    \node[pipestep, right=of git_branch]                (mr) {Creazione\\merge request};
+    \node[pipestep, below=of mr]                        (mr_approval1) {Approvazione\\tecnica};
+    \node[pipestep, right=of mr_approval1]              (mr_approval2) {Approvazione\\del PO};
+    \coordinate[right=of mr, xshift=0.8cm]              (padding);
+    \node[pipestep, right=of padding]                   (merge) {Merge nel\\branch \texttt{dev}};
+    \node[pipestep, below=of merge, yshift=-2cm]        (prod) {Merge nel\\branch \texttt{main}};
+    %
+    \draw[-stealth']  (taiga) -- (git_branch) node[midway, anchor=east] {};
+    \draw[-stealth']  (git_branch) -- (mr) node[midway, anchor=east] {};
+    \draw[-stealth']  (mr) -- (mr_approval1) node[midway, anchor=east] {};
+    \draw[-stealth']  (mr_approval1) -- (mr_approval2) node[midway, anchor=east] {};
+    \draw[-stealth']  (mr_approval2) -- (merge) node[midway, anchor=east] {};
+    \draw[dashed,->]  (merge) -- (prod) node[midway, anchor=west, text width=1.5cm] {Termine sprint};
+    % 
+\end{tikzpicture}
+\end{center}
