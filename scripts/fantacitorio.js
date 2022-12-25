@@ -8,7 +8,12 @@ module.exports = {
 
 async function fetchCurrentWeekScores() {
     const today = moment.utc().toISOString();
-    const points = await getPointsByWeek(today);
 
-    await FantacitorioModel.cachePoints(points, today);
+    try {
+        const points = await getPointsByWeek(today);
+        await FantacitorioModel.cachePoints(points, today);
+    }
+    catch (err) {
+        await FantacitorioModel.cachePoints({}, today); // Nessun punteggio per la settimana
+    }
 }
