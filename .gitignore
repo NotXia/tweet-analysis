@@ -114,3 +114,6 @@ frontend/build/
 *.synctex.gz
 *.synctex(busy)
 *.toc
+*.bbl
+.gitignore
+*.blg

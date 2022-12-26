@@ -26,6 +26,8 @@
 \usepackage[noabbrev,capitalize,italian]{cleveref}
 \newcommand{\fref}[1]{\hyperref[#1]{\cref{#1}}}
 \usepackage{makecell}
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*{\refname}}{}{}{}
 
 \tolerance=1
 \emergencystretch=\maxdimen
@@ -73,11 +75,11 @@
         \vspace*{1.5cm}
             
         \Huge
-        \textbf{Tweet Analysis}
+        \textbf{Rapporto del TEAM 12}
             
         \vspace{0.3cm}
         \LARGE
-        Relazione finale\\[0.2em]
+        Tweet Analysis\\[0.2em]
 
         \vspace{1.5cm}
           
@@ -212,7 +214,7 @@ seguenti\footnote{Ad eccezione dello sprint 3 durante il quale è stato sperimen
         \hline
         \makecell[cl]{Paris Manuel\\{\footnotesize Developer}} & Sviluppo backend. \\ 
         \hline
-        \makecell[cl]{Xia Tian Cheng\\{\footnotesize Scrum master}} & Sviluppo backend e frontend (quando necessario). Sistemista. \\ 
+        \makecell[cl]{Xia Tian Cheng\\{\footnotesize Scrum master}} & Sviluppo fullstack. Sistemista e CI/CD. \\ 
         \hline
     \end{tabular}
 \end{center}
@@ -233,11 +235,19 @@ una maggiore organizzazione durante lo sprint.
 
 \subsection{Team building}
 \subsubsection{Scrumble}
+La partita a Scrumble è stata giocata allo sprint 0, durante la fase preparatoria del progetto.\\
+Lo scopo della sessione di team building era quella di prendere maggiore confidenza con la metodologia Scrum e 
+confermare i ruoli all'interno del gruppo (Autovalutazione \cite{gqm_scrumble}).
+
 \subsubsection{Escape the Boom}
+La partita a Scrumble è stata giocata allo sprint 1.\\
+L'obiettivo era quello di rafforzare la comunicazione nel team, che, come segnalato dal team alla retrospettiva (\fref{sprint1_retrospettiva}),
+era carente e poco significativa (Autovalutazione \cite{gqm_escapetheboom}).
+
 
 \subsection{Gitinspector}
 
-\subsection{Retrospettiva finale}
+
 
 \subsection{Deployment}
 \input{deployment.tex}
@@ -245,6 +255,8 @@ una maggiore organizzazione durante lo sprint.
 
 \newpage
 \section{Artefatti}
+\bibliographystyle{unsrt}
+\bibliography{references}
 
 \end{document}
 
