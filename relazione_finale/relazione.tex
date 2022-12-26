@@ -28,6 +28,7 @@
 \usepackage{makecell}
 \usepackage{etoolbox}
 \patchcmd{\thebibliography}{\section*{\refname}}{}{}{}
+\usepackage{enumitem}
 
 \tolerance=1
 \emergencystretch=\maxdimen
@@ -64,6 +65,46 @@
         \fi
 
     }}
+    \end{center}
+}
+
+% {Nome}{Responsabilità}{Collaborazioni}
+\newcommand{\crc}[3]{%
+    \begin{center}
+        \fbox{\parbox{15cm}{%
+            \vspace*{0.3em}
+
+            \begin{minipage}{13cm}
+                \textbf{Nome}: \texttt{#1}\\
+            \end{minipage}
+            \vspace*{0.5em}
+
+            \begin{minipage}[t]{0.45\textwidth}
+                \textbf{Responsabilità}
+                \def\temp{#2}\ifx\temp\empty
+                    %
+                \else
+                    \begin{itemize}[topsep=0.2em]
+                        \setlength\itemsep{-0.5em}
+                        #2
+                    \end{itemize}
+                \fi
+            \end{minipage}
+            \hfill\vline\hfill
+            \begin{minipage}[t]{0.45\textwidth}
+                \textbf{Collaborazioni}
+                \def\temp{#3}\ifx\temp\empty
+                    %
+                \else
+                    \begin{itemize}[topsep=0.2em]
+                        \setlength\itemsep{-0.5em}
+                        #3
+                    \end{itemize}
+                \fi
+            \end{minipage}
+            
+            \vspace*{0.3em}
+        }}
     \end{center}
 }
 
@@ -169,6 +210,7 @@ Le user stories contenute in ciascuna epica sono descritte nella \fref{sprint_de
 
 
 \subsection{Diagramma delle classi}
+\input{class_diagram.tex}
 
 
 %%%

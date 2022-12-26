@@ -1,0 +1,86 @@
+Di seguito sono descritti, sottoforma di schede CRC, gli oggetti e le funzioni suddivisi per epica del backlog.\\
+Per molte funzionalità del prodotto, si è ritenuto più adatto seguire un approccio funzionale (divisi in moduli) invece di utilizzare un approccio a oggetti.\\
+Nonostante ciò, si è preferito descrivere la progettazione come schede CRC, anche se le entità non sono propriamente classi in quanto 
+per ciascun modulo è possibile individuare le responsabilità e le dipendenze.
+
+\subsubsection*{Raccolta e analisi di tweet}
+%%% Raccolta
+\crc{fetch/keyword}{%
+    \item Raccolta di tweet per parola chiave
+}{%
+}
+
+\crc{fetch/user}{%
+    \item Raccolta di tweet per nome utente
+}{%
+}
+
+\crc{fetch/multiple\_tweets}{%
+    \item Raccolta di un determinato numero (potenzialmente alto) di tweet
+}{%
+    \item \texttt{fetch/keyword}
+    \item \texttt{fetch/user}
+}
+
+\crc{fetch/stream}{%
+    \item Apertura di uno stream per la raccolta di tweet in tempo reale
+    \item Lettura dallo stream
+    \item Chiusura dello stream
+}{%
+}
+
+%%% Analisi
+\crc{analysis/language}{%
+    \item Rilevazione della lingua di un testo
+}{%
+}
+
+\crc{analysis/sentiment}{%
+    \item Rilevazione del sentimento di un testo
+}{%
+    \item \texttt{analysis/language}
+}
+
+\crc{analysis/stopwords}{%
+    \item Rimozione di stop words da un testo
+}{%
+    \item \texttt{analysis/language}
+}
+
+
+\subsubsection*{Scacchi}
+\crc{ChessOpponent}{%
+    \item Pubblicazione tweet con lo stato della scacchiera
+    \item Selezione della mossa successiva a maggioranza
+}{%
+    \item Modulo per l'autenticazione e l'invio di tweet
+}
+
+\crc{ChessGame}{%
+    \item Tracciamento dello stato della partita
+    \item Rilevamento conclusione partita
+}{%
+}
+
+\subsubsection*{Reazione a catena e L'Eredità}
+\crc{games/winningWord}{%
+    \item Estrazione della parola vincente
+}{%
+    \item \texttt{fetch/keyword}
+}
+\crc{games/userAttempts}{%
+    \item Raccolta dei tentativi degli utenti
+}{%
+    \item \texttt{fetch/keyword}
+}
+
+\subsubsection*{Fantacitorio}
+\crc{games/fantacitorio}{%
+    \item Raccolta dei punteggi settimanali
+    \item Calcolo della classifica generale
+    \item Raccolta delle squadre degli utenti
+    \item Calcolo di statistiche sulla classifica
+}{%
+    \item \texttt{fetch/keyword}
+    \item \texttt{fetch/user}
+}
