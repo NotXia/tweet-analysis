@@ -160,8 +160,8 @@
 
 \section{Descrizione del prodotto}
 \subsection{Scope}
-Il prodotto da realizzare è un client Twitter in grado di fornire analisi e funzionalità specifiche per determinate tematiche.\\
-In particolare sono state chieste le seguenti funzioni:
+Il prodotto realizzato è un client Twitter in grado di fornire analisi e funzionalità specifiche per determinate tematiche.\\
+In particolare sono state richieste le seguenti funzioni:
 \begin{itemize}
     \item Ricerca e visualizzazione di tweet con filtri di ricerca, grafici per l'analisi aggregata e mappa per la geolocalizzazione.
     \item Partita a scacchi contro gli utenti di Twitter che giocano la propria mossa a maggioranza.
@@ -187,7 +187,10 @@ Il backlog è stato partizionato in cinque epiche:
         \hline
     \end{tabular}
 \end{center}
-Le user stories contenute in ciascuna epica sono descritte nella \fref{sprint_description}.
+Le user stories contenute in ciascuna epica sono descritte nella \fref{sprint_description}.\\~\\
+
+Il prodotto è attivo online \cite{deploy_prod}, assieme ad un video dimostrativo \cite{video}.
+
 
 \subsection{Casi d'uso}
 \begin{figure}[H]
@@ -249,12 +252,12 @@ Il punteggio complessivo è quindi ottenuto dalla somma di quest'ultimi.
 \section{Descrizione del processo}
 
 \subsection{Flusso di lavoro}
-Le responsabilità di ciascun componente del gruppo nel processo di sviluppo sono stati i 
+I ruoli di ciascun componente del gruppo nel processo di sviluppo sono stati i 
 seguenti\footnote{Ad eccezione dello sprint 3 durante il quale è stato sperimentato l'inversione dei ruoli del team di sviluppo}:
 \begin{center}
     \begin{tabular}{ | m{4cm} | m{10cm} | }
         \hline
-        {\textbf{Membro}} & {\textbf{Responsabilità}} \\
+        {\textbf{Membro}} & {\textbf{Ruoli}} \\
         \hline
         \makecell[cl]{Cheikh Ibrahim Zaid\\{\footnotesize PO Operativo}} & Sviluppo backend. Testing e quality assurance. \\ 
         \hline
@@ -314,6 +317,19 @@ Per un'analisi più gradulare, sono state fatte le seguenti scansioni:
     \item Solo sui file che implementano funzionalità (quindi escludendo i test)
     \item Solo sui file contenenti test
 \end{itemize}
+
+Oltre a considerare come metriche la quantità di commit e il numero di righe inserite che possono variare dal metodo di lavoro del singolo,
+risulta interessante analizzare il contributo di ciascun membro alle feature del prodotto.\\
+È infatti possibile individuare le feature a cui ciascun componente del gruppo ha maggiormente contribuito:
+\input{git_responsabilities.tex}
+
+È anche interessante analizzare l'andamento del numero di commit giornalieri nel tempo.
+In particolare, se partizionata in base agli sprint, è possibile osservare alcuni comportamenti già evidenziati nella descrizione degli sprint (\fref{sprint_description}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{./img/git/commit.png}
+    \caption{Andamento del numero di commit giornalieri, suddivisi per sprint}
+\end{figure}
 
 
 \subsection{Deployment}
