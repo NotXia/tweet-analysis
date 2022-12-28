@@ -43,7 +43,7 @@
 % {US}{Punti}{DoD}{Test}{Epica}
 \newcommand{\userstory}[5]{%
     \begin{center}
-        \fbox{\parbox{15cm}{%
+    \fbox{\parbox{15cm}{%
         \begin{minipage}{9.8cm}
             \textbf{US}: #1\\
             \textbf{Epica}: #5
@@ -63,7 +63,6 @@
         \else
             \textbf{Test}: #4\\
         \fi
-
     }}
     \end{center}
 }
@@ -160,9 +159,16 @@
 
 
 \section{Descrizione del prodotto}
-Il prodotto da realizzare è un client Twitter in grado di fornire analisi e funzionalità specifiche per determinati argomenti.
-
 \subsection{Scope}
+Il prodotto da realizzare è un client Twitter in grado di fornire analisi e funzionalità specifiche per determinate tematiche.\\
+In particolare sono state chieste le seguenti funzioni:
+\begin{itemize}
+    \item Ricerca e visualizzazione di tweet con filtri di ricerca, grafici per l'analisi aggregata e mappa per la geolocalizzazione.
+    \item Partita a scacchi contro gli utenti di Twitter che giocano la propria mossa a maggioranza.
+    \item Raccolta dei tweet degli spettatori dei giochi televisivi \textit{L'Eredità} e \textit{Reazione a Catena}, visualizzando i tentativi e i vincitori.
+    \item Visualizzazione di una sintesi dei punteggi, di statistiche e delle squadre partecipanti degli altri utenti riguardanti il \textit{Fantacitorio}.
+\end{itemize}
+
 Il backlog è stato partizionato in cinque epiche:
 \begin{center}
     \begin{tabular}{ | m{8em} | m{11cm} | }
@@ -173,9 +179,9 @@ Il backlog è stato partizionato in cinque epiche:
         \hline
         Scacchi & Partita a scacchi contro gli utenti di Twitter che scelgono a maggioranza la mossa \\ 
         \hline
-        Reazione a catena & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{catena finale} \\ 
+        L'Eredità & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{Ghigliottina} \\ 
         \hline
-        L'Eredità & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{ghigliottina} \\ 
+        Reazione a catena & Raccolta dei tentativi degli utenti di Twitter di indovinare la \textit{Catena Finale} \\ 
         \hline
         Fantacitorio & Raccolta e visualizzazione dei punteggi del Fantacitorio e ricerca delle squadre degli altri utenti \\ 
         \hline
@@ -186,25 +192,25 @@ Le user stories contenute in ciascuna epica sono descritte nella \fref{sprint_de
 \subsection{Casi d'uso}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=14cm]{./img/usecase/tweet.pdf}
+    \includegraphics[scale=0.7]{./img/usecase/tweet.pdf}
     \caption{Casi d'uso per l'epica: Raccolta e analisi di tweet}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=10cm]{./img/usecase/tvgames.pdf}
+    \includegraphics[scale=0.7]{./img/usecase/tvgames.pdf}
     \caption{Casi d'uso per l'epica: Giochi televisivi}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=10cm]{./img/usecase/chess.pdf}
+    \includegraphics[scale=0.7]{./img/usecase/chess.pdf}
     \caption{Casi d'uso per l'epica: Scacchi}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=11cm]{./img/usecase/fantacitorio.pdf}
+    \includegraphics[scale=0.7]{./img/usecase/fantacitorio.pdf}
     \caption{Casi d'uso per l'epica: Fantacitorio}
 \end{figure}
 
@@ -270,13 +276,13 @@ Più nello specifico, il flusso del lavoro ha seguito il seguente schema:
 \subsubsection{Bug tracking}
 Per il tracciamento di problemi e bug sono stati usati gli strumenti disponibili in Gitlab e Taiga.
 In particolare è stato utilizzato la funzionalità \textit{Issues} di Gitlab per creare e segnalare bug. 
-Contemporaneamente è stato impostato Taiga in modo tale che venga sincronizzato con Gitlab.\\
+Contemporaneamente è stato impostato Taiga in modo tale che venga integrato con Gitlab.\\
 In questo modo sono visibile su entrambi gli strumenti le segnalazioni e il loro stato, permettendo una migliore pianificazione in fase di sprint planning e
 una maggiore organizzazione durante lo sprint.
 
 \subsubsection{Daily scrum}
 Data l'impossibilità di effettuare incontri quotidiani, i daily scrum sono stati realizzati con cadenza più irregolare, tenendo una riunione almeno una volta a settimana
-per allineare il team alla situazione del progetto.\\
+per allineare il team alla situazione del progetto (\textit{Weekly scrum}).\\
 In aggiunta, con l'obiettivo sopperire alla mancanza di incontri giornalieri, sono stati effettuati dei \textit{daily scrum virtuali} su Mattermost.
 Nello specifico, quando un componente decide di lavorare in una giornata, scrive un messaggio contenente la struttura di un daily scrum (ciò che svolgerà, ciò che ha svolto l'ultima volta ed eventuali problemi)
 in modo tale da informare il team dell'avanzamento dei lavori.
@@ -284,7 +290,7 @@ in modo tale da informare il team dell'avanzamento dei lavori.
 \subsubsection{Monitoraggio delle ore di lavoro}
 Per il tracciamento delle ore di lavoro è stata adottata una soluzione "manuale".
 Ogni componente del gruppo è responsabile del monitoraggio delle proprie ore che compila in un file \texttt{json} presente in un repository su Gitlab\footnote{Repository per le ore di lavoro: \url{https://tcxia.ddns.net/gitlab/t12/time-tracker}}.\\
-Nello stesso repository è presente una webapp\footnote{Webapp con sintesi delle ore di lavoro: \url{https://tcxia.ddns.net/time/}}
+È inoltre presente una webapp\footnote{Webapp con sintesi delle ore di lavoro: \url{https://tcxia.ddns.net/time/}}
 che elabora le informazioni inserite e si interfaccia con le API di Taiga, producendo una sintesi dei dati assieme a qualche statistica. 
 
 

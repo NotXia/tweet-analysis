@@ -49,11 +49,23 @@ per ciascun modulo è possibile individuare le responsabilità e le dipendenze.
 
 
 \subsubsection*{Scacchi}
+
+\crc{tweet/twitter\_oauth}{%
+    \item Autenticazione a Twitter
+}{%
+}
+
+\crc{tweet/send}{%
+    \item Pubblicazione di un tweet
+}{%
+    \item \texttt{tweet/twitter\_oauth}
+}
+
 \crc{ChessOpponent}{%
-    \item Pubblicazione tweet con lo stato della scacchiera
+    \item Generazione dell'immagine con lo stato della scacchiera da pubblicare come tweet
     \item Selezione della mossa successiva a maggioranza
 }{%
-    \item Modulo per l'autenticazione e l'invio di tweet
+    \item \texttt{tweet/send}
 }
 
 \crc{ChessGame}{%
