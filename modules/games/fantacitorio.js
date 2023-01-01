@@ -377,12 +377,12 @@ async function _bestClimber(scores) {
     let best_climber = { politician: "", rank: Number.MIN_VALUE };
 
     // Calcolo delle settimane di riferimento
-    let rank_reference_date = scores[0].date;
-    let rank_previous_date = scores[1].date;
-    if (scores[0].points.length == 0) { // Non ci sono ancora punti per questa settimana, si considera quella precedente
-        rank_reference_date = scores[1].date;
-        rank_previous_date = scores[2].date;
-    }
+    let i = 0;
+    while (scores[i].points.length === 0) { i++; } // Cerca la prima settimana disponibile con dei punteggi
+    const rank_reference_date = scores[i].date;
+    i++;
+    while (scores[i].points.length === 0) { i++; } // Cerca la seconda settimana disponibile con dei punteggi
+    const rank_previous_date = scores[i].date;
     
     // Calcolo delle posizioni
     let ranking_reference = await getRanking(rank_reference_date);
