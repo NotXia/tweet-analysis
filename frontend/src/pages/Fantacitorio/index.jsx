@@ -320,7 +320,7 @@ class Fantacitorio extends React.Component {
      * @param date la data da dove cercare i punteggi
      */
     async searchWeekPoints(date) {
-        if (date === "") { return this.setState({ error_message: "", date_result: [], date: "" }); }
+        if (date === "") { return this.setState({ error_message: "", error_message_week_search: "", date_result: [], date: "" }); }
 
         date = `${date}T00:00:00Z`;
 
@@ -346,7 +346,7 @@ class Fantacitorio extends React.Component {
             });
         }
         catch (err) {
-            this.setState({ error_message: "Si è verificato un errore durante la ricerca"});
+            this.setState({ error_message_week_search: "La classifica per la settimana inserita non è disponibile"});
         }
 
         this.setState({ fetching_date: false });
