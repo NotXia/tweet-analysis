@@ -197,7 +197,20 @@ class Fantacitorio extends React.Component {
                                                 <div className="border rounded-4 mt-4">
                                                     <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best climber</h3>
                                                     <p className="m-0 text-center fs-6 text-muted">Maggior numero di posizioni scalate dall'ultima classifica</p>
-                                                    <p className="text-center m-0 mt-2 fs-5"><span className="fw-semibold">{this.state.statistics?.best_climber.politician}</span> {this.state.statistics?.best_climber.rank} posizioni scalate</p>
+                                                    <p className="text-center m-0 mt-2 fs-5">
+                                                        {
+                                                            this.state.statistics?.best_climber &&
+                                                            <span>
+                                                                <span className="fw-semibold">{this.state.statistics.best_climber.politician}</span> {this.state.statistics.best_climber.rank} posizioni scalate
+                                                            </span>
+                                                        }
+                                                        {
+                                                            !this.state.statistics?.best_climber &&
+                                                            <span>
+                                                                Posizioni invariate
+                                                            </span>
+                                                        }
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
