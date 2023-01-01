@@ -371,19 +371,19 @@ function _bestAverage(scores) {
 /**
  * Calcola il best climber: il politico che tra questa settimana e la precedente ha scalato il numero maggiore di posizioni
  * @param {{points: [{politician:string, points:number}, date:string]}} scores  Punteggi settimanali
- * @returns {politician:string, points:number} Il politico best climber
+ * @returns {politician:string, points:number|null} Il politico best climber
  */
 async function _bestClimber(scores) {
     let best_climber = { politician: "", rank: Number.MIN_VALUE };
 
     // Calcolo delle settimane di riferimento
-    let rank_reference_date = scores[0].date;
-    let rank_previous_date = scores[1].date;
-    if (scores[0].points.length == 0) { // Non ci sono ancora punti per questa settimana, si considera quella precedente
-        rank_reference_date = scores[1].date;
-        rank_previous_date = scores[2].date;
-    }
-    
+    let i = 0;
+    while (scores[i].points.length === 0) { i++; } // Cerca la prima settimana disponibile con dei punteggi
+    const rank_reference_date = scores[i].date;
+    i++;
+    while (scores[i].points.length === 0) { i++; } // Cerca la seconda settimana disponibile con dei punteggi
+    const rank_previous_date = scores[i].date;
+
     // Calcolo delle posizioni
     let ranking_reference = await getRanking(rank_reference_date);
     let ranking_previous = await getRanking(rank_previous_date);
@@ -400,6 +400,8 @@ async function _bestClimber(scores) {
             best_climber.rank = diff;
         }
     });
+    
+    if (best_climber.politician === "") { return null; } // Classifica rimasta invariata
 
     return best_climber;
 }

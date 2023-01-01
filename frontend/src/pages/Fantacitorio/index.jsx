@@ -157,7 +157,7 @@ class Fantacitorio extends React.Component {
 
                                             {/* Risultato ricerca settimanale e form modifica punteggio */}
                                             {
-                                                this.state.date_result.length > 0 &&
+                                                this.state.date !== "" &&
                                                 <div className="mt-3">
                                                     <p className="my-1-0 h1 text-center" style={{ fontSize: "0.9rem" }} data-bs-toggle="collapse" data-bs-target="#editPoliticianScore">Modifica il punteggio di un politico ▾</p>
                                                     <div className="collapse" id="editPoliticianScore">
@@ -197,7 +197,20 @@ class Fantacitorio extends React.Component {
                                                 <div className="border rounded-4 mt-4">
                                                     <h3 className="m-0 text-center fw-normal fs-4 text-uppercase fw-semibold" style={{ color: "#f9aa10" }}>Best climber</h3>
                                                     <p className="m-0 text-center fs-6 text-muted">Maggior numero di posizioni scalate dall'ultima classifica</p>
-                                                    <p className="text-center m-0 mt-2 fs-5"><span className="fw-semibold">{this.state.statistics?.best_climber.politician}</span> {this.state.statistics?.best_climber.rank} posizioni scalate</p>
+                                                    <p className="text-center m-0 mt-2 fs-5">
+                                                        {
+                                                            this.state.statistics?.best_climber &&
+                                                            <span>
+                                                                <span className="fw-semibold">{this.state.statistics.best_climber.politician}</span> {this.state.statistics.best_climber.rank} posizioni scalate
+                                                            </span>
+                                                        }
+                                                        {
+                                                            !this.state.statistics?.best_climber &&
+                                                            <span>
+                                                                Posizioni invariate
+                                                            </span>
+                                                        }
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -320,7 +333,7 @@ class Fantacitorio extends React.Component {
      * @param date la data da dove cercare i punteggi
      */
     async searchWeekPoints(date) {
-        if (date === "") { return this.setState({ error_message: "", date_result: [], date: "" }); }
+        if (date === "") { return this.setState({ error_message: "", error_message_week_search: "", date_result: [], date: "" }); }
 
         date = `${date}T00:00:00Z`;
 
@@ -328,7 +341,7 @@ class Fantacitorio extends React.Component {
         this.setState({ 
             fetching_date: true, error_message: "", error_message_week_search: "",
             date_result: [],
-            date: "",
+            date: date,
         });
 
         try {
@@ -346,7 +359,7 @@ class Fantacitorio extends React.Component {
             });
         }
         catch (err) {
-            this.setState({ error_message: "Si è verificato un errore durante la ricerca"});
+            this.setState({ error_message_week_search: "La classifica per la settimana inserita non è disponibile"});
         }
 
         this.setState({ fetching_date: false });
