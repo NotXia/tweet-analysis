@@ -115,3 +115,35 @@ Alla retrospettiva il team ha evidenziato i seguenti aspetti positivi:
     \includegraphics[width=15cm]{./img/sprint4/retrospettiva.png}
     \caption{Retrospettiva del 02/12/2022}
 \end{figure}
+
+\subsubsection{Qualità del codice}
+I risultati delle analisi effettuate da Sonarqube sul codice sono i seguenti:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./img/sprint4/sonarqube.png}
+    \caption{Risultato dell'analisi di Sonarqube}
+\end{figure}
+Tutte le segnalazioni sono state risolte e il coverage dei test sul codice finale è del 61,6\%.\\
+Più nel dettaglio la copertura dei test sulle varie sezioni di codice (suddivisione basata sull'organizzazione del file system) è la seguente:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Sezione} & \textbf{\% di coverage (righe totali)} \\
+        \hline
+        \texttt{modules} & 79,9\% (1136) \\
+        \hline
+        \texttt{controller} & 66,9\% (207) \\
+        \hline
+        \texttt{middleware} & 94\% (122) \\
+        \hline
+        \texttt{routes} & 100\% (34) \\
+        \hline
+        \texttt{models} & 100\% (279) \\
+        \hline
+        \texttt{sockets} & 61,8\% (322) \\
+        \hline
+        \hline
+        \texttt{frontend} & 26,9\% (2524) \\
+        \hline
+    \end{tabular}
+\end{center}
