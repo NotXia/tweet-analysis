@@ -157,7 +157,7 @@ class Fantacitorio extends React.Component {
 
                                             {/* Risultato ricerca settimanale e form modifica punteggio */}
                                             {
-                                                this.state.date_result.length > 0 &&
+                                                this.state.date !== "" &&
                                                 <div className="mt-3">
                                                     <p className="my-1-0 h1 text-center" style={{ fontSize: "0.9rem" }} data-bs-toggle="collapse" data-bs-target="#editPoliticianScore">Modifica il punteggio di un politico ▾</p>
                                                     <div className="collapse" id="editPoliticianScore">
@@ -328,7 +328,7 @@ class Fantacitorio extends React.Component {
         this.setState({ 
             fetching_date: true, error_message: "", error_message_week_search: "",
             date_result: [],
-            date: "",
+            date: date,
         });
 
         try {
